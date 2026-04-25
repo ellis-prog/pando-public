@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Your Gear — Pando Refitters</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #04342C;
+    --forest-mid: #0F6E56;
+    --forest-light: #1D9E75;
+    --forest-pale: #E1F5EE;
+    --forest-mint: #9FE1CB;
+    --forest-teal: #5DCAA5;
+    --ink: #1a1a18;
+    --ink-mid: #3a3a38;
+    --ink-light: #6a6a68;
+    --ink-pale: #9a9a98;
+    --paper: #fafaf8;
+    --paper-mid: #f2f2ef;
+    --paper-dark: #e8e8e4;
+    --border: #d8d8d4;
+    --white: #ffffff;
+    --amber: #BA7517;
+    --amber-pale: #FAEEDA;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  .site-header {
+    background: var(--forest);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .site-header .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--forest-mint);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--forest);
+    flex-shrink: 0;
+  }
+
+  .site-header .logo-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--forest-pale);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Main layout */
+  .main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* Intro */
+  .intro {
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .intro-greeting {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .intro-sub {
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  .intro-expiry {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--amber);
+    background: var(--amber-pale);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-top: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* Item cards */
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .item-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    transition: box-shadow 0.2s;
+  }
+
+  .item-card.approved {
+    border-color: var(--forest-light);
+    background: #f8fdfb;
+  }
+
+  .item-card-header {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid var(--paper-dark);
+  }
+
+  .item-name {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .item-size {
+    font-size: 13px;
+    color: var(--ink-pale);
+  }
+
+  .staff-note {
+    margin-top: 0.75rem;
+    background: var(--paper-mid);
+    border-left: 3px solid var(--forest-light);
+    border-radius: 0 6px 6px 0;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--ink-mid);
+    font-style: italic;
+  }
+
+  .staff-note-label {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-pale);
+    margin-bottom: 2px;
+  }
+
+  /* Tile grid */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 1rem 1.25rem;
+  }
+
+  .tile {
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: transform 0.12s, opacity 0.12s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+
+  .tile:active { transform: scale(0.97); }
+
+  .tile.selected {
+    background: var(--forest);
+  }
+
+  .tile.unselected {
+    background: var(--paper-mid);
+    border: 1.5px solid var(--border);
+  }
+
+  .tile.unavailable {
+    background: var(--paper-mid);
+    border: 1.5px solid var(--border);
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .tile-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tile.selected .tile-label { color: var(--forest-mint); }
+  .tile.unselected .tile-label { color: var(--ink-pale); }
+  .tile.unavailable .tile-label { color: var(--ink-pale); }
+
+  .tile-price {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .tile.selected .tile-price { color: var(--forest-pale); }
+  .tile.unselected .tile-price { color: var(--ink); }
+  .tile.unavailable .tile-price { color: var(--ink-light); font-size: 15px; }
+
+  .tile-desc {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .tile.selected .tile-desc { color: var(--forest-teal); }
+  .tile.unselected .tile-desc { color: var(--ink-light); }
+  .tile.unavailable .tile-desc { color: var(--ink-pale); }
+
+  .tile-sub {
+    font-size: 11px;
+    margin-top: 5px;
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  .tile.selected .tile-sub { color: var(--forest-mint); }
+  .tile.unselected .tile-sub { color: var(--ink-pale); }
+
+  /* Actions */
+  .item-actions {
+    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-approve {
+    width: 100%;
+    padding: 13px;
+    background: var(--forest);
+    color: var(--forest-pale);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-approve:hover { background: var(--forest-mid); }
+  .btn-approve:active { transform: scale(0.98); }
+
+  .btn-note {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    color: var(--ink-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .btn-note:hover {
+    background: var(--paper-mid);
+    color: var(--ink);
+  }
+
+  /* Note area */
+  .note-area {
+    display: none;
+    padding: 0 1.25rem 1.25rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .note-area.open { display: flex; }
+
+  .note-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--white);
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .note-textarea:focus { border-color: var(--forest-light); }
+
+  .note-hint {
+    font-size: 12px;
+    color: var(--ink-pale);
+  }
+
+  .btn-submit-note {
+    padding: 10px;
+    background: var(--paper-mid);
+    color: var(--ink-mid);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-submit-note:hover { background: var(--paper-dark); }
+
+  /* Approved state */
+  .approved-banner {
+    display: none;
+    padding: 1rem 1.25rem;
+    align-items: center;
+    gap: 10px;
+    background: #f0faf6;
+    border-top: 1px solid #c8ead9;
+  }
+
+  .approved-banner.show { display: flex; }
+
+  .approved-check {
+    width: 28px;
+    height: 28px;
+    background: var(--forest-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .approved-check svg {
+    width: 14px;
+    height: 14px;
+    stroke: white;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  .approved-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--forest);
+  }
+
+  .approved-sub {
+    font-size: 12px;
+    color: var(--forest-mid);
+    margin-top: 1px;
+  }
+
+  /* Note submitted state */
+  .note-submitted {
+    display: none;
+    padding: 0.75rem 1.25rem 1.25rem;
+    font-size: 13px;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  .note-submitted.show { display: block; }
+
+  /* Approve all */
+  .approve-all-section {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    animation: fadeUp 0.5s ease 0.3s both;
+  }
+
+  .approve-all-label {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .btn-approve-all {
+    width: 100%;
+    padding: 14px;
+    background: var(--forest);
+    color: var(--forest-pale);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-approve-all:hover { background: var(--forest-mid); }
+
+  /* Loading / error states */
+  .state-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--forest);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .state-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .state-sub {
+    font-size: 14px;
+    color: var(--ink-light);
+    max-width: 300px;
+    line-height: 1.6;
+  }
+
+  /* Footer */
+  .site-footer {
+    text-align: center;
+    padding: 2rem 1.25rem;
+    font-size: 12px;
+    color: var(--ink-pale);
+    line-height: 1.8;
+  }
+
+  .site-footer a {
+    color: var(--forest-mid);
+    text-decoration: none;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-mark">P</div>
+  <span class="logo-text">Pando Refitters</span>
+</header>
+
+<main class="main">
+  <div id="loading" class="state-screen">
+    <div class="spinner"></div>
+    <p style="font-size:14px; color:var(--ink-light);">Loading your gear...</p>
+  </div>
+
+  <div id="error" class="state-screen" style="display:none;">
+    <div class="state-title">Nothing to review</div>
+    <p class="state-sub">This link may have expired or all items have already been reviewed. Questions? Call us at <a href="tel:8016697978">(801) 669-7978</a>.</p>
+  </div>
+
+  <div id="content" style="display:none;">
+    <div class="intro">
+      <h1 class="intro-greeting" id="greeting">Hi there!</h1>
+      <p class="intro-sub">Here's the gear you dropped off. Review our suggested pricing, choose how you'd like to sell each item, then hit Approve.</p>
+      <span class="intro-expiry">⏱ This link expires in 2 weeks</span>
+    </div>
+
+    <div class="items-list" id="items-list"></div>
+
+    <div class="approve-all-section" id="approve-all-section">
+      <p class="approve-all-label">Happy with everything? Approve all items at once using your current selections.</p>
+      <button class="btn-approve-all" onclick="approveAll()">Approve All Items</button>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  Questions? <a href="mailto:hello@pandorefitters.com">hello@pandorefitters.com</a> · <a href="tel:8012101835">(801) 210-1835</a><br>
+  249 N University Ave, Provo, UT
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://ehzcymnztsbbroxzcidq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_inbwheC0ne9Frtu6NFkcAg_LnU7xE9I';
+
+const TOKEN = new URLSearchParams(window.location.search).get('token') || '18922882-2e33-4538-8835-b802fd038441';
+
+const selections = {};
+const approvedItems = {};
+const noteStates = {};
+
+async function loadItems() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/get_approval_items`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ p_token: TOKEN })
+      }
+    );
+
+    if (!res.ok) throw new Error('Query failed');
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      showError();
+      return;
+    }
+
+    renderItems(data);
+  } catch (e) {
+    console.error(e);
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error').style.display = 'flex';
+}
+
+function fmt(val) {
+  if (!val && val !== 0) return null;
+  return '$' + Number(val).toFixed(2);
+}
+
+function renderItems(items) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+
+  const personName = items[0].person_name;
+  const firstName = personName ? personName.split(' ')[0] : null;
+  if (firstName) {
+    document.getElementById('greeting').textContent = `Hi ${firstName}!`;
+  }
+
+  const list = document.getElementById('items-list');
+  list.innerHTML = '';
+
+  items.forEach((item, index) => {
+    const isConsignment = item.acquisition_type === 'Consignment';
+    const defaultSelection = isConsignment ? 'Consignment' : 'Trade In';
+    selections[item.airtable_id] = defaultSelection;
+
+    const tradeInOnly = item.acquisition_eligibility === 'Trade In Only';
+    const consignOnly = item.acquisition_eligibility === 'Consignment Only';
+
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = `card-${item.airtable_id}`;
+    card.style.animationDelay = `${index * 0.08}s`;
+
+    const staffNote = item.staff_notes
+      ? `<div class="staff-note">
+           <div class="staff-note-label">Note from our team</div>
+           ${item.staff_notes}
+         </div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="item-card-header">
+        <div class="item-name">${item.product_name || 'Item'}</div>
+        ${item.size_ ? `<div class="item-size">${item.size_}</div>` : ''}
+        ${staffNote}
+      </div>
+
+      <div class="tile-grid" id="tiles-${item.airtable_id}">
+        ${renderTiles(item, isConsignment, tradeInOnly, consignOnly)}
+      </div>
+
+      <div class="item-actions" id="actions-${item.airtable_id}">
+        <button class="btn-approve" onclick="approveItem('${item.airtable_id}')">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,8 6,12 14,4"></polyline>
+          </svg>
+          Approve
+        </button>
+        <button class="btn-note" onclick="toggleNote('${item.airtable_id}')">Leave a note</button>
+      </div>
+
+      <div class="note-area" id="note-${item.airtable_id}">
+        <textarea class="note-textarea" id="textarea-${item.airtable_id}" placeholder="Tell us your thoughts — pricing concerns, condition questions, or if you'd like this item back..."></textarea>
+        <p class="note-hint">We'll follow up with you directly.</p>
+        <button class="btn-submit-note" onclick="submitNote('${item.airtable_id}')">Send note</button>
+      </div>
+
+      <div class="note-submitted" id="note-submitted-${item.airtable_id}">
+        ✓ Note received — we'll be in touch.
+      </div>
+
+      <div class="approved-banner" id="approved-${item.airtable_id}">
+        <div class="approved-check">
+          <svg viewBox="0 0 14 14"><polyline points="2,7 5.5,10.5 12,3.5"></polyline></svg>
+        </div>
+        <div>
+          <div class="approved-text" id="approved-text-${item.airtable_id}">Approved</div>
+          <div class="approved-sub" id="approved-sub-${item.airtable_id}"></div>
+        </div>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+function renderTiles(item, isConsignment, tradeInOnly, consignOnly) {
+  const sel = selections[item.airtable_id];
+  const tradeSelected = sel === 'Trade In';
+  const consignSelected = sel === 'Consignment';
+
+  const tradePrice = fmt(item.acquisition_cost);
+  const consignEarnings = fmt(item.potential_earnings);
+  const listPrice = fmt(item.starting_price_in_store);
+
+  let leftTile, rightTile;
+
+  if (isConsignment) {
+    // Consignment customer — consignment left, trade in right
+    leftTile = consignOnly
+      ? tileConsignUnavailable()
+      : tileConsignForConsignCustomer(item, consignSelected, listPrice, consignEarnings);
+
+    rightTile = tradeInOnly
+      ? tileTradeUnavailable()
+      : tileTrade(item, tradeSelected, tradePrice);
+  } else {
+    // Quote customer — trade in left, consignment right
+    leftTile = tradeInOnly
+      ? tileTradeUnavailable()
+      : tileTrade(item, tradeSelected, tradePrice);
+
+    rightTile = consignOnly
+      ? tileConsignUnavailable()
+      : tileConsignForQuoteCustomer(item, consignSelected, consignEarnings, listPrice);
+  }
+
+  return leftTile + rightTile;
+}
+
+function tileTrade(item, selected, tradePrice) {
+  const cls = selected ? 'selected' : 'unselected';
+  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Trade In')"`;
+  return `
+    <div class="tile ${cls}" ${onclick}>
+      <div class="tile-label">Trade in</div>
+      <div class="tile-price">${tradePrice || '—'}</div>
+      <div class="tile-desc">Store credit, right now</div>
+    </div>`;
+}
+
+function tileConsignForConsignCustomer(item, selected, listPrice, consignEarnings) {
+  const cls = selected ? 'selected' : 'unselected';
+  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Consignment')"`;
+  return `
+    <div class="tile ${cls}" ${onclick}>
+      <div class="tile-label">Consignment</div>
+      <div class="tile-price">${listPrice || '—'}</div>
+      <div class="tile-desc">Starting list price</div>
+      ${consignEarnings ? `<div class="tile-sub">You earn up to ${consignEarnings} if it sells</div>` : ''}
+    </div>`;
+}
+
+function tileConsignForQuoteCustomer(item, selected, consignEarnings, listPrice) {
+  const cls = selected ? 'selected' : 'unselected';
+  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Consignment')"`;
+  return `
+    <div class="tile ${cls}" ${onclick}>
+      <div class="tile-label">Consignment</div>
+      <div class="tile-price">${consignEarnings || '—'}</div>
+      <div class="tile-desc">Potential earnings</div>
+      ${listPrice ? `<div class="tile-sub">If it sells at ${listPrice} — subject to discounts</div>` : ''}
+    </div>`;
+}
+
+function tileTradeUnavailable() {
+  return `
+    <div class="tile unavailable">
+      <div class="tile-label">Trade in</div>
+      <div class="tile-price">Not available</div>
+      <div class="tile-desc">This item is consignment only</div>
+    </div>`;
+}
+
+function tileConsignUnavailable() {
+  return `
+    <div class="tile unavailable">
+      <div class="tile-label">Consignment</div>
+      <div class="tile-price">Not available</div>
+      <div class="tile-desc">This item is trade in only</div>
+    </div>`;
+}
+
+function selectTile(airtableId, choice) {
+  if (approvedItems[airtableId]) return;
+  selections[airtableId] = choice;
+
+  const item = window._items.find(i => i.airtable_id === airtableId);
+  if (!item) return;
+
+  const isConsignment = item.acquisition_type === 'Consignment';
+  const tradeInOnly = item.acquisition_eligibility === 'Trade In Only';
+  const consignOnly = item.acquisition_eligibility === 'Consignment Only';
+
+  const tilesEl = document.getElementById(`tiles-${airtableId}`);
+  tilesEl.innerHTML = renderTiles(item, isConsignment, tradeInOnly, consignOnly);
+}
+
+function approveItem(airtableId) {
+  const selection = selections[airtableId];
+  approvedItems[airtableId] = selection;
+
+  document.getElementById(`actions-${airtableId}`).style.display = 'none';
+  document.getElementById(`note-${airtableId}`).classList.remove('open');
+
+  const banner = document.getElementById(`approved-${airtableId}`);
+  banner.classList.add('show');
+
+  document.getElementById(`approved-text-${airtableId}`).textContent =
+    `Approved as ${selection}`;
+  document.getElementById(`approved-sub-${airtableId}`).textContent =
+    selection === 'Trade In'
+      ? 'Store credit will be added to your account.'
+      : "We'll put it on the floor and notify you when it sells.";
+
+  const card = document.getElementById(`card-${airtableId}`);
+  card.classList.add('approved');
+
+  // TODO: write back to Airtable
+  console.log('Approved:', airtableId, selection);
+
+  checkAllApproved();
+}
+
+function approveAll() {
+  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id]);
+  unapproved.forEach(item => approveItem(item.airtable_id));
+}
+
+function toggleNote(airtableId) {
+  const noteEl = document.getElementById(`note-${airtableId}`);
+  noteEl.classList.toggle('open');
+}
+
+function submitNote(airtableId) {
+  const text = document.getElementById(`textarea-${airtableId}`).value.trim();
+  if (!text) return;
+
+  document.getElementById(`note-${airtableId}`).classList.remove('open');
+  document.getElementById(`note-submitted-${airtableId}`).classList.add('show');
+
+  // TODO: write note back to Airtable
+  console.log('Note submitted for', airtableId, ':', text);
+}
+
+function checkAllApproved() {
+  if (!window._items) return;
+  const allDone = window._items.every(i => approvedItems[i.airtable_id]);
+  if (allDone) {
+    document.getElementById('approve-all-section').style.display = 'none';
+  }
+}
+
+// For now, use static token to query directly via SQL
+async function loadItemsDirect() {
+  try {
+    const query = `
+      SELECT
+        a.airtable_id,
+        a.brand || ' ' || a.product_name || COALESCE(' (' || a.color || ')', '') AS product_name,
+        array_to_string(a.size_, ', ') AS size_,
+        a.acquisition_type,
+        a.acquisition_eligibility,
+        a.starting_price_in_store,
+        a.acquisition_cost,
+        ROUND(a.potential_earnings::numeric, 2) AS potential_earnings,
+        a.staff_notes,
+        p.full_name AS person_name,
+        p.approval_token
+      FROM assets a
+      JOIN people p
+        ON p.airtable_id = COALESCE(a.owner_airtable_id, a.trade_in_person_airtable_id)
+      WHERE
+        p.approval_token = '${TOKEN}'
+        AND a.status_ = 'Pending Approval to Sell'
+      ORDER BY a.inventory_date
+    `;
+
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/execute_sql`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query })
+      }
+    );
+
+    throw new Error('Use direct table query instead');
+  } catch(e) {
+    await loadItemsViaTable();
+  }
+}
+
+async function loadItemsViaTable() {
+  try {
+    // First get the person by token
+    const personRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/people?approval_token=eq.${encodeURIComponent(TOKEN)}&select=airtable_id,full_name,approval_token`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        }
+      }
+    );
+
+    const people = await personRes.json();
+    if (!people || people.length === 0) { showError(); return; }
+
+    const person = people[0];
+
+    // Then get their pending assets
+    const assetsRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/assets?select=airtable_id,brand,product_name,color,size_,acquisition_type,acquisition_eligibility,starting_price_in_store,acquisition_cost,potential_earnings,staff_notes,inventory_date,owner_airtable_id,trade_in_person_airtable_id&status_=eq.Pending Approval to Sell&order=inventory_date`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        }
+      }
+    );
+
+    const allAssets = await assetsRes.json();
+
+    const assets = allAssets.filter(a =>
+      a.owner_airtable_id === person.airtable_id ||
+      a.trade_in_person_airtable_id === person.airtable_id
+    );
+
+    if (!assets || assets.length === 0) { showError(); return; }
+
+    const items = assets.map(a => ({
+      ...a,
+      product_name: [a.brand, a.product_name, a.color ? `(${a.color})` : null].filter(Boolean).join(' '),
+      size_: Array.isArray(a.size_) ? a.size_.join(', ') : a.size_,
+      person_name: person.full_name,
+    }));
+
+    window._items = items;
+    renderItems(items);
+
+  } catch(e) {
+    console.error(e);
+    showError();
+  }
+}
+
+loadItemsViaTable();
+</script>
+</body>
+</html>
