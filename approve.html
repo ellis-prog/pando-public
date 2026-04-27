@@ -653,7 +653,7 @@ function submitNote(airtableId) {
 
 async function patchAirtable(recordId, fields) {
   try {
-    await fetch(`${SUPABASE_URL}/functions/v1/airtable-patch`, {
+    await fetch(`${SUPABASE_URL}/functions/v1/smooth-service`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
