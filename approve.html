@@ -608,20 +608,25 @@ function approveItem(airtableId) {
     : "We'll put it on the floor and notify you when it sells.";
   const card = document.getElementById(`card-${airtableId}`);
   card.classList.add('approved');
-
-  // Collapse after a brief moment so the banner is visible first
   setTimeout(() => card.classList.add('collapsed'), 400);
 
   // Write to Airtable
+  const item = window._items.find(i => i.airtable_id === airtableId);
+  const personId = item?.person_airtable_id;
+  const PANDO_ID = 'recr110TSqC4sph7r';
   const fields = { 'Status': 'Available' };
-  if (selection === 'Trade In') {
-    const currentType = window._items.find(i => i.airtable_id === airtableId)?.acquisition_type || '';
-    fields['Acquisition Type'] = currentType.toLowerCase().includes('trade in')
-      ? currentType
-      : 'Trade In - Local';
-  }
-  patchAirtable(airtableId, fields);
 
+  if (selection === 'Trade In') {
+    fields['Acquisition Type'] = 'Trade In - Local';
+    fields['Owner'] = [{ id: PANDO_ID }];
+    if (personId) fields['Trade In Person'] = [{ id: personId }];
+  } else {
+    fields['Acquisition Type'] = 'Consignment';
+    if (personId) fields['Owner'] = [{ id: personId }];
+    fields['Trade In Person'] = null;
+  }
+
+  patchAirtable(airtableId, fields);
   updateStickyBar();
 }
 
@@ -643,12 +648,8 @@ function submitNote(airtableId) {
   if (!text) return;
   document.getElementById(`note-${airtableId}`).classList.remove('open');
   document.getElementById(`note-submitted-${airtableId}`).classList.add('show');
-
-  // Write note and status to Airtable
-  patchAirtable(airtableId, {
-    'Owner Notes': text,
-    'Status': 'Feedback Requested'
-  });
+  // Write note to Airtable, leave status unchanged
+  patchAirtable(airtableId, { 'Owner Notes': text });
 }
 
 async function patchAirtable(recordId, fields) {
@@ -681,11 +682,9 @@ async function loadItems() {
         body: JSON.stringify({ p_token: TOKEN })
       }
     );
-
     if (!res.ok) throw new Error('Query failed');
     const items = await res.json();
     if (!items || items.length === 0) { showError(); return; }
-
     window._items = items;
     renderItems(items);
   } catch(e) {
