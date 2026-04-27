@@ -633,12 +633,12 @@ function approveItem(airtableId) {
 
   if (selection === 'Trade In') {
     fields['Acquisition Type'] = 'Trade In - Local';
-    fields['Owner'] = [{ id: PANDO_ID }];
-    if (personId) fields['Trade In Person'] = [{ id: personId }];
+    fields['Owner'] = [PANDO_ID];
+    if (personId) fields['Trade In Person'] = [personId];
   } else {
     fields['Acquisition Type'] = 'Consignment';
-    if (personId) fields['Owner'] = [{ id: personId }];
-    fields['Trade In Person'] = null;
+    if (personId) fields['Owner'] = [personId];
+    fields['Trade In Person'] = [];
   }
 
   patchAirtable(airtableId, fields);
