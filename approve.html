@@ -547,13 +547,28 @@ function renderTiles(item, isConsignment, tradeInOnly, consignOnly) {
   const consignEarnings = fmt(item.potential_earnings);
   const listPrice = fmt(item.starting_price_in_store);
 
+  // If only one option available, force it left and pre-select it
+  if (tradeInOnly) {
+    selections[item.airtable_id] = 'Trade In';
+    return tileTrade(item, true, tradePrice) + tileConsignUnavailable();
+  }
+
+  if (consignOnly) {
+    selections[item.airtable_id] = 'Consignment';
+    const consignTile = isConsignment
+      ? tileConsignForConsignCustomer(item, true, listPrice, consignEarnings)
+      : tileConsignForQuoteCustomer(item, true, consignEarnings, listPrice);
+    return consignTile + tileTradeUnavailable();
+  }
+
+  // Both available — order by customer type
   let left, right;
   if (isConsignment) {
-    left = consignOnly ? tileConsignUnavailable() : tileConsignForConsignCustomer(item, consignSelected, listPrice, consignEarnings);
-    right = tradeInOnly ? tileTradeUnavailable() : tileTrade(item, tradeSelected, tradePrice);
+    left = tileConsignForConsignCustomer(item, consignSelected, listPrice, consignEarnings);
+    right = tileTrade(item, tradeSelected, tradePrice);
   } else {
-    left = tradeInOnly ? tileTradeUnavailable() : tileTrade(item, tradeSelected, tradePrice);
-    right = consignOnly ? tileConsignUnavailable() : tileConsignForQuoteCustomer(item, consignSelected, consignEarnings, listPrice);
+    left = tileTrade(item, tradeSelected, tradePrice);
+    right = tileConsignForQuoteCustomer(item, consignSelected, consignEarnings, listPrice);
   }
   return left + right;
 }
