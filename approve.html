@@ -612,7 +612,16 @@ function approveItem(airtableId) {
   // Collapse after a brief moment so the banner is visible first
   setTimeout(() => card.classList.add('collapsed'), 400);
 
-  console.log('Approved:', airtableId, selection);
+  // Write to Airtable
+  const fields = { 'Status': 'Available' };
+  if (selection === 'Trade In') {
+    const currentType = window._items.find(i => i.airtable_id === airtableId)?.acquisition_type || '';
+    fields['Acquisition Type'] = currentType.toLowerCase().includes('trade in')
+      ? currentType
+      : 'Trade In - Local';
+  }
+  patchAirtable(airtableId, fields);
+
   updateStickyBar();
 }
 
@@ -634,36 +643,48 @@ function submitNote(airtableId) {
   if (!text) return;
   document.getElementById(`note-${airtableId}`).classList.remove('open');
   document.getElementById(`note-submitted-${airtableId}`).classList.add('show');
-  console.log('Note submitted for', airtableId, ':', text);
+
+  // Write note and status to Airtable
+  patchAirtable(airtableId, {
+    'Owner Notes': text,
+    'Status': 'Feedback Requested'
+  });
 }
 
-async function loadItemsViaTable() {
+async function patchAirtable(recordId, fields) {
   try {
-    const personRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/people?approval_token=eq.${encodeURIComponent(TOKEN)}&select=airtable_id,full_name,approval_token`,
-      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
-    );
-    const people = await personRes.json();
-    if (!people || people.length === 0) { showError(); return; }
-    const person = people[0];
+    await fetch(`${SUPABASE_URL}/functions/v1/airtable-patch`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recordId, fields })
+    });
+  } catch(e) {
+    console.error('Airtable write failed:', e);
+  }
+}
 
-    const assetsRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/assets?select=airtable_id,brand,product_name,color,size_,acquisition_type,acquisition_eligibility,starting_price_in_store,acquisition_cost,potential_earnings,staff_notes,inventory_date,owner_airtable_id,trade_in_person_airtable_id&status_=eq.Pending%20Approval%20to%20Sell&order=inventory_date`,
-      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+async function loadItems() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/get_approval_items`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ p_token: TOKEN })
+      }
     );
-    const allAssets = await assetsRes.json();
-    const assets = allAssets.filter(a =>
-      a.owner_airtable_id === person.airtable_id ||
-      a.trade_in_person_airtable_id === person.airtable_id
-    );
-    if (!assets || assets.length === 0) { showError(); return; }
 
-    const items = assets.map(a => ({
-      ...a,
-      product_name: [a.brand, a.product_name, a.color ? `(${a.color})` : null].filter(Boolean).join(' '),
-      size_: Array.isArray(a.size_) ? a.size_.join(', ') : a.size_,
-      person_name: person.full_name,
-    }));
+    if (!res.ok) throw new Error('Query failed');
+    const items = await res.json();
+    if (!items || items.length === 0) { showError(); return; }
 
     window._items = items;
     renderItems(items);
@@ -673,7 +694,7 @@ async function loadItemsViaTable() {
   }
 }
 
-loadItemsViaTable();
+loadItems();
 </script>
 </body>
 </html>
