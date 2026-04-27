@@ -441,6 +441,7 @@
 const SUPABASE_URL = 'https://ehzcymnztsbbroxzcidq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_inbwheC0ne9Frtu6NFkcAg_LnU7xE9I';
 const TOKEN = new URLSearchParams(window.location.search).get('token');
+const FRESH = new URLSearchParams(window.location.search).get('fresh') === 'true';
 
 const selections = {};
 const approvedItems = {};
@@ -683,7 +684,7 @@ async function patchAirtable(recordId, fields) {
   }
 }
 
-async function loadItems() {
+async function loadItems(retryCount = 0) {
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/rpc/get_approval_items`,
@@ -699,10 +700,22 @@ async function loadItems() {
     );
     if (!res.ok) throw new Error('Query failed');
     const items = await res.json();
+
+    if ((!items || items.length === 0) && FRESH && retryCount < 8) {
+      document.getElementById('loading').querySelector('p').textContent =
+        'Getting your items ready…';
+      setTimeout(() => loadItems(retryCount + 1), 4000);
+      return;
+    }
+
     if (!items || items.length === 0) { showError(); return; }
     window._items = items;
     renderItems(items);
   } catch(e) {
+    if (FRESH && retryCount < 8) {
+      setTimeout(() => loadItems(retryCount + 1), 4000);
+      return;
+    }
     console.error(e);
     showError();
   }
