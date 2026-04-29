@@ -42,34 +42,14 @@
   }
 
   .site-header {
-    background: var(--forest);
+    background: #000000;
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: flex-start;
   }
 
-  .site-header .logo-mark {
-    width: 32px;
-    height: 32px;
-    background: var(--forest-mint);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    color: var(--forest);
-    flex-shrink: 0;
-  }
-
-  .site-header .logo-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--forest-pale);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+  .site-header img { display: block; }
 
   .main {
     max-width: 680px;
@@ -402,8 +382,7 @@
 <body>
 
 <header class="site-header">
-  <div class="logo-mark">P</div>
-  <span class="logo-text">Pando Refitters</span>
+  <img src="https://cdn.shopify.com/s/files/1/0707/2632/0403/files/logo_-_white.png?v=1777436258" alt="Pando Refitters" style="height:40px;width:auto;display:block;">
 </header>
 
 <main class="main">
