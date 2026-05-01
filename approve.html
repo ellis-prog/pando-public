@@ -631,8 +631,12 @@ function toggleApproved(airtableId) {
   card.classList.toggle('collapsed');
 }
 
-function approveAll() {
-  window._items.filter(i => !approvedItems[i.airtable_id]).forEach(item => approveItem(item.airtable_id));
+async function approveAll() {
+  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id]);
+  for (const item of unapproved) {
+    approveItem(item.airtable_id);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
 }
 
 function toggleNote(airtableId) {
