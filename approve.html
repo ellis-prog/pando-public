@@ -90,6 +90,46 @@
     font-weight: 500;
   }
 
+  .summary-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+
+  .summary-cell {
+    background: var(--white);
+    padding: 1rem 1.25rem;
+  }
+
+  .summary-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-pale);
+    margin-bottom: 4px;
+  }
+
+  .summary-amount {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 3px;
+  }
+
+  .summary-note {
+    font-size: 11px;
+    color: var(--ink-pale);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
   .items-list {
     display: flex;
     flex-direction: column;
@@ -403,6 +443,18 @@
       <p class="intro-sub">Here's the gear you dropped off. Review our suggested pricing, choose how you'd like to sell each item, then hit Approve.</p>
       <span class="intro-expiry">⏱ This link expires in 2 weeks</span>
     </div>
+    <div class="summary-card" id="summary-card" style="display:none;">
+      <div class="summary-cell">
+        <div class="summary-label">Store Credit Offer</div>
+        <div class="summary-amount" id="summary-trade-in">—</div>
+        <div class="summary-note">If you choose trade in for all items</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-label">Potential Cash Earnings</div>
+        <div class="summary-amount" id="summary-consignment">—</div>
+        <div class="summary-note">Assumes each item sells at full price — actual earnings may vary</div>
+      </div>
+    </div>
     <div class="items-list" id="items-list"></div>
   </div>
 </main>
@@ -459,6 +511,15 @@ function renderItems(items) {
 
   const firstName = items[0].person_name?.split(' ')[0];
   if (firstName) document.getElementById('greeting').textContent = `Hi ${firstName}!`;
+
+  // Calculate and render summary totals
+  const totalTradeIn = items.reduce((sum, item) => sum + (Number(item.acquisition_cost) || 0), 0);
+  const totalEarnings = items.reduce((sum, item) => sum + (Number(item.potential_earnings) || 0), 0);
+  if (totalTradeIn > 0 || totalEarnings > 0) {
+    document.getElementById('summary-card').style.display = 'grid';
+    document.getElementById('summary-trade-in').textContent = '$' + totalTradeIn.toFixed(2);
+    document.getElementById('summary-consignment').textContent = '$' + totalEarnings.toFixed(2);
+  }
 
   const list = document.getElementById('items-list');
   list.innerHTML = '';
