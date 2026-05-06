@@ -150,6 +150,11 @@
     background: #f8fdfb;
   }
 
+  .item-card.declined {
+    border-color: var(--border);
+    background: var(--paper-mid);
+  }
+
   .item-card-header {
     padding: 1.25rem 1.25rem 1rem;
     border-bottom: 1px solid var(--paper-dark);
@@ -236,6 +241,11 @@
     gap: 8px;
   }
 
+  .item-actions-secondary {
+    display: flex;
+    gap: 8px;
+  }
+
   .btn-approve {
     width: 100%;
     padding: 13px;
@@ -258,7 +268,7 @@
   .btn-approve:active { transform: scale(0.98); }
 
   .btn-note {
-    width: 100%;
+    flex: 1;
     padding: 11px;
     background: transparent;
     color: var(--ink-light);
@@ -271,6 +281,21 @@
   }
 
   .btn-note:hover { background: var(--paper-mid); color: var(--ink); }
+
+  .btn-decline {
+    flex: 1;
+    padding: 11px;
+    background: transparent;
+    color: var(--ink-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .btn-decline:hover { background: var(--paper-mid); color: var(--ink); }
 
   .note-area { display: none; padding: 0 1.25rem 1.25rem; flex-direction: column; gap: 8px; }
   .note-area.open { display: flex; }
@@ -323,6 +348,35 @@
   .approved-text { font-size: 14px; font-weight: 500; color: var(--forest); }
   .approved-sub { font-size: 12px; color: var(--forest-mid); margin-top: 1px; }
 
+  /* Declined banner */
+  .declined-banner { display: none; padding: 1rem 1.25rem; align-items: center; gap: 10px; background: var(--paper-mid); border-top: 1px solid var(--border); }
+  .declined-banner.show { display: flex; }
+
+  .declined-check {
+    width: 28px; height: 28px;
+    background: var(--paper-dark);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .declined-check svg { width: 14px; height: 14px; stroke: var(--ink-light); stroke-width: 2.5; fill: none; }
+  .declined-text { font-size: 14px; font-weight: 500; color: var(--ink-mid); }
+  .declined-sub { font-size: 12px; color: var(--ink-pale); margin-top: 1px; }
+
+  .declined-banner { cursor: pointer; }
+  .declined-banner:hover { background: var(--paper-dark); }
+
+  .declined-chevron {
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    color: var(--ink-pale);
+  }
+
+  .item-card.declined.collapsed .declined-chevron { transform: rotate(0deg); }
+  .item-card.declined:not(.collapsed) .declined-chevron { transform: rotate(180deg); }
+
   .note-submitted { display: none; padding: 0.75rem 1.25rem 1.25rem; font-size: 13px; color: var(--ink-light); font-style: italic; }
   .note-submitted.show { display: block; }
 
@@ -334,10 +388,25 @@
   .item-card.approved.collapsed .note-submitted { display: none !important; }
   .item-card.approved.collapsed .approved-banner { border-top: none; }
 
+  /* Collapsed declined state */
+  .item-card.declined.collapsed .item-card-header { border-bottom: none; }
+  .item-card.declined.collapsed .tile-grid,
+  .item-card.declined.collapsed .item-actions,
+  .item-card.declined.collapsed .note-area,
+  .item-card.declined.collapsed .note-submitted { display: none !important; }
+  .item-card.declined.collapsed .declined-banner { border-top: none; }
+
   .approved-banner { cursor: pointer; }
   .approved-banner:hover { background: #e8f7f0; }
 
   .approved-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .declined-banner-inner {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -364,6 +433,17 @@
   }
 
   .item-card.approved:not(.collapsed) .change-mind-note { display: block; }
+
+  .change-mind-note-declined {
+    display: none;
+    padding: 0 1.25rem 1rem;
+    font-size: 12px;
+    color: var(--ink-pale);
+    font-style: italic;
+    background: var(--paper-mid);
+  }
+
+  .item-card.declined:not(.collapsed) .change-mind-note-declined { display: block; }
 
   /* Sticky bar */
   .sticky-bar {
@@ -415,6 +495,61 @@
 
   .site-footer { text-align: center; padding: 2rem 1.25rem; font-size: 12px; color: var(--ink-pale); line-height: 1.8; }
   .site-footer a { color: var(--forest-mid); text-decoration: none; }
+
+  /* Return info modal overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 1.5rem;
+    max-width: 360px;
+    width: 100%;
+    animation: fadeUp 0.2s ease both;
+  }
+
+  .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+  }
+
+  .modal-body {
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-body strong { color: var(--ink-mid); font-weight: 500; }
+
+  .btn-modal-confirm {
+    width: 100%;
+    padding: 13px;
+    background: var(--forest);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-modal-confirm:hover { background: #162d45; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -469,6 +604,17 @@
   <button class="btn-approve-all" onclick="approveAll()">Approve All</button>
 </div>
 
+<!-- Return info modal — shown once per session on first decline -->
+<div class="modal-overlay" id="return-modal">
+  <div class="modal">
+    <div class="modal-title">Returning your item</div>
+    <div class="modal-body">
+      If you're local, please stop by within <strong>7 days</strong> to pick it up. If you're farther away, we'll reach out to arrange return shipping — please note that you will be responsible for return shipping costs.
+    </div>
+    <button class="btn-modal-confirm" onclick="closeReturnModal()">Got it</button>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://ehzcymnztsbbroxzcidq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_inbwheC0ne9Frtu6NFkcAg_LnU7xE9I';
@@ -477,6 +623,8 @@ const FRESH = new URLSearchParams(window.location.search).get('fresh') === 'true
 
 const selections = {};
 const approvedItems = {};
+const declinedItems = {};
+let returnModalShown = false;
 
 function showError() {
   document.getElementById('loading').style.display = 'none';
@@ -490,7 +638,7 @@ function fmt(val) {
 
 function updateStickyBar() {
   if (!window._items) return;
-  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id]);
+  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id] && !declinedItems[i.airtable_id]);
   const bar = document.getElementById('sticky-bar');
   const countEl = document.getElementById('sticky-count');
 
@@ -554,7 +702,10 @@ function renderItems(items) {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,12 14,4"></polyline></svg>
           Approve
         </button>
-        <button class="btn-note" onclick="toggleNote('${item.airtable_id}')">Leave a note</button>
+        <div class="item-actions-secondary">
+          <button class="btn-note" onclick="toggleNote('${item.airtable_id}')">Leave a note</button>
+          <button class="btn-decline" onclick="declineItem('${item.airtable_id}')">I want it back</button>
+        </div>
       </div>
       <div class="note-area" id="note-${item.airtable_id}">
         <textarea class="note-textarea" id="textarea-${item.airtable_id}" placeholder="Tell us your thoughts — pricing concerns, condition questions, or if you'd like this item back..."></textarea>
@@ -573,6 +724,17 @@ function renderItems(items) {
         <svg class="approved-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 8,10 12,6"></polyline></svg>
       </div>
       <div class="change-mind-note">Changed your mind? Call us at <a href="tel:8012101835" style="color:var(--forest-mid);">(801) 210-1835</a> and we'll sort it out.</div>
+      <div class="declined-banner" id="declined-${item.airtable_id}" onclick="toggleDeclined('${item.airtable_id}')">
+        <div class="declined-banner-inner">
+          <div class="declined-check"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></svg></div>
+          <div>
+            <div class="declined-text">Returning to you</div>
+            <div class="declined-sub">Please pick up within 7 days, or look for communication from us for return shipping next steps.</div>
+          </div>
+        </div>
+        <svg class="declined-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 8,10 12,6"></polyline></svg>
+      </div>
+      <div class="change-mind-note-declined">Changed your mind? Call us at <a href="tel:8012101835" style="color:var(--forest-mid);">(801) 210-1835</a> and we'll sort it out.</div>
     `;
 
     list.appendChild(card);
@@ -642,7 +804,7 @@ function tileConsignUnavailable() {
 }
 
 function selectTile(airtableId, choice) {
-  if (approvedItems[airtableId]) return;
+  if (approvedItems[airtableId] || declinedItems[airtableId]) return;
   selections[airtableId] = choice;
   const item = window._items.find(i => i.airtable_id === airtableId);
   if (!item) return;
@@ -687,13 +849,46 @@ function approveItem(airtableId) {
   updateStickyBar();
 }
 
+function declineItem(airtableId) {
+  declinedItems[airtableId] = true;
+  document.getElementById(`actions-${airtableId}`).style.display = 'none';
+  document.getElementById(`note-${airtableId}`).classList.remove('open');
+  const banner = document.getElementById(`declined-${airtableId}`);
+  banner.classList.add('show');
+  const card = document.getElementById(`card-${airtableId}`);
+  card.classList.add('declined');
+  setTimeout(() => card.classList.add('collapsed'), 400);
+
+  // Write to Airtable — status only, no ownership changes
+  patchAirtable(airtableId, { 'Status': 'Declined' });
+
+  updateStickyBar();
+
+  // Show return info modal once per session
+  if (!returnModalShown) {
+    returnModalShown = true;
+    setTimeout(() => {
+      document.getElementById('return-modal').classList.add('show');
+    }, 450);
+  }
+}
+
+function closeReturnModal() {
+  document.getElementById('return-modal').classList.remove('show');
+}
+
 function toggleApproved(airtableId) {
   const card = document.getElementById(`card-${airtableId}`);
   card.classList.toggle('collapsed');
 }
 
+function toggleDeclined(airtableId) {
+  const card = document.getElementById(`card-${airtableId}`);
+  card.classList.toggle('collapsed');
+}
+
 async function approveAll() {
-  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id]);
+  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id] && !declinedItems[i.airtable_id]);
   for (const item of unapproved) {
     approveItem(item.airtable_id);
     await new Promise(resolve => setTimeout(resolve, 1500));
