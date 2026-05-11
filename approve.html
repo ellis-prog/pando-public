@@ -620,6 +620,7 @@ const SUPABASE_URL = 'https://ehzcymnztsbbroxzcidq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_inbwheC0ne9Frtu6NFkcAg_LnU7xE9I';
 const TOKEN = new URLSearchParams(window.location.search).get('token');
 const FRESH = new URLSearchParams(window.location.search).get('fresh') === 'true';
+const EXPECTED = parseInt(new URLSearchParams(window.location.search).get('expected') || '0', 10);
 
 const selections = {};
 const approvedItems = {};
@@ -941,10 +942,16 @@ async function loadItems(retryCount = 0) {
     if (!res.ok) throw new Error('Query failed');
     const items = await res.json();
 
-    if ((!items || items.length === 0) && FRESH && retryCount < 8) {
+    // If we know how many items to expect, wait until they all appear
+    const shouldWait = FRESH && retryCount < 12;
+    const notEnoughItems = EXPECTED > 0
+      ? (!items || items.length < EXPECTED)
+      : (!items || items.length === 0);
+
+    if (notEnoughItems && shouldWait) {
       document.getElementById('loading').querySelector('p').textContent =
-        'Getting your items ready…';
-      setTimeout(() => loadItems(retryCount + 1), 4000);
+        retryCount < 2 ? 'Getting your items ready…' : 'Almost there…';
+      setTimeout(() => loadItems(retryCount + 1), 3000);
       return;
     }
 
@@ -952,8 +959,8 @@ async function loadItems(retryCount = 0) {
     window._items = items;
     renderItems(items);
   } catch(e) {
-    if (FRESH && retryCount < 8) {
-      setTimeout(() => loadItems(retryCount + 1), 4000);
+    if (FRESH && retryCount < 12) {
+      setTimeout(() => loadItems(retryCount + 1), 3000);
       return;
     }
     console.error(e);
