@@ -844,6 +844,7 @@ function approveItem(airtableId) {
     fields['Acquisition Type'] = 'Consignment';
     if (personId) fields['Owner'] = [personId];
     fields['Trade In Person'] = [];
+    fields['Acquisition Cost'] = null;
   }
 
   patchAirtable(airtableId, fields);
