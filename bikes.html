@@ -3,1046 +3,1036 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Review Your Gear — Pando Refitters</title>
- <link rel="icon" type="image/png" href="https://www.pandorefitters.com/cdn/shop/files/Pando_logo-mark_black.png?v=1674246140">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<title>Bike Trade-In Pricer — Pando Refitters</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --forest: #1d3a58;
-    --forest-mid: #0F6E56;
-    --forest-light: #1D9E75;
-    --forest-pale: #ffffff;
-    --forest-mint: #ffffff;
-    --forest-teal: #ffffff;
-    --ink: #1a1a18;
-    --ink-mid: #3a3a38;
-    --ink-light: #6a6a68;
-    --ink-pale: #9a9a98;
-    --paper: #fafaf8;
-    --paper-mid: #f2f2ef;
-    --paper-dark: #e8e8e4;
-    --border: #d8d8d4;
-    --white: #ffffff;
-    --amber: #BA7517;
-    --amber-pale: #FAEEDA;
-    --approve: #b8302a;
-    --approve-hover: #500f0c;
-  }
-
-  html { font-size: 16px; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    padding-bottom: 80px;
-  }
-
-  .site-header {
-    background: #000000;
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  .site-header img { display: block; }
-
-  .main {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 2rem;
-  }
-
-  .intro {
-    margin-bottom: 2rem;
-    animation: fadeUp 0.5s ease both;
-  }
-
-  .intro-greeting {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--ink);
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-  }
-
-  .intro-sub {
-    font-size: 15px;
-    color: var(--ink-light);
-    line-height: 1.6;
-  }
-
-  .intro-expiry {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--amber);
-    background: var(--amber-pale);
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-top: 0.75rem;
-    font-weight: 500;
-  }
-
-  .summary-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 1.25rem;
-  }
-
-  .summary-cell {
-    background: var(--white);
-    padding: 1rem 1.25rem;
-  }
-
-  .summary-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink-mid);
-    margin-bottom: 6px;
-   text-transform: uppercase;
-  }
-
-  .summary-amount {
-    font-size: 26px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.1;
-    margin-bottom: 5px;
-  }
-
-  .summary-note {
-    font-size: 13px;
-    color: var(--ink-mid);
-    font-style: italic;
-    line-height: 1.4;
-   font-weight: 500;
-  }
-
-  .items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .item-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    animation: fadeUp 0.5s ease both;
-    transition: border-color 0.2s;
-  }
-
-  .item-card.approved {
-    border-color: var(--forest-light);
-    background: #f8fdfb;
-  }
-
-  .item-card.declined {
-    border-color: var(--border);
-    background: var(--paper-mid);
-  }
-
-  .item-card-header {
-    padding: 1.25rem 1.25rem 1rem;
-    border-bottom: 1px solid var(--paper-dark);
-  }
-
-  .item-name {
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    margin-bottom: 3px;
-  }
-
-  .item-size {
-    font-size: 13px;
-    color: var(--ink-pale);
-  }
-
-  .staff-note {
-    margin-top: 0.75rem;
-    background: var(--paper-mid);
-    border-left: 3px solid var(--forest-light);
-    border-radius: 0 6px 6px 0;
-    padding: 8px 10px;
-    font-size: 13px;
-    color: var(--ink-mid);
-    font-style: italic;
-  }
-
-  .staff-note-label {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-pale);
-    margin-bottom: 2px;
-  }
-
-  .tile-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 1rem 1.25rem;
-  }
-
-  .tile {
-    border-radius: 10px;
-    padding: 14px;
-    cursor: pointer;
-    transition: transform 0.12s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .tile:active { transform: scale(0.97); }
-  .tile.selected { background: var(--forest); }
-  .tile.unselected { background: var(--paper-mid); border: 1.5px solid var(--border); }
-  .tile.unavailable { background: var(--paper-mid); border: 1.5px solid var(--border); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-
-  .tile-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
-  .tile.selected .tile-label { color: var(--forest-mint); }
-  .tile.unselected .tile-label { color: var(--ink-mid); }
-  .tile.unavailable .tile-label { color: var(--ink-pale); }
-
-  .tile-price { font-size: 24px; font-weight: 500; line-height: 1.1; margin-bottom: 4px; }
-  .tile.selected .tile-price { color: var(--forest-pale); }
-  .tile.unselected .tile-price { color: var(--ink); }
-  .tile.unavailable .tile-price { color: var(--ink-light); font-size: 15px; }
-
-  .tile-desc { font-size: 13px; line-height: 1.5; font-weight: 500; }
-  .tile.selected .tile-desc { color: var(--forest-teal); }
-  .tile.unselected .tile-desc { color: var(--ink-mid); }
-  .tile.unavailable .tile-desc { color: var(--ink-pale); }
-
-  .tile-sub { font-size: 12px; margin-top: 5px; line-height: 1.4; font-style: italic; }
-  .tile.selected .tile-sub { color: var(--forest-mint); }
-  .tile.unselected .tile-sub { color: var(--ink-light); }
-
-  .item-actions {
-    padding: 0 1.25rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .item-actions-secondary {
-    display: flex;
-    gap: 8px;
-  }
-
-  .btn-approve {
-    width: 100%;
-    padding: 13px;
-    background: var(--approve);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .btn-approve:hover { background: var(--approve-hover); }
-  .btn-approve:active { transform: scale(0.98); }
-
-  .btn-note {
-    flex: 1;
-    padding: 11px;
-    background: transparent;
-    color: var(--ink-light);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .btn-note:hover { background: var(--paper-mid); color: var(--ink); }
-
-  .btn-decline {
-    flex: 1;
-    padding: 11px;
-    background: transparent;
-    color: var(--ink-light);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .btn-decline:hover { background: var(--paper-mid); color: var(--ink); }
-
-  .note-area { display: none; padding: 0 1.25rem 1.25rem; flex-direction: column; gap: 8px; }
-  .note-area.open { display: flex; }
-
-  .note-textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--white);
-    resize: vertical;
-    min-height: 80px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  .note-textarea:focus { border-color: var(--forest-light); }
-  .note-hint { font-size: 12px; color: var(--ink-pale); }
-
-  .btn-submit-note {
-    padding: 10px;
-    background: var(--paper-mid);
-    color: var(--ink-mid);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .btn-submit-note:hover { background: var(--paper-dark); }
-
-  .approved-banner { display: none; padding: 1rem 1.25rem; align-items: center; gap: 10px; background: #f0faf6; border-top: 1px solid #c8ead9; }
-  .approved-banner.show { display: flex; }
-
-  .approved-check {
-    width: 28px; height: 28px;
-    background: var(--forest-light);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .approved-check svg { width: 14px; height: 14px; stroke: white; stroke-width: 2.5; fill: none; }
-  .approved-text { font-size: 14px; font-weight: 500; color: var(--forest); }
-  .approved-sub { font-size: 12px; color: var(--forest-mid); margin-top: 1px; }
-
-  /* Declined banner */
-  .declined-banner { display: none; padding: 1rem 1.25rem; align-items: center; gap: 10px; background: var(--paper-mid); border-top: 1px solid var(--border); }
-  .declined-banner.show { display: flex; }
-
-  .declined-check {
-    width: 28px; height: 28px;
-    background: var(--paper-dark);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .declined-check svg { width: 14px; height: 14px; stroke: var(--ink-light); stroke-width: 2.5; fill: none; }
-  .declined-text { font-size: 14px; font-weight: 500; color: var(--ink-mid); }
-  .declined-sub { font-size: 12px; color: var(--ink-pale); margin-top: 1px; }
-
-  .declined-banner { cursor: pointer; }
-  .declined-banner:hover { background: var(--paper-dark); }
-
-  .declined-chevron {
-    margin-left: auto;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-    color: var(--ink-pale);
-  }
-
-  .item-card.declined.collapsed .declined-chevron { transform: rotate(0deg); }
-  .item-card.declined:not(.collapsed) .declined-chevron { transform: rotate(180deg); }
-
-  .note-submitted { display: none; padding: 0.75rem 1.25rem 1.25rem; font-size: 13px; color: var(--ink-light); font-style: italic; }
-  .note-submitted.show { display: block; }
-
-  /* Collapsed approved state */
-  .item-card.approved.collapsed .item-card-header { border-bottom: none; }
-  .item-card.approved.collapsed .tile-grid,
-  .item-card.approved.collapsed .item-actions,
-  .item-card.approved.collapsed .note-area,
-  .item-card.approved.collapsed .note-submitted { display: none !important; }
-  .item-card.approved.collapsed .approved-banner { border-top: none; }
-
-  /* Collapsed declined state */
-  .item-card.declined.collapsed .item-card-header { border-bottom: none; }
-  .item-card.declined.collapsed .tile-grid,
-  .item-card.declined.collapsed .item-actions,
-  .item-card.declined.collapsed .note-area,
-  .item-card.declined.collapsed .note-submitted { display: none !important; }
-  .item-card.declined.collapsed .declined-banner { border-top: none; }
-
-  .approved-banner { cursor: pointer; }
-  .approved-banner:hover { background: #e8f7f0; }
-
-  .approved-banner-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-  }
-
-  .declined-banner-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-  }
-
-  .approved-chevron {
-    margin-left: auto;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-    color: var(--forest-mid);
-  }
-
-  .item-card.approved.collapsed .approved-chevron { transform: rotate(0deg); }
-  .item-card.approved:not(.collapsed) .approved-chevron { transform: rotate(180deg); }
-
-  .change-mind-note {
-    display: none;
-    padding: 0 1.25rem 1rem;
-    font-size: 12px;
-    color: var(--ink-pale);
-    font-style: italic;
-    background: #f8fdfb;
-  }
-
-  .item-card.approved:not(.collapsed) .change-mind-note { display: block; }
-
-  .change-mind-note-declined {
-    display: none;
-    padding: 0 1.25rem 1rem;
-    font-size: 12px;
-    color: var(--ink-pale);
-    font-style: italic;
-    background: var(--paper-mid);
-  }
-
-  .item-card.declined:not(.collapsed) .change-mind-note-declined { display: block; }
-
-  /* Sticky bar */
-  .sticky-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    padding: 12px 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 100;
-    transition: transform 0.25s ease;
-  }
-
-  .sticky-bar.hidden { transform: translateY(100%); }
-
-  .sticky-count {
-    font-size: 13px;
-    color: var(--ink-light);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .sticky-count strong { color: var(--ink); font-weight: 500; }
-
-  .btn-approve-all {
-    flex: 1;
-    padding: 13px;
-    background: var(--approve);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .btn-approve-all:hover { background: var(--approve-hover); }
-
-  .state-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40vh; text-align: center; gap: 1rem; }
-
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--forest); border-radius: 50%; animation: spin 0.8s linear infinite; }
-
-  .state-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); }
-  .state-sub { font-size: 14px; color: var(--ink-light); max-width: 300px; line-height: 1.6; }
-
-  .site-footer { text-align: center; padding: 2rem 1.25rem; font-size: 12px; color: var(--ink-pale); line-height: 1.8; }
-  .site-footer a { color: var(--forest-mid); text-decoration: none; }
-
-  /* Return info modal overlay */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    padding: 1.25rem;
-  }
-
-  .modal-overlay.show { display: flex; }
-
-  .modal {
-    background: var(--white);
-    border-radius: 14px;
-    padding: 1.5rem;
-    max-width: 360px;
-    width: 100%;
-    animation: fadeUp 0.2s ease both;
-  }
-
-  .modal-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--ink);
-    margin-bottom: 0.75rem;
-  }
-
-  .modal-body {
-    font-size: 15px;
-    color: var(--ink-light);
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-  }
-
-  .modal-body strong { color: var(--ink-mid); font-weight: 500; }
-
-  .btn-modal-confirm {
-    width: 100%;
-    padding: 13px;
-    background: var(--forest);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .btn-modal-confirm:hover { background: #162d45; }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes spin { to { transform: rotate(360deg); } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --forest: #04342C;
+  --forest-mid: #0F6E56;
+  --forest-light: #1D9E75;
+  --forest-pale: #E1F5EE;
+  --forest-mint: #9FE1CB;
+  --ink: #1a1a18;
+  --ink-mid: #3a3a38;
+  --ink-light: #6a6a68;
+  --ink-pale: #9a9a98;
+  --paper: #fafaf8;
+  --paper-mid: #f2f2ef;
+  --paper-dark: #e8e8e4;
+  --border: #d8d8d4;
+  --white-card: #ffffff;
+  --danger: #b8302a;
+  --danger-pale: #fdf0ef;
+  --amber: #BA7517;
+  --amber-pale: #FAEEDA;
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.site-header {
+  background: var(--black);
+  padding: 0.875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-header img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.header-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+
+/* Layout */
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* Step system */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step {
+  background: var(--white-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.step.active { border-color: var(--forest-light); }
+.step.completed { border-color: var(--border); opacity: 0.7; }
+
+.step-header {
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  cursor: pointer;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--paper-mid);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-pale);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.step.active .step-number {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--white);
+}
+
+.step.completed .step-number {
+  background: var(--forest-light);
+  border-color: var(--forest-light);
+  color: var(--white);
+}
+
+.step-number.done::after { content: '✓'; }
+
+.step-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.step-summary {
+  font-size: 13px;
+  color: var(--ink-pale);
+  margin-left: auto;
+}
+
+.step-body {
+  display: none;
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--paper-dark);
+}
+
+.step.active .step-body { display: block; }
+
+/* Form elements */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.field-grid.full { grid-template-columns: 1fr; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-mid);
+  letter-spacing: 0.02em;
+}
+
+.field input, .field select {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--white-card);
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.field input:focus, .field select:focus {
+  border-color: var(--forest-light);
+}
+
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236a6a68' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+/* Curb appeal selector */
+.curb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.curb-option {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  background: var(--paper-mid);
+}
+
+.curb-option:hover { border-color: var(--forest-light); }
+
+.curb-option.selected {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--white);
+}
+
+.curb-option input { display: none; }
+
+.curb-emoji { font-size: 22px; margin-bottom: 5px; }
+
+.curb-label {
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+}
+
+.curb-sub {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* Components section */
+.components-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.component-field { display: flex; flex-direction: column; gap: 5px; }
+
+/* Checklist */
+.checklist-section {
+  margin-top: 1rem;
+}
+
+.checklist-category {
+  margin-bottom: 1rem;
+}
+
+.checklist-category-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-pale);
+  padding: 8px 0 6px;
+  border-bottom: 1px solid var(--paper-dark);
+  margin-bottom: 6px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--paper-dark);
+  gap: 12px;
+}
+
+.checklist-item:last-child { border-bottom: none; }
+
+.checklist-label {
+  font-size: 13px;
+  color: var(--ink);
+  flex: 1;
+}
+
+.checklist-deduction {
+  font-size: 12px;
+  color: var(--ink-pale);
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+}
+
+.checklist-toggle {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.toggle-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--paper-mid);
+  color: var(--ink-light);
+  transition: all 0.12s;
+}
+
+.toggle-btn.active-ok {
+  background: var(--forest-pale);
+  border-color: var(--forest-light);
+  color: var(--forest);
+}
+
+.toggle-btn.active-issue {
+  background: var(--danger-pale);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1.25rem;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover { background: var(--forest-mid); }
+
+.btn-secondary {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  color: var(--ink-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.15s;
+}
+
+.btn-secondary:hover { background: var(--paper-mid); color: var(--ink); }
+
+/* Quote result */
+.quote-card {
+  background: var(--forest);
+  border-radius: 14px;
+  padding: 1.5rem;
+  color: var(--white);
+  margin-top: 1rem;
+}
+
+.quote-bike-name {
+  font-size: 13px;
+  color: var(--forest-mint);
+  font-weight: 500;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+
+.quote-main-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+}
+
+.quote-amount {
+  font-family: 'DM Serif Display', serif;
+  font-size: 52px;
+  color: var(--forest-pale);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.quote-sub {
+  font-size: 13px;
+  color: var(--forest-teal, #5DCAA5);
+  margin-bottom: 1.25rem;
+}
+
+.quote-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin: 1rem 0;
+}
+
+.quote-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quote-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.quote-row-label { color: rgba(255,255,255,0.6); }
+.quote-row-value { color: var(--forest-pale); font-weight: 500; }
+.quote-row-deduction { color: #f4a5a1; font-weight: 500; }
+
+.quote-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 1.25rem;
+}
+
+.btn-approve-offer {
+  padding: 13px;
+  background: var(--forest-light);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-approve-offer:hover { background: #17895f; }
+
+.btn-decline-offer {
+  padding: 13px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-decline-offer:hover {
+  background: rgba(184,48,42,0.3);
+  border-color: rgba(184,48,42,0.5);
+  color: #f4a5a1;
+}
+
+.deductions-summary {
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
+.deductions-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 6px;
+}
+
+/* Success state */
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 3rem 1.25rem;
+  animation: fadeUp 0.4s ease;
+}
+
+.success-screen.show { display: block; }
+
+.success-check {
+  width: 64px;
+  height: 64px;
+  background: var(--forest-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.success-check svg {
+  width: 28px;
+  height: 28px;
+  stroke: white;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+.success-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.success-sub {
+  font-size: 15px;
+  color: var(--ink-light);
+  line-height: 1.6;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.success-ref {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 13px;
+  color: var(--ink-pale);
+  background: var(--paper-mid);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: monospace;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--ink-pale);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-mid);
+  margin-top: 1.25rem;
+  margin-bottom: 6px;
+}
 </style>
 </head>
 <body>
 
 <header class="site-header">
-  <img src="https://cdn.shopify.com/s/files/1/0707/2632/0403/files/logo_-_white.png?v=1777436258" alt="Pando Refitters" style="height:40px;width:auto;display:block;">
+  <img src="https://cdn.shopify.com/s/files/1/0707/2632/0403/files/logo_-_white.png?v=1777436258" alt="Pando Refitters">
+  <span class="header-tag">Bike Trade-In Pricer</span>
 </header>
 
 <main class="main">
-  <div id="loading" class="state-screen">
-    <div class="spinner"></div>
-    <p style="font-size:14px; color:var(--ink-light);">Loading your gear...</p>
+
+  <div class="steps" id="steps">
+
+    <!-- Step 1: Bike Identity -->
+    <div class="step active" id="step-1">
+      <div class="step-header" onclick="toggleStep(1)">
+        <div class="step-number" id="num-1">1</div>
+        <span class="step-title">Bike Details</span>
+        <span class="step-summary" id="summary-1"></span>
+      </div>
+      <div class="step-body">
+        <div class="field-grid three">
+          <div class="field">
+            <label>Year</label>
+            <input type="number" id="year" placeholder="2021" min="1990" max="2025" oninput="updateCalc()">
+          </div>
+          <div class="field">
+            <label>Brand</label>
+            <input type="text" id="brand" placeholder="Trek, Specialized…" oninput="updateCalc()">
+          </div>
+          <div class="field">
+            <label>Original Retail (MSRP)</label>
+            <input type="number" id="msrp" placeholder="$1,200" oninput="updateCalc()">
+          </div>
+        </div>
+        <div class="field-grid full" style="margin-top:10px;">
+          <div class="field">
+            <label>Model</label>
+            <input type="text" id="model" placeholder="Marlin 7, Rockhopper Comp…" oninput="updateCalc()">
+          </div>
+        </div>
+        <div class="field-grid" style="margin-top:10px;">
+          <div class="field">
+            <label>Bike Type</label>
+            <select id="bike-type" onchange="updateCalc()">
+              <option value="">Select type…</option>
+              <option>Mountain — Hardtail</option>
+              <option>Mountain — Full Suspension</option>
+              <option>Road</option>
+              <option>Gravel / Adventure</option>
+              <option>Commuter / Urban</option>
+              <option>Kids</option>
+              <option>E-Bike</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Frame Size</label>
+            <input type="text" id="frame-size" placeholder="Medium, 54cm, 17.5&quot;…">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="goToStep(2)">
+          Next — Components
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Components -->
+    <div class="step" id="step-2">
+      <div class="step-header" onclick="toggleStep(2)">
+        <div class="step-number" id="num-2">2</div>
+        <span class="step-title">Components</span>
+        <span class="step-summary" id="summary-2"></span>
+      </div>
+      <div class="step-body">
+        <p class="field-hint" style="margin-top:0.75rem;">Record key components for Pando's team. This helps us verify the bike and list it accurately.</p>
+        <div class="components-grid">
+          <div class="component-field field">
+            <label>Fork</label>
+            <input type="text" id="fork" placeholder="RockShox Recon 120mm">
+          </div>
+          <div class="component-field field">
+            <label>Rear Shock</label>
+            <input type="text" id="rear-shock" placeholder="Fox Float DPS (or N/A)">
+          </div>
+          <div class="component-field field">
+            <label>Drivetrain</label>
+            <input type="text" id="drivetrain" placeholder="Shimano Deore 12-speed">
+          </div>
+          <div class="component-field field">
+            <label>Brakes</label>
+            <input type="text" id="brakes" placeholder="Shimano MT200 Hydraulic">
+          </div>
+          <div class="component-field field">
+            <label>Wheel Size</label>
+            <select id="wheel-size">
+              <option value="">Select…</option>
+              <option>26"</option>
+              <option>27.5"</option>
+              <option>29"</option>
+              <option>700c</option>
+              <option>650b</option>
+              <option>20"</option>
+              <option>24"</option>
+            </select>
+          </div>
+          <div class="component-field field">
+            <label>Dropper Post?</label>
+            <select id="dropper">
+              <option value="">Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="section-label">Curb Appeal</p>
+        <div class="curb-grid">
+          <label class="curb-option" id="curb-great">
+            <input type="radio" name="curb" value="great" onchange="updateCalc()">
+            <div class="curb-emoji">✨</div>
+            <span class="curb-label">Great</span>
+            <span class="curb-sub">Turns heads</span>
+          </label>
+          <label class="curb-option selected" id="curb-typical">
+            <input type="radio" name="curb" value="typical" checked onchange="updateCalc()">
+            <div class="curb-emoji">👍</div>
+            <span class="curb-label">Typical</span>
+            <span class="curb-sub">Looks its age</span>
+          </label>
+          <label class="curb-option" id="curb-poor">
+            <input type="radio" name="curb" value="poor" onchange="updateCalc()">
+            <div class="curb-emoji">😬</div>
+            <span class="curb-label">Rough</span>
+            <span class="curb-sub">Needs TLC</span>
+          </label>
+        </div>
+
+        <button class="btn-primary" onclick="goToStep(3)">
+          Next — Mechanical Check
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+        </button>
+        <button class="btn-secondary" onclick="goToStep(1)">← Back</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Mechanical Checklist -->
+    <div class="step" id="step-3">
+      <div class="step-header" onclick="toggleStep(3)">
+        <div class="step-number" id="num-3">3</div>
+        <span class="step-title">Mechanical Inspection</span>
+        <span class="step-summary" id="summary-3"></span>
+      </div>
+      <div class="step-body">
+        <p class="field-hint" style="margin-top:0.75rem;">Mark any items that need attention. Deductions are applied to the trade-in offer.</p>
+        <div class="checklist-section" id="checklist"></div>
+        <button class="btn-primary" onclick="goToStep(4); buildQuote()">
+          Generate Quote
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+        </button>
+        <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Quote -->
+    <div class="step" id="step-4">
+      <div class="step-header">
+        <div class="step-number" id="num-4">4</div>
+        <span class="step-title">Trade-In Quote</span>
+      </div>
+      <div class="step-body">
+        <div id="quote-output"></div>
+      </div>
+    </div>
+
   </div>
 
-  <div id="error" class="state-screen" style="display:none;">
-    <div class="state-title">Nothing to review</div>
-    <p class="state-sub">This link may have expired or all items have already been reviewed. Questions? Call us at <a href="tel:8012101835">(801) 210-1835</a>.</p>
+  <!-- Success screen -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-check">
+      <svg viewBox="0 0 28 28"><polyline points="4,14 10,20 24,6"></polyline></svg>
+    </div>
+    <div class="success-title">Offer Sent to Pando</div>
+    <p class="success-sub">Our team has been notified and will follow up to arrange pickup or drop-off. The customer can bring this bike in anytime in the next 2 weeks.</p>
+    <span class="success-ref" id="success-ref"></span>
+    <button class="btn-primary" style="max-width:300px;margin:1.5rem auto 0;" onclick="resetForm()">Start New Quote</button>
   </div>
 
-  <div id="content" style="display:none;">
-    <div class="intro">
-      <h1 class="intro-greeting" id="greeting">Hi there!</h1>
-      <p class="intro-sub">Here's the gear you dropped off. Review our suggested pricing, choose how you'd like to sell each item, then hit Approve.</p>
-      <span class="intro-expiry">⏱ This link expires in 4 days</span>
-    </div>
-    <div class="summary-card" id="summary-card" style="display:none;">
-      <div class="summary-cell">
-        <div class="summary-label">Store credit offer</div>
-        <div class="summary-amount" id="summary-trade-in">—</div>
-        <div class="summary-note">If all eligible items are approved as trade in.<br/>Available immediately.</div>
-      </div>
-      <div class="summary-cell">
-        <div class="summary-label">Potential cash earnings</div>
-        <div class="summary-amount" id="summary-consignment">—</div>
-        <div class="summary-note">If all eligible items are approved as consignment and sell at our suggested price.<br/>Discounts may impact this number.</br>Earnings become available as items sell.</div>
-      </div>
-    </div>
-    <div class="items-list" id="items-list"></div>
-  </div>
 </main>
 
-<footer class="site-footer">
-  Questions? <a href="mailto:hello@pandorefitters.com">hello@pandorefitters.com</a> · <a href="tel:8012101835">(801) 210-1835</a><br>
-  249 N University Ave, Provo, UT
-</footer>
-
-<div class="sticky-bar hidden" id="sticky-bar">
-  <span class="sticky-count" id="sticky-count"></span>
-  <button class="btn-approve-all" onclick="approveAll()">Approve All</button>
-</div>
-
-<!-- Return info modal — shown once per session on first decline -->
-<div class="modal-overlay" id="return-modal">
-  <div class="modal">
-    <div class="modal-title">Returning your item</div>
-    <div class="modal-body">
-      If you're local, please stop by within <strong>7 days</strong> to pick it up. If you're farther away, we'll reach out to arrange return shipping — please note that you will be responsible for return shipping costs.
-    </div>
-    <button class="btn-modal-confirm" onclick="closeReturnModal()">Got it</button>
-  </div>
-</div>
-
 <script>
-const SUPABASE_URL = 'https://ehzcymnztsbbroxzcidq.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_inbwheC0ne9Frtu6NFkcAg_LnU7xE9I';
-const TOKEN = new URLSearchParams(window.location.search).get('token');
-const FRESH = new URLSearchParams(window.location.search).get('fresh') === 'true';
-const EXPECTED = parseInt(new URLSearchParams(window.location.search).get('expected') || '0', 10);
+const CHECKLIST = [
+  { category: 'Drivetrain', items: [
+    { id: 'chain', label: 'Chain worn / needs replacement', deduction: 15 },
+    { id: 'cassette', label: 'Cassette worn', deduction: 20 },
+    { id: 'chainring', label: 'Chainring(s) worn', deduction: 25 },
+    { id: 'fd', label: 'Front derailleur needs adjustment', deduction: 15 },
+    { id: 'rd', label: 'Rear derailleur needs adjustment', deduction: 20 },
+    { id: 'hanger', label: 'Derailleur hanger bent / missing', deduction: 15 },
+    { id: 'shifters', label: 'Shifters not functioning properly', deduction: 25 },
+    { id: 'cables', label: 'Cables / housing need replacement', deduction: 20 },
+  ]},
+  { category: 'Brakes', items: [
+    { id: 'fp', label: 'Front brake pads worn', deduction: 15 },
+    { id: 'rp', label: 'Rear brake pads worn', deduction: 15 },
+    { id: 'fb', label: 'Front brake not functioning properly', deduction: 25 },
+    { id: 'rb', label: 'Rear brake not functioning properly', deduction: 25 },
+    { id: 'bleed', label: 'Hydraulic fluid needs bleeding', deduction: 30 },
+  ]},
+  { category: 'Wheels & Tires', items: [
+    { id: 'fw', label: 'Front wheel not true', deduction: 20 },
+    { id: 'rw', label: 'Rear wheel not true', deduction: 20 },
+    { id: 'ft', label: 'Front tire worn / cracked', deduction: 20 },
+    { id: 'rt', label: 'Rear tire worn / cracked', deduction: 20 },
+    { id: 'spoke', label: 'Spoke(s) broken / missing', deduction: 25 },
+  ]},
+  { category: 'Suspension', items: [
+    { id: 'fork-svc', label: 'Fork needs service', deduction: 60 },
+    { id: 'shock-svc', label: 'Rear shock needs service', deduction: 60 },
+    { id: 'fork-seal', label: 'Fork seals leaking', deduction: 40 },
+    { id: 'shock-seal', label: 'Rear shock leaking', deduction: 40 },
+  ]},
+  { category: 'Cockpit & Fit', items: [
+    { id: 'bar', label: 'Handlebar / stem loose or damaged', deduction: 20 },
+    { id: 'saddle', label: 'Saddle torn / damaged', deduction: 15 },
+    { id: 'sp', label: 'Seatpost seized', deduction: 30 },
+    { id: 'grips', label: 'Grips worn', deduction: 10 },
+  ]},
+  { category: 'Frame & Safety', items: [
+    { id: 'scratch', label: 'Frame scratch / scuff (cosmetic)', deduction: 0 },
+    { id: 'bb', label: 'Bottom bracket worn / creaking', deduction: 25 },
+    { id: 'headset', label: 'Headset worn / loose', deduction: 20 },
+    { id: 'pedals', label: 'Pedals damaged / missing', deduction: 15 },
+    { id: 'carbon', label: 'Carbon inspection required', deduction: 50 },
+  ]},
+];
 
-const selections = {};
-const approvedItems = {};
-const declinedItems = {};
-let returnModalShown = false;
+const issues = {};
 
-function showError() {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error').style.display = 'flex';
+function buildChecklist() {
+  const container = document.getElementById('checklist');
+  container.innerHTML = '';
+  CHECKLIST.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'checklist-category';
+    section.innerHTML = `<div class="checklist-category-title">${cat.category}</div>`;
+    cat.items.forEach(item => {
+      issues[item.id] = false;
+      const row = document.createElement('div');
+      row.className = 'checklist-item';
+      row.innerHTML = `
+        <span class="checklist-label">${item.label}</span>
+        <span class="checklist-deduction">${item.deduction > 0 ? '-$' + item.deduction : '—'}</span>
+        <div class="checklist-toggle">
+          <button class="toggle-btn active-ok" id="ok-${item.id}" onclick="setIssue('${item.id}', false)">OK</button>
+          <button class="toggle-btn" id="issue-${item.id}" onclick="setIssue('${item.id}', true)">Issue</button>
+        </div>`;
+      section.appendChild(row);
+    });
+    container.appendChild(section);
+  });
 }
 
-function fmt(val) {
-  if (!val && val !== 0) return null;
-  return '$' + Number(val).toFixed(2);
+function setIssue(id, hasIssue) {
+  issues[id] = hasIssue;
+  document.getElementById(`ok-${id}`).className = `toggle-btn${hasIssue ? '' : ' active-ok'}`;
+  document.getElementById(`issue-${id}`).className = `toggle-btn${hasIssue ? ' active-issue' : ''}`;
+  updateSummary3();
 }
 
-function updateStickyBar() {
-  if (!window._items) return;
-  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id] && !declinedItems[i.airtable_id]);
-  const bar = document.getElementById('sticky-bar');
-  const countEl = document.getElementById('sticky-count');
+function getYear() { return parseInt(document.getElementById('year').value) || null; }
+function getMSRP() { return parseFloat(document.getElementById('msrp').value) || null; }
+function getCurb() {
+  const el = document.querySelector('input[name="curb"]:checked');
+  return el ? el.value : 'typical';
+}
 
-  if (unapproved.length === 0) {
-    bar.classList.add('hidden');
+function getGenerationRate(year) {
+  if (!year) return 0.35;
+  const age = new Date().getFullYear() - year;
+  if (age <= 3) return 0.45;
+  if (age <= 10) return 0.35;
+  if (age <= 20) return 0.20;
+  return 0.10;
+}
+
+function getCurbAdj(curb) {
+  if (curb === 'great') return 0.05;
+  if (curb === 'poor') return -0.10;
+  return 0;
+}
+
+function getTotalDeductions() {
+  let total = 0;
+  CHECKLIST.forEach(cat => {
+    cat.items.forEach(item => {
+      if (issues[item.id]) total += item.deduction;
+    });
+  });
+  return total;
+}
+
+function getIssueList() {
+  const list = [];
+  CHECKLIST.forEach(cat => {
+    cat.items.forEach(item => {
+      if (issues[item.id] && item.deduction > 0) {
+        list.push({ label: item.label, deduction: item.deduction });
+      }
+    });
+  });
+  return list;
+}
+
+function updateCalc() {
+  // Update curb appeal selected state
+  document.querySelectorAll('.curb-option').forEach(el => el.classList.remove('selected'));
+  const checked = document.querySelector('input[name="curb"]:checked');
+  if (checked) checked.closest('.curb-option').classList.add('selected');
+}
+
+function updateSummary3() {
+  const issueCount = Object.values(issues).filter(Boolean).length;
+  const deductions = getTotalDeductions();
+  document.getElementById('summary-3').textContent =
+    issueCount > 0 ? `${issueCount} issue${issueCount !== 1 ? 's' : ''} · -$${deductions}` : '';
+}
+
+function fmt(n) {
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function buildQuote() {
+  const msrp = getMSRP();
+  const year = getYear();
+  const brand = document.getElementById('brand').value.trim();
+  const model = document.getElementById('model').value.trim();
+  const curb = getCurb();
+
+  if (!msrp) {
+    document.getElementById('quote-output').innerHTML =
+      '<p style="color:var(--danger);padding:1rem 0;font-size:14px;">Please enter the original retail price (MSRP) to generate a quote.</p>';
     return;
   }
 
-  bar.classList.remove('hidden');
-  countEl.innerHTML = unapproved.length === 1
-    ? '<strong>1</strong> item left'
-    : `<strong>${unapproved.length}</strong> items left`;
-}
+  const genRate = getGenerationRate(year);
+  const curbAdj = getCurbAdj(curb);
+  const finalRate = Math.min(Math.max(genRate + curbAdj, 0.10), 0.60);
+  const expectedSelling = msrp * finalRate;
+  const totalDeductions = getTotalDeductions();
+  const tradeInOffer = Math.max(0, (expectedSelling * 0.60) - totalDeductions);
+  const issueList = getIssueList();
 
-function renderItems(items) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('content').style.display = 'block';
+  const bikeName = [year, brand, model].filter(Boolean).join(' ') || 'Bike';
+  const ageLabel = year ? (() => {
+    const age = new Date().getFullYear() - year;
+    if (age <= 3) return 'Current (≤3 yrs)';
+    if (age <= 10) return 'Recent (4–10 yrs)';
+    if (age <= 20) return 'Legacy (11–20 yrs)';
+    return 'Older (20+ yrs)';
+  })() : '—';
 
-  const firstName = items[0].person_name?.split(' ')[0];
-  if (firstName) document.getElementById('greeting').textContent = `Hi ${firstName}!`;
+  const curbLabel = { great: 'Great (+5%)', typical: 'Typical', poor: 'Rough (–10%)' }[curb];
 
-  // Calculate and render summary totals
-  const totalTradeIn = items.reduce((sum, item) => sum + (Number(item.acquisition_cost) || 0), 0);
-  const totalEarnings = items.reduce((sum, item) => sum + (Number(item.potential_earnings) || 0), 0);
-  if (totalTradeIn > 0 || totalEarnings > 0) {
-    document.getElementById('summary-card').style.display = 'grid';
-    document.getElementById('summary-trade-in').textContent = '$' + totalTradeIn.toFixed(2);
-    document.getElementById('summary-consignment').textContent = '$' + totalEarnings.toFixed(2);
-  }
+  const deductionRows = issueList.length > 0 ? `
+    <div class="deductions-summary">
+      <div class="deductions-title">Mechanical deductions</div>
+      ${issueList.map(i => `
+        <div class="quote-row">
+          <span class="quote-row-label">${i.label}</span>
+          <span class="quote-row-deduction">–$${i.deduction}</span>
+        </div>`).join('')}
+    </div>` : '';
 
-  const list = document.getElementById('items-list');
-  list.innerHTML = '';
-
-  items.forEach((item, index) => {
-    const isConsignment = item.acquisition_type === 'Consignment';
-    selections[item.airtable_id] = isConsignment ? 'Consignment' : 'Trade In';
-
-    const tradeInOnly = item.acquisition_eligibility === 'Trade In Only';
-    const consignOnly = item.acquisition_eligibility === 'Consignment Only';
-
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    card.id = `card-${item.airtable_id}`;
-    card.style.animationDelay = `${index * 0.08}s`;
-
-    const staffNote = item.staff_notes
-      ? `<div class="staff-note"><div class="staff-note-label">Note from our team</div>${item.staff_notes}</div>`
-      : '';
-
-    card.innerHTML = `
-      <div class="item-card-header">
-        <div class="item-name">${item.product_name || 'Item'}</div>
-        ${item.size_ ? `<div class="item-size">${item.size_}</div>` : ''}
-        ${staffNote}
+  document.getElementById('quote-output').innerHTML = `
+    <div class="quote-card">
+      <div class="quote-bike-name">${bikeName}</div>
+      <div class="quote-main-label">Trade-In Offer</div>
+      <div class="quote-amount">${fmt(tradeInOffer)}</div>
+      <div class="quote-sub">Store credit at Pando Refitters</div>
+      <hr class="quote-divider">
+      <div class="quote-breakdown">
+        <div class="quote-row">
+          <span class="quote-row-label">Original retail (MSRP)</span>
+          <span class="quote-row-value">${fmt(msrp)}</span>
+        </div>
+        <div class="quote-row">
+          <span class="quote-row-label">Generation — ${ageLabel}</span>
+          <span class="quote-row-value">${Math.round(genRate * 100)}% of retail</span>
+        </div>
+        <div class="quote-row">
+          <span class="quote-row-label">Curb appeal — ${curbLabel}</span>
+          <span class="quote-row-value">${curbAdj >= 0 ? '+' : ''}${Math.round(curbAdj * 100)}%</span>
+        </div>
+        <div class="quote-row">
+          <span class="quote-row-label">Expected selling price</span>
+          <span class="quote-row-value">${fmt(expectedSelling)}</span>
+        </div>
+        <div class="quote-row">
+          <span class="quote-row-label">Pando trade-in rate</span>
+          <span class="quote-row-value">60% of selling price</span>
+        </div>
+        ${totalDeductions > 0 ? `
+        <div class="quote-row">
+          <span class="quote-row-label">Mechanical deductions</span>
+          <span class="quote-row-deduction">–${fmt(totalDeductions)}</span>
+        </div>` : ''}
       </div>
-      <div class="tile-grid" id="tiles-${item.airtable_id}">
-        ${renderTiles(item, isConsignment, tradeInOnly, consignOnly)}
-      </div>
-      <div class="item-actions" id="actions-${item.airtable_id}">
-        <button class="btn-approve" onclick="approveItem('${item.airtable_id}')">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,12 14,4"></polyline></svg>
-          Approve
+      ${deductionRows}
+      <div class="quote-actions">
+        <button class="btn-approve-offer" onclick="approveOffer('${bikeName}', ${tradeInOffer.toFixed(2)})">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>
+          Offer Approved
         </button>
-        <div class="item-actions-secondary">
-          <button class="btn-note" onclick="toggleNote('${item.airtable_id}')">Leave a note</button>
-          <button class="btn-decline" onclick="declineItem('${item.airtable_id}')">I want it back</button>
-        </div>
+        <button class="btn-decline-offer" onclick="declineOffer()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></svg>
+          Customer Declined
+        </button>
       </div>
-      <div class="note-area" id="note-${item.airtable_id}">
-        <textarea class="note-textarea" id="textarea-${item.airtable_id}" placeholder="Tell us your thoughts — pricing concerns, condition questions, or if you'd like this item back..."></textarea>
-        <p class="note-hint">We'll follow up with you directly.</p>
-        <button class="btn-submit-note" onclick="submitNote('${item.airtable_id}')">Send note</button>
-      </div>
-      <div class="note-submitted" id="note-submitted-${item.airtable_id}">✓ Note received — we'll be in touch.</div>
-      <div class="approved-banner" id="approved-${item.airtable_id}" onclick="toggleApproved('${item.airtable_id}')">
-        <div class="approved-banner-inner">
-          <div class="approved-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5.5,10.5 12,3.5"></polyline></svg></div>
-          <div>
-            <div class="approved-text" id="approved-text-${item.airtable_id}">Approved</div>
-            <div class="approved-sub" id="approved-sub-${item.airtable_id}"></div>
-          </div>
-        </div>
-        <svg class="approved-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 8,10 12,6"></polyline></svg>
-      </div>
-      <div class="change-mind-note">Changed your mind? Call us at <a href="tel:8012101835" style="color:var(--forest-mid);">(801) 210-1835</a> and we'll sort it out.</div>
-      <div class="declined-banner" id="declined-${item.airtable_id}" onclick="toggleDeclined('${item.airtable_id}')">
-        <div class="declined-banner-inner">
-          <div class="declined-check"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></svg></div>
-          <div>
-            <div class="declined-text">Returning to you</div>
-            <div class="declined-sub">Please pick up within 7 days, or look for communication from us for return shipping next steps.</div>
-          </div>
-        </div>
-        <svg class="declined-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 8,10 12,6"></polyline></svg>
-      </div>
-      <div class="change-mind-note-declined">Changed your mind? Call us at <a href="tel:8012101835" style="color:var(--forest-mid);">(801) 210-1835</a> and we'll sort it out.</div>
-    `;
-
-    list.appendChild(card);
-  });
-
-  updateStickyBar();
+    </div>`;
 }
 
-function renderTiles(item, isConsignment, tradeInOnly, consignOnly) {
-  const sel = selections[item.airtable_id];
-  const tradeSelected = sel === 'Trade In';
-  const consignSelected = sel === 'Consignment';
-  const tradePrice = fmt(item.acquisition_cost);
-  const consignEarnings = fmt(item.potential_earnings);
-  const listPrice = fmt(item.starting_price_in_store);
+function approveOffer(bikeName, amount) {
+  const ref = 'PND-' + Date.now().toString(36).toUpperCase().slice(-6);
+  document.getElementById('steps').style.display = 'none';
+  document.getElementById('success-screen').classList.add('show');
+  document.getElementById('success-ref').textContent = 'Reference: ' + ref;
+}
 
-  // If only one option available, force it left and pre-select it
-  if (tradeInOnly) {
-    selections[item.airtable_id] = 'Trade In';
-    return tileTrade(item, true, tradePrice) + tileConsignUnavailable();
+function declineOffer() {
+  document.getElementById('steps').style.display = 'none';
+  const screen = document.getElementById('success-screen');
+  screen.classList.add('show');
+  screen.querySelector('.success-title').textContent = 'Offer Recorded as Declined';
+  screen.querySelector('.success-sub').textContent = 'No worries — this happens. The quote has been logged. If the customer changes their mind within 2 weeks, have them come back and we\'ll honor this offer.';
+  screen.querySelector('.success-check').style.background = 'var(--ink-light)';
+  document.getElementById('success-ref').textContent = '';
+}
+
+function resetForm() {
+  location.reload();
+}
+
+function goToStep(n) {
+  // Mark previous steps completed
+  for (let i = 1; i < n; i++) {
+    const step = document.getElementById(`step-${i}`);
+    step.classList.remove('active');
+    step.classList.add('completed');
+    const num = document.getElementById(`num-${i}`);
+    num.classList.add('done');
+    num.textContent = '';
   }
-
-  if (consignOnly) {
-    selections[item.airtable_id] = 'Consignment';
-    const consignTile = isConsignment
-      ? tileConsignForConsignCustomer(item, true, listPrice, consignEarnings)
-      : tileConsignForQuoteCustomer(item, true, consignEarnings, listPrice);
-    return consignTile + tileTradeUnavailable();
-  }
-
-  // Both available — order by customer type
-  let left, right;
-  if (isConsignment) {
-    left = tileConsignForConsignCustomer(item, consignSelected, listPrice, consignEarnings);
-    right = tileTrade(item, tradeSelected, tradePrice);
-  } else {
-    left = tileTrade(item, tradeSelected, tradePrice);
-    right = tileConsignForQuoteCustomer(item, consignSelected, consignEarnings, listPrice);
-  }
-  return left + right;
+  // Activate current
+  const current = document.getElementById(`step-${n}`);
+  current.classList.add('active');
+  current.classList.remove('completed');
+  // Scroll to it
+  setTimeout(() => current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
-function tileTrade(item, selected, tradePrice) {
-  const cls = selected ? 'selected' : 'unselected';
-  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Trade In')"`;
-  return `<div class="tile ${cls}" ${onclick}><div class="tile-label">Trade in</div><div class="tile-price">${tradePrice || '—'}</div><div class="tile-desc">Store credit, right now</div></div>`;
+function toggleStep(n) {
+  const step = document.getElementById(`step-${n}`);
+  if (step.classList.contains('active')) return; // already open
+  goToStep(n);
 }
 
-function tileConsignForConsignCustomer(item, selected, listPrice, consignEarnings) {
-  const cls = selected ? 'selected' : 'unselected';
-  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Consignment')"`;
-  return `<div class="tile ${cls}" ${onclick}><div class="tile-label">Consignment</div><div class="tile-price">${listPrice || '—'}</div><div class="tile-desc">Starting list price</div>${consignEarnings ? `<div class="tile-sub">You earn up to ${consignEarnings} if it sells</div>` : ''}</div>`;
-}
-
-function tileConsignForQuoteCustomer(item, selected, consignEarnings, listPrice) {
-  const cls = selected ? 'selected' : 'unselected';
-  const onclick = selected ? '' : `onclick="selectTile('${item.airtable_id}', 'Consignment')"`;
-  return `<div class="tile ${cls}" ${onclick}><div class="tile-label">Consignment</div><div class="tile-price">${consignEarnings || '—'}</div><div class="tile-desc">Potential earnings</div>${listPrice ? `<div class="tile-sub">If it sells at ${listPrice} — subject to discounts</div>` : ''}</div>`;
-}
-
-function tileTradeUnavailable() {
-  return `<div class="tile unavailable"><div class="tile-label">Trade in</div><div class="tile-price">Not available</div><div class="tile-desc">This item is consignment only</div></div>`;
-}
-
-function tileConsignUnavailable() {
-  return `<div class="tile unavailable"><div class="tile-label">Consignment</div><div class="tile-price">Not available</div><div class="tile-desc">This item is trade in only</div></div>`;
-}
-
-function selectTile(airtableId, choice) {
-  if (approvedItems[airtableId] || declinedItems[airtableId]) return;
-  selections[airtableId] = choice;
-  const item = window._items.find(i => i.airtable_id === airtableId);
-  if (!item) return;
-  const isConsignment = item.acquisition_type === 'Consignment';
-  const tradeInOnly = item.acquisition_eligibility === 'Trade In Only';
-  const consignOnly = item.acquisition_eligibility === 'Consignment Only';
-  document.getElementById(`tiles-${airtableId}`).innerHTML = renderTiles(item, isConsignment, tradeInOnly, consignOnly);
-}
-
-function approveItem(airtableId) {
-  const selection = selections[airtableId];
-  approvedItems[airtableId] = selection;
-  document.getElementById(`actions-${airtableId}`).style.display = 'none';
-  document.getElementById(`note-${airtableId}`).classList.remove('open');
-  const banner = document.getElementById(`approved-${airtableId}`);
-  banner.classList.add('show');
-  document.getElementById(`approved-text-${airtableId}`).textContent = `Approved as ${selection}`;
-  document.getElementById(`approved-sub-${airtableId}`).textContent = selection === 'Trade In'
-    ? 'Store credit will be added to your account.'
-    : "We'll put it on the floor and notify you when it sells.";
-  const card = document.getElementById(`card-${airtableId}`);
-  card.classList.add('approved');
-  setTimeout(() => card.classList.add('collapsed'), 400);
-
-  const item = window._items.find(i => i.airtable_id === airtableId);
-  const personId = item?.person_airtable_id;
-  const PANDO_ID = 'recr110TSqC4sph7r';
-  const fields = { 'Status': 'Available' };
-
-  if (selection === 'Trade In') {
-    fields['Acquisition Type'] = 'Trade In - Local';
-    fields['Owner'] = [PANDO_ID];
-    if (personId) fields['Trade In Person'] = [personId];
-
-    // Add store credit via Edge Function
-    const credit = Number(item?.acquisition_cost) || 0;
-    if (credit > 0 && personId) {
-      fetch(`${SUPABASE_URL}/functions/v1/add-store-credit`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ personAirtableId: personId, amountToAdd: credit })
-      }).catch(e => console.error('Store credit update failed:', e));
-    }
-  } else {
-    fields['Acquisition Type'] = 'Consignment';
-    if (personId) fields['Owner'] = [personId];
-    fields['Trade In Person'] = [];
-    fields['Acquisition Cost'] = null;
-  }
-
-  patchAirtable(airtableId, fields);
-  updateStickyBar();
-}
-
-function declineItem(airtableId) {
-  declinedItems[airtableId] = true;
-  document.getElementById(`actions-${airtableId}`).style.display = 'none';
-  document.getElementById(`note-${airtableId}`).classList.remove('open');
-  const banner = document.getElementById(`declined-${airtableId}`);
-  banner.classList.add('show');
-  const card = document.getElementById(`card-${airtableId}`);
-  card.classList.add('declined');
-  setTimeout(() => card.classList.add('collapsed'), 400);
-
-  // Write to Airtable — status only, no ownership changes
-  patchAirtable(airtableId, { 'Status': 'Declined' });
-
-  updateStickyBar();
-
-  // Show return info modal once per session
-  if (!returnModalShown) {
-    returnModalShown = true;
-    setTimeout(() => {
-      document.getElementById('return-modal').classList.add('show');
-    }, 450);
-  }
-}
-
-function closeReturnModal() {
-  document.getElementById('return-modal').classList.remove('show');
-}
-
-function toggleApproved(airtableId) {
-  const card = document.getElementById(`card-${airtableId}`);
-  card.classList.toggle('collapsed');
-}
-
-function toggleDeclined(airtableId) {
-  const card = document.getElementById(`card-${airtableId}`);
-  card.classList.toggle('collapsed');
-}
-
-async function approveAll() {
-  const unapproved = window._items.filter(i => !approvedItems[i.airtable_id] && !declinedItems[i.airtable_id]);
-  if (unapproved.length === 0) return;
-
-  // Calculate total trade-in credit upfront and write once
-  const tradeInItems = unapproved.filter(i => selections[i.airtable_id] === 'Trade In');
-  const totalCredit = tradeInItems.reduce((sum, item) => sum + (Number(item.acquisition_cost) || 0), 0);
-  const personId = unapproved[0].person_airtable_id;
-
-  if (totalCredit > 0 && personId) {
-    try {
-      await fetch(`${SUPABASE_URL}/functions/v1/add-store-credit`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ personAirtableId: personId, amountToAdd: totalCredit })
-      });
-    } catch(e) {
-      console.error('Store credit update failed:', e);
-    }
-  }
-
-  // Now approve all items — skip store credit since we handled it above
-  for (const item of unapproved) {
-    approveItemNoCredit(item.airtable_id);
-    await new Promise(resolve => setTimeout(resolve, 400));
-  }
-}
-
-function approveItemNoCredit(airtableId) {
-  const selection = selections[airtableId];
-  approvedItems[airtableId] = selection;
-  document.getElementById(`actions-${airtableId}`).style.display = 'none';
-  document.getElementById(`note-${airtableId}`).classList.remove('open');
-  const banner = document.getElementById(`approved-${airtableId}`);
-  banner.classList.add('show');
-  document.getElementById(`approved-text-${airtableId}`).textContent = `Approved as ${selection}`;
-  document.getElementById(`approved-sub-${airtableId}`).textContent = selection === 'Trade In'
-    ? 'Store credit will be added to your account.'
-    : "We'll put it on the floor and notify you when it sells.";
-  const card = document.getElementById(`card-${airtableId}`);
-  card.classList.add('approved');
-  setTimeout(() => card.classList.add('collapsed'), 400);
-
-  // Write asset fields to Airtable — no store credit handling
-  const item = window._items.find(i => i.airtable_id === airtableId);
-  const personId = item?.person_airtable_id;
-  const PANDO_ID = 'recr110TSqC4sph7r';
-  const fields = { 'Status': 'Available' };
-
-  if (selection === 'Trade In') {
-    fields['Acquisition Type'] = 'Trade In - Local';
-    fields['Owner'] = [PANDO_ID];
-    if (personId) fields['Trade In Person'] = [personId];
-  } else {
-    fields['Acquisition Type'] = 'Consignment';
-    if (personId) fields['Owner'] = [personId];
-    fields['Trade In Person'] = [];
-    fields['Acquisition Cost'] = null;
-  }
-
-  patchAirtable(airtableId, fields);
-  updateStickyBar();
-}
-
-function toggleNote(airtableId) {
-  document.getElementById(`note-${airtableId}`).classList.toggle('open');
-}
-
-function submitNote(airtableId) {
-  const text = document.getElementById(`textarea-${airtableId}`).value.trim();
-  if (!text) return;
-  document.getElementById(`note-${airtableId}`).classList.remove('open');
-  document.getElementById(`note-submitted-${airtableId}`).classList.add('show');
-  // Write note to Airtable, leave status unchanged
-  patchAirtable(airtableId, { 'Owner Notes': text });
-}
-
-async function patchAirtable(recordId, fields) {
-  try {
-    await fetch(`${SUPABASE_URL}/functions/v1/smooth-service`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ recordId, fields })
-    });
-  } catch(e) {
-    console.error('Airtable write failed:', e);
-  }
-}
-
-async function loadItems(retryCount = 0) {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/get_approval_items`,
-      {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ p_token: TOKEN })
-      }
-    );
-    if (!res.ok) throw new Error('Query failed');
-    const items = await res.json();
-
-    // If we know how many items to expect, wait until they all appear
-    const shouldWait = FRESH && retryCount < 12;
-    const notEnoughItems = EXPECTED > 0
-      ? (!items || items.length < EXPECTED)
-      : (!items || items.length === 0);
-
-    if (notEnoughItems && shouldWait) {
-      document.getElementById('loading').querySelector('p').textContent =
-        retryCount < 2 ? 'Getting your items ready…' : 'Almost there…';
-      setTimeout(() => loadItems(retryCount + 1), 3000);
-      return;
-    }
-
-    if (!items || items.length === 0) { showError(); return; }
-    window._items = items;
-    renderItems(items);
-  } catch(e) {
-    if (FRESH && retryCount < 12) {
-      setTimeout(() => loadItems(retryCount + 1), 3000);
-      return;
-    }
-    console.error(e);
-    showError();
-  }
-}
-
-loadItems();
+// Init
+buildChecklist();
+document.querySelectorAll('input[name="curb"]').forEach(el => {
+  el.addEventListener('change', updateCalc);
+});
 </script>
 </body>
 </html>
