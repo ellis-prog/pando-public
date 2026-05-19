@@ -830,7 +830,6 @@ function approveItem(airtableId) {
   card.classList.add('approved');
   setTimeout(() => card.classList.add('collapsed'), 400);
 
-  // Write to Airtable
   const item = window._items.find(i => i.airtable_id === airtableId);
   const personId = item?.person_airtable_id;
   const PANDO_ID = 'recr110TSqC4sph7r';
@@ -840,6 +839,20 @@ function approveItem(airtableId) {
     fields['Acquisition Type'] = 'Trade In - Local';
     fields['Owner'] = [PANDO_ID];
     if (personId) fields['Trade In Person'] = [personId];
+
+    // Add store credit via Edge Function
+    const credit = Number(item?.acquisition_cost) || 0;
+    if (credit > 0 && personId) {
+      fetch(`${SUPABASE_URL}/functions/v1/add-store-credit`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ personAirtableId: personId, amountToAdd: credit })
+      }).catch(e => console.error('Store credit update failed:', e));
+    }
   } else {
     fields['Acquisition Type'] = 'Consignment';
     if (personId) fields['Owner'] = [personId];
@@ -891,10 +904,70 @@ function toggleDeclined(airtableId) {
 
 async function approveAll() {
   const unapproved = window._items.filter(i => !approvedItems[i.airtable_id] && !declinedItems[i.airtable_id]);
-  for (const item of unapproved) {
-    approveItem(item.airtable_id);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+  if (unapproved.length === 0) return;
+
+  // Calculate total trade-in credit upfront and write once
+  const tradeInItems = unapproved.filter(i => selections[i.airtable_id] === 'Trade In');
+  const totalCredit = tradeInItems.reduce((sum, item) => sum + (Number(item.acquisition_cost) || 0), 0);
+  const personId = unapproved[0].person_airtable_id;
+
+  if (totalCredit > 0 && personId) {
+    try {
+      await fetch(`${SUPABASE_URL}/functions/v1/add-store-credit`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ personAirtableId: personId, amountToAdd: totalCredit })
+      });
+    } catch(e) {
+      console.error('Store credit update failed:', e);
+    }
   }
+
+  // Now approve all items — skip store credit since we handled it above
+  for (const item of unapproved) {
+    approveItemNoCredit(item.airtable_id);
+    await new Promise(resolve => setTimeout(resolve, 400));
+  }
+}
+
+function approveItemNoCredit(airtableId) {
+  const selection = selections[airtableId];
+  approvedItems[airtableId] = selection;
+  document.getElementById(`actions-${airtableId}`).style.display = 'none';
+  document.getElementById(`note-${airtableId}`).classList.remove('open');
+  const banner = document.getElementById(`approved-${airtableId}`);
+  banner.classList.add('show');
+  document.getElementById(`approved-text-${airtableId}`).textContent = `Approved as ${selection}`;
+  document.getElementById(`approved-sub-${airtableId}`).textContent = selection === 'Trade In'
+    ? 'Store credit will be added to your account.'
+    : "We'll put it on the floor and notify you when it sells.";
+  const card = document.getElementById(`card-${airtableId}`);
+  card.classList.add('approved');
+  setTimeout(() => card.classList.add('collapsed'), 400);
+
+  // Write asset fields to Airtable — no store credit handling
+  const item = window._items.find(i => i.airtable_id === airtableId);
+  const personId = item?.person_airtable_id;
+  const PANDO_ID = 'recr110TSqC4sph7r';
+  const fields = { 'Status': 'Available' };
+
+  if (selection === 'Trade In') {
+    fields['Acquisition Type'] = 'Trade In - Local';
+    fields['Owner'] = [PANDO_ID];
+    if (personId) fields['Trade In Person'] = [personId];
+  } else {
+    fields['Acquisition Type'] = 'Consignment';
+    if (personId) fields['Owner'] = [personId];
+    fields['Trade In Person'] = [];
+    fields['Acquisition Cost'] = null;
+  }
+
+  patchAirtable(airtableId, fields);
+  updateStickyBar();
 }
 
 function toggleNote(airtableId) {
