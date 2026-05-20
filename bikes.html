@@ -618,7 +618,33 @@ body {
           </div>
           <div class="field">
             <label>Frame Size</label>
-            <input type="text" id="frame-size" placeholder="Medium, 54cm, 17.5&quot;…">
+            <select id="frame-size">
+              <option value="">Select…</option>
+              <optgroup label="Mountain / Trail">
+                <option>XS</option>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>XXL</option>
+              </optgroup>
+              <optgroup label="Road / Gravel (cm)">
+                <option>44cm</option>
+                <option>46cm</option>
+                <option>48cm</option>
+                <option>50cm</option>
+                <option>52cm</option>
+                <option>54cm</option>
+                <option>56cm</option>
+                <option>58cm</option>
+                <option>60cm</option>
+                <option>62cm</option>
+              </optgroup>
+              <optgroup label="Kids">
+                <option>Kids 20"</option>
+                <option>Kids 24"</option>
+              </optgroup>
+            </select>
           </div>
         </div>
         <button class="btn-primary" onclick="goToStep(2)">
@@ -640,19 +666,161 @@ body {
         <div class="components-grid">
           <div class="component-field field">
             <label>Fork</label>
-            <input type="text" id="fork" placeholder="RockShox Recon 120mm">
+            <select id="fork">
+              <option value="">Select…</option>
+              <optgroup label="RockShox">
+                <option>RockShox Judy</option>
+                <option>RockShox Recon</option>
+                <option>RockShox Recon Silver</option>
+                <option>RockShox 30 Silver</option>
+                <option>RockShox Revelation</option>
+                <option>RockShox Reba</option>
+                <option>RockShox Pike</option>
+                <option>RockShox Pike Ultimate</option>
+                <option>RockShox Lyrik</option>
+                <option>RockShox Lyrik Ultimate</option>
+                <option>RockShox ZEB</option>
+                <option>RockShox ZEB Ultimate</option>
+                <option>RockShox Sid</option>
+                <option>RockShox Sid SL</option>
+                <option>RockShox Bluto (fat)</option>
+              </optgroup>
+              <optgroup label="FOX">
+                <option>FOX 32</option>
+                <option>FOX 32 Step-Cast</option>
+                <option>FOX 34</option>
+                <option>FOX 34 Step-Cast</option>
+                <option>FOX 36</option>
+                <option>FOX 38</option>
+                <option>FOX 40</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Manitou</option>
+                <option>Marzocchi Bomber</option>
+                <option>SR Suntour</option>
+                <option>Rigid fork</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
           </div>
           <div class="component-field field">
             <label>Rear Shock</label>
-            <input type="text" id="rear-shock" placeholder="Fox Float DPS (or N/A)">
+            <select id="rear-shock">
+              <option value="">Select…</option>
+              <option>N/A — Hardtail</option>
+              <optgroup label="RockShox">
+                <option>RockShox Deluxe</option>
+                <option>RockShox Deluxe Select</option>
+                <option>RockShox Deluxe Ultimate</option>
+                <option>RockShox Super Deluxe</option>
+                <option>RockShox Super Deluxe Ultimate</option>
+                <option>RockShox Monarch</option>
+                <option>RockShox Vivid</option>
+                <option>RockShox Vivid Ultimate</option>
+                <option>RockShox Nude</option>
+                <option>RockShox Kage</option>
+              </optgroup>
+              <optgroup label="FOX">
+                <option>FOX Float DPS</option>
+                <option>FOX Float DPX2</option>
+                <option>FOX Float X</option>
+                <option>FOX Float X2</option>
+                <option>FOX DHX</option>
+                <option>FOX DHX2</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Cane Creek DB</option>
+                <option>Cane Creek IL</option>
+                <option>Push Industries</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
           </div>
           <div class="component-field field">
             <label>Drivetrain</label>
-            <input type="text" id="drivetrain" placeholder="Shimano Deore 12-speed">
+            <select id="drivetrain">
+              <option value="">Select…</option>
+              <optgroup label="Shimano MTB">
+                <option>Shimano Altus (7/8-speed)</option>
+                <option>Shimano Acera (8-speed)</option>
+                <option>Shimano Alivio (9-speed)</option>
+                <option>Shimano Deore (10/11/12-speed)</option>
+                <option>Shimano SLX (11/12-speed)</option>
+                <option>Shimano XT (11/12-speed)</option>
+                <option>Shimano XTR (11/12-speed)</option>
+              </optgroup>
+              <optgroup label="SRAM MTB">
+                <option>SRAM SX Eagle (12-speed)</option>
+                <option>SRAM NX Eagle (12-speed)</option>
+                <option>SRAM GX Eagle (12-speed)</option>
+                <option>SRAM X01 Eagle (12-speed)</option>
+                <option>SRAM XX1 Eagle (12-speed)</option>
+                <option>SRAM X0 AXS (12-speed wireless)</option>
+                <option>SRAM XX AXS (12-speed wireless)</option>
+              </optgroup>
+              <optgroup label="Shimano Road / Gravel">
+                <option>Shimano Claris (8-speed)</option>
+                <option>Shimano Sora (9-speed)</option>
+                <option>Shimano Tiagra (10-speed)</option>
+                <option>Shimano 105 (11/12-speed)</option>
+                <option>Shimano Ultegra (11/12-speed)</option>
+                <option>Shimano Dura-Ace (11/12-speed)</option>
+                <option>Shimano GRX (gravel)</option>
+              </optgroup>
+              <optgroup label="SRAM Road / Gravel">
+                <option>SRAM Apex (11-speed)</option>
+                <option>SRAM Rival (11/12-speed)</option>
+                <option>SRAM Force (11/12-speed)</option>
+                <option>SRAM Red (11/12-speed)</option>
+                <option>SRAM Rival AXS (wireless)</option>
+                <option>SRAM Force AXS (wireless)</option>
+                <option>SRAM Red AXS (wireless)</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Microshift</option>
+                <option>Campagnolo</option>
+                <option>Single speed</option>
+                <option>Internal gear hub</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
           </div>
           <div class="component-field field">
             <label>Brakes</label>
-            <input type="text" id="brakes" placeholder="Shimano MT200 Hydraulic">
+            <select id="brakes">
+              <option value="">Select…</option>
+              <optgroup label="Shimano Hydraulic">
+                <option>Shimano MT200</option>
+                <option>Shimano MT400 / MT420</option>
+                <option>Shimano MT500 / MT520</option>
+                <option>Shimano MT800 (SLX)</option>
+                <option>Shimano M8100 (XT)</option>
+                <option>Shimano M9100 (XTR)</option>
+                <option>Shimano RS505 / RS805 (road)</option>
+              </optgroup>
+              <optgroup label="SRAM Hydraulic">
+                <option>SRAM Level</option>
+                <option>SRAM Level T</option>
+                <option>SRAM Level TL</option>
+                <option>SRAM Level Silver</option>
+                <option>SRAM G2 R</option>
+                <option>SRAM G2 RS</option>
+                <option>SRAM G2 Ultimate</option>
+                <option>SRAM Code R</option>
+                <option>SRAM Code RS</option>
+                <option>SRAM Code RSC</option>
+                <option>SRAM Maven</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>TRP</option>
+                <option>Magura</option>
+                <option>Hope</option>
+                <option>Tektro hydraulic</option>
+                <option>Mechanical disc</option>
+                <option>Rim brakes</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
           </div>
           <div class="component-field field">
             <label>Wheel Size</label>
@@ -794,7 +962,7 @@ const CHECKLIST = [
     { id: 'bb', label: 'Bottom bracket worn / creaking', deduction: 25 },
     { id: 'headset', label: 'Headset worn / loose', deduction: 20 },
     { id: 'pedals', label: 'Pedals damaged / missing', deduction: 15 },
-    { id: 'carbon', label: 'Carbon inspection required', deduction: 50 },
+    { id: 'carbon', label: 'Compromised carbon frame', deduction: 0, disqualify: true },
   ]},
 ];
 
@@ -867,7 +1035,7 @@ function getIssueList() {
   const list = [];
   CHECKLIST.forEach(cat => {
     cat.items.forEach(item => {
-      if (issues[item.id] && item.deduction > 0) {
+      if (issues[item.id] && item.deduction > 0 && !item.disqualify) {
         list.push({ label: item.label, deduction: item.deduction });
       }
     });
@@ -899,6 +1067,17 @@ function buildQuote() {
   const brand = document.getElementById('brand').value.trim();
   const model = document.getElementById('model').value.trim();
   const curb = getCurb();
+
+  // Check for disqualifying issues
+  const disqualified = CHECKLIST.flatMap(c => c.items).find(i => i.disqualify && issues[i.id]);
+  if (disqualified) {
+    document.getElementById('quote-output').innerHTML = `
+      <div style="background:var(--danger-pale);border:1px solid var(--danger);border-radius:12px;padding:1.25rem;">
+        <div style="font-size:15px;font-weight:500;color:var(--danger);margin-bottom:6px;">This bike does not qualify for a trade-in quote</div>
+        <div style="font-size:13px;color:var(--ink-mid);line-height:1.6;">A compromised carbon frame was flagged during inspection. Pando is unable to accept this bike for trade-in. Please return the bike to the customer.</div>
+      </div>`;
+    return;
+  }
 
   if (!msrp) {
     document.getElementById('quote-output').innerHTML =
