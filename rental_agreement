@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Agreement — Pando Refitters</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --forest:   #2C4A3E;
+      --sage:     #7A9E8E;
+      --sand:     #F0EBE1;
+      --stone:    #C8BFB0;
+      --ink:      #1A1A1A;
+      --mist:     #F7F5F2;
+      --error:    #C0392B;
+      --white:    #FFFFFF;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--mist);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--forest);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .site-header .wordmark {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+    .site-header .divider {
+      width: 1px;
+      height: 18px;
+      background: var(--sage);
+      opacity: 0.6;
+    }
+    .site-header .doc-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--sage);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Progress ── */
+    .progress-bar {
+      height: 3px;
+      background: var(--stone);
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--sage);
+      transition: width 0.4s ease;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Steps ── */
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-header {
+      padding: 36px 0 24px;
+      border-bottom: 1px solid var(--stone);
+      margin-bottom: 32px;
+    }
+    .step-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 6px;
+    }
+    .step-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.75rem;
+      color: var(--forest);
+      line-height: 1.2;
+    }
+
+    /* ── Fields ── */
+    .field-group {
+      margin-bottom: 20px;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 6px;
+    }
+    label .optional {
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--sage);
+      font-size: 0.75rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--stone);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--sage);
+    }
+    input.error {
+      border-color: var(--error);
+    }
+    .field-error {
+      font-size: 0.78rem;
+      color: var(--error);
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    /* ── Checkbox ── */
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--forest);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .checkbox-row label {
+      font-size: 0.875rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--ink);
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    /* ── Legal text ── */
+    .legal-box {
+      background: var(--sand);
+      border: 1px solid var(--stone);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 28px;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+    .legal-box h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      color: var(--forest);
+      margin-bottom: 14px;
+    }
+    .legal-box p, .legal-box li {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: #444;
+      margin-bottom: 12px;
+    }
+    .legal-box ol {
+      padding-left: 18px;
+    }
+    .legal-box ol li {
+      margin-bottom: 10px;
+    }
+    .legal-scroll-hint {
+      font-size: 0.75rem;
+      color: var(--sage);
+      text-align: center;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    /* ── Dependents ── */
+    .dependents-intro {
+      background: var(--white);
+      border: 1.5px solid var(--stone);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .dependents-intro p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 12px;
+    }
+    .dependents-intro p:last-child { margin-bottom: 0; }
+    .dependents-intro strong { color: var(--forest); }
+
+    .dep-toggle-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .dep-toggle {
+      flex: 1;
+      padding: 12px;
+      border: 1.5px solid var(--stone);
+      border-radius: 6px;
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: center;
+    }
+    .dep-toggle.selected {
+      border-color: var(--forest);
+      background: var(--forest);
+      color: var(--white);
+    }
+
+    .dependents-list { display: none; }
+    .dependents-list.visible { display: block; }
+
+    .dependent-card {
+      background: var(--white);
+      border: 1.5px solid var(--stone);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .dependent-card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 16px;
+    }
+    .remove-dep {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--stone);
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+    .remove-dep:hover { color: var(--error); }
+
+    .add-dep-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: 1.5px dashed var(--stone);
+      border-radius: 6px;
+      color: var(--sage);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 12px 16px;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      margin-bottom: 28px;
+    }
+    .add-dep-btn:hover {
+      border-color: var(--sage);
+      color: var(--forest);
+    }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn-primary {
+      flex: 1;
+      padding: 14px 24px;
+      background: var(--forest);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #1e3328; }
+    .btn-primary:disabled { background: var(--stone); cursor: not-allowed; }
+    .btn-back {
+      padding: 14px 20px;
+      background: none;
+      border: 1.5px solid var(--stone);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .btn-back:hover { border-color: var(--forest); }
+
+    /* ── Success ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .success-screen.visible { display: block; }
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--forest);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 1.5rem;
+      color: var(--white);
+    }
+    .success-screen h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.75rem;
+      color: var(--forest);
+      margin-bottom: 12px;
+    }
+    .success-screen p {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* ── Submitting ── */
+    .submitting-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .submitting-overlay.visible { display: flex; }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--stone);
+      border-top-color: var(--forest);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+      .dep-toggle-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="wordmark">Pando Refitters</span>
+  <span class="divider"></span>
+  <span class="doc-title">Rental Agreement</span>
+</header>
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill" style="width: 33%"></div>
+</div>
+
+<div class="container">
+
+  <!-- ── STEP 1: Your Information ── -->
+  <div class="step active" id="step1">
+    <div class="step-header">
+      <div class="step-label">Step 1 of 3</div>
+      <div class="step-title">Your Information</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" autocomplete="given-name" />
+        <div class="field-error" id="firstNameError">Required</div>
+      </div>
+      <div class="field-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" autocomplete="family-name" />
+        <div class="field-error" id="lastNameError">Required</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" autocomplete="tel" />
+      <div class="field-error" id="phoneError">Required</div>
+    </div>
+
+    <div class="field-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" />
+      <div class="field-error" id="emailError">A valid email address is required</div>
+    </div>
+
+    <div class="field-group">
+      <label for="zip">Zip Code <span class="optional">(optional)</span></label>
+      <input type="text" id="zip" inputmode="numeric" maxlength="10" autocomplete="postal-code" />
+    </div>
+
+    <div class="field-group">
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" />
+      <div class="field-error" id="dobError">Required</div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="optIn" />
+      <label for="optIn">Yes, send me occasional shop updates from Pando Refitters.</label>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goToStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Rental Agreement ── -->
+  <div class="step" id="step2">
+    <div class="step-header">
+      <div class="step-label">Step 2 of 3</div>
+      <div class="step-title">Rental Agreement</div>
+    </div>
+
+    <p class="legal-scroll-hint">Please read the full agreement before agreeing.</p>
+
+    <div class="legal-box">
+      <h3>Equipment Return</h3>
+      <p>I agree to return all equipment:</p>
+      <ol>
+        <li><strong>In Good Condition.</strong> I am responsible for covering the cost of any damage that occurs during the rental period. If I purchased insurance (available on some rentals), I am still responsible for damages if the gear is (a) unreturned, (b) abused, (c) misused, or (d) damaged beyond reasonable repair.</li>
+        <li><strong>On Time.</strong> If I need more days, I will let Pando Refitters know when I can return it, and I agree to being charged for the extra days. If I don't return the gear at all, I agree to being charged for its full retail value as determined by Pando Refitters.</li>
+        <li><strong>Clean.</strong> I will do my best to return the gear clean. Excessive dirtiness may result in a cleaning fee of up to $25.</li>
+      </ol>
+
+      <h3 style="margin-top: 20px;">Release of Liability & Assumption of Risk</h3>
+      <p>I acknowledge that I have read and agree that:</p>
+      <ol>
+        <li>There are significant elements of risk in any adventure, sport, or activity associated with water sports, winter sports, and the outdoors. Although Pando Refitters has taken reasonable steps to provide me with appropriate equipment and guidelines, I understand that the activity is not without certain risk.</li>
+        <li>The risk of injury from the activity is significant, including the potential for permanent paralysis and death. I am aware that the activity entails risks of injury or death. I understand that unknown or unanticipated risks may result in injury, illness, or death as a result of participation in the activity.</li>
+        <li>I knowingly and freely assume all such risks, both known and unknown, even arising from the negligence of the releasees or others, and assume full responsibility for my participation.</li>
+        <li>I assume full responsibility for myself and any minor children for whom I am responsible, for any bodily injury, accident, illness, death, and loss of or damage to personal property as a result of any accident which may occur while renting. I agree to pay for damage to any equipment that resulted from my rental.</li>
+        <li>I acknowledge that I have read this release of liability and assumption of risk agreement and fully understand its terms. I hereby forever fully release, waive, discharge, and hold harmless Pando Refitters and its agents and/or employees from all liability — including but not limited to any and all claims, demands, losses, and liability arising out of or related to any injury, disability, or death I may suffer, or loss or damage to person or property, as related to the undersigned, his/her personal representatives, assigns, heirs and next of kin.</li>
+      </ol>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="agreeTerms" />
+      <label for="agreeTerms">I agree to the Rental Agreement and Release of Liability above, for myself and for any minor participants I list in the next step.</label>
+    </div>
+    <div class="field-error" id="agreeError" style="margin-bottom: 16px;">You must agree to continue.</div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(1)">← Back</button>
+      <button class="btn-primary" onclick="goToStep(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Minor Participants ── -->
+  <div class="step" id="step3">
+    <div class="step-header">
+      <div class="step-label">Step 3 of 3</div>
+      <div class="step-title">Minor Participants</div>
+    </div>
+
+    <div class="dependents-intro">
+      <p><strong>Are you renting on behalf of any participants under 18?</strong></p>
+      <p>If yes, add each minor below. Your signature on the previous page covers all participants you list here.</p>
+      <p>If you're only renting for yourself, select "Just me" and submit.</p>
+    </div>
+
+    <div class="dep-toggle-row">
+      <button class="dep-toggle selected" id="toggleJustMe" onclick="setDependents(false)">Just me</button>
+      <button class="dep-toggle" id="toggleHasMinors" onclick="setDependents(true)">I have minor participants</button>
+    </div>
+
+    <div class="dependents-list" id="dependentsList">
+      <div id="dependentCards"></div>
+      <button class="add-dep-btn" onclick="addDependent()">+ Add another minor</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(2)">← Back</button>
+      <button class="btn-primary" id="submitBtn" onclick="submitForm()">Submit Agreement</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>You're all set.</h2>
+    <p>Your rental agreement is on file with Pando Refitters.<br>Enjoy your adventure — and return everything clean!</p>
+  </div>
+
+</div>
+
+<!-- Submitting overlay -->
+<div class="submitting-overlay" id="submittingOverlay">
+  <div class="spinner"></div>
+  <p style="font-size: 0.9rem; color: #555;">Submitting your agreement…</p>
+</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────
+  const EDGE_FUNCTION_URL = "https://ehzcymnztsbbroxzcidq.supabase.co/functions/v1/rental-agreement";
+
+  // ── State ───────────────────────────────────────────────
+  let hasMinors = false;
+  let depCount = 0;
+
+  // ── Step navigation ──────────────────────────────────────
+  function goToStep(n) {
+    if (n === 2 && !validateStep1()) return;
+    if (n === 3 && !validateStep2()) return;
+
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.getElementById('progressFill').style.width = (n / 3 * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Validation ───────────────────────────────────────────
+  function showError(fieldId, errorId, show) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+    if (field) field.classList.toggle('error', show);
+    if (error) error.classList.toggle('visible', show);
+  }
+
+  function validateStep1() {
+    let valid = true;
+
+    const firstName = document.getElementById('firstName').value.trim();
+    showError('firstName', 'firstNameError', !firstName);
+    if (!firstName) valid = false;
+
+    const lastName = document.getElementById('lastName').value.trim();
+    showError('lastName', 'lastNameError', !lastName);
+    if (!lastName) valid = false;
+
+    const phone = document.getElementById('phone').value.trim();
+    showError('phone', 'phoneError', !phone);
+    if (!phone) valid = false;
+
+    const dob = document.getElementById('dob').value;
+    showError('dob', 'dobError', !dob);
+    if (!dob) valid = false;
+
+    const email = document.getElementById('email').value.trim();
+    const emailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    showError('email', 'emailError', !emailValid);
+    if (!emailValid) valid = false;
+
+    return valid;
+  }
+
+  function validateStep2() {
+    const agreed = document.getElementById('agreeTerms').checked;
+    document.getElementById('agreeError').classList.toggle('visible', !agreed);
+    return agreed;
+  }
+
+  function validateStep3() {
+    if (!hasMinors) return true;
+    const cards = document.querySelectorAll('.dependent-card');
+    let valid = true;
+    cards.forEach((card, i) => {
+      const fn = card.querySelector('.dep-fn').value.trim();
+      const ln = card.querySelector('.dep-ln').value.trim();
+      const dob = card.querySelector('.dep-dob').value;
+      const fnErr = card.querySelector('.dep-fn-err');
+      const lnErr = card.querySelector('.dep-ln-err');
+      const dobErr = card.querySelector('.dep-dob-err');
+      card.querySelector('.dep-fn').classList.toggle('error', !fn);
+      fnErr.classList.toggle('visible', !fn);
+      card.querySelector('.dep-ln').classList.toggle('error', !ln);
+      lnErr.classList.toggle('visible', !ln);
+      card.querySelector('.dep-dob').classList.toggle('error', !dob);
+      dobErr.classList.toggle('visible', !dob);
+      if (!fn || !ln || !dob) valid = false;
+    });
+    return valid;
+  }
+
+  // ── Dependents ───────────────────────────────────────────
+  function setDependents(value) {
+    hasMinors = value;
+    document.getElementById('toggleJustMe').classList.toggle('selected', !value);
+    document.getElementById('toggleHasMinors').classList.toggle('selected', value);
+    const list = document.getElementById('dependentsList');
+    list.classList.toggle('visible', value);
+    if (value && depCount === 0) addDependent();
+  }
+
+  function addDependent() {
+    depCount++;
+    const n = depCount;
+    const card = document.createElement('div');
+    card.className = 'dependent-card';
+    card.id = 'dep-' + n;
+    card.innerHTML = `
+      <div class="dependent-card-title">Minor Participant ${n}</div>
+      <button class="remove-dep" onclick="removeDependent(${n})" title="Remove">✕</button>
+      <div class="field-row">
+        <div class="field-group">
+          <label>First Name</label>
+          <input type="text" class="dep-fn" />
+          <div class="field-error dep-fn-err">Required</div>
+        </div>
+        <div class="field-group">
+          <label>Last Name</label>
+          <input type="text" class="dep-ln" />
+          <div class="field-error dep-ln-err">Required</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Date of Birth</label>
+        <input type="date" class="dep-dob" />
+        <div class="field-error dep-dob-err">Required</div>
+      </div>
+    `;
+    document.getElementById('dependentCards').appendChild(card);
+  }
+
+  function removeDependent(n) {
+    const card = document.getElementById('dep-' + n);
+    if (card) card.remove();
+    // Renumber visible cards
+    const cards = document.querySelectorAll('.dependent-card');
+    cards.forEach((c, i) => {
+      c.querySelector('.dependent-card-title').textContent = `Minor Participant ${i + 1}`;
+    });
+  }
+
+  // ── Title case ───────────────────────────────────────────
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+  }
+
+  // ── Submit ───────────────────────────────────────────────
+  async function submitForm() {
+    if (!validateStep3()) return;
+
+    // Build dependents log string
+    const dependents = [];
+    if (hasMinors) {
+      document.querySelectorAll('.dependent-card').forEach(card => {
+        const fn = toTitleCase(card.querySelector('.dep-fn').value.trim());
+        const ln = toTitleCase(card.querySelector('.dep-ln').value.trim());
+        const dob = card.querySelector('.dep-dob').value;
+        if (fn && ln && dob) dependents.push({ firstName: fn, lastName: ln, dob });
+      });
+    }
+
+    const payload = {
+      firstName:      toTitleCase(document.getElementById('firstName').value.trim()),
+      lastName:       toTitleCase(document.getElementById('lastName').value.trim()),
+      phone:          document.getElementById('phone').value.trim(),
+      email:          document.getElementById('email').value.trim(),
+      zip:            document.getElementById('zip').value.trim(),
+      dob:            document.getElementById('dob').value,
+      optIn:          document.getElementById('optIn').checked,
+      rentalAgreement: true,
+      dependents,
+      submittedAt:    new Date().toISOString(),
+    };
+
+    document.getElementById('submittingOverlay').classList.add('visible');
+    document.getElementById('submitBtn').disabled = true;
+
+    try {
+      const res = await fetch(EDGE_FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      document.getElementById('submittingOverlay').classList.remove('visible');
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('successScreen').classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+      document.getElementById('submittingOverlay').classList.remove('visible');
+      document.getElementById('submitBtn').disabled = false;
+      alert('Something went wrong submitting your agreement. Please try again or ask a staff member for help.');
+      console.error(err);
+    }
+  }
+</script>
+</body>
+</html>
