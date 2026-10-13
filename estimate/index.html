@@ -79,8 +79,12 @@
   .pe-empty-title { font-size: 21px; font-weight: 700; color: var(--pe-ink); margin-bottom: 6px; }
   .pe-basis { font-size: 14px; color: var(--pe-muted); }
   .pe-ranges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .pe-range { border: 1px solid #C9CEC3; border-radius: 12px; padding: 14px 16px; }
-  .pe-range.pe-primary { border: 2px solid var(--pe-accent); padding: 13px 15px; }
+  .pe-range { border: 1px solid #C9CEC3; border-radius: 12px; padding: 14px 16px; background: #fff; text-align: left; cursor: pointer; width: 100%; }
+  .pe-range[aria-pressed="true"] { border: 2px solid var(--pe-accent); padding: 13px 15px; background: #EEF4F0; }
+  .pe-range-pick { display: flex; align-items: center; gap: 8px; }
+  .pe-radio { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #9AA39C; flex-shrink: 0; }
+  .pe-range[aria-pressed="true"] .pe-radio { border-color: var(--pe-accent); background: radial-gradient(circle, var(--pe-accent) 45%, transparent 50%); }
+  .pe-timing { font-size: 14px; color: #3F4A44; }
   .pe-range-label { font-size: 13px; font-weight: 600; color: #3F4A44; }
   .pe-range-value { font-size: clamp(24px, 4vw, 30px); font-weight: 700; line-height: 1.15; }
   .pe-note { border-radius: 12px; padding: 12px 16px; font-size: 14px; }
@@ -218,7 +222,7 @@
     cats: [], rules: {}, brands: [],
     catResults: [], catActive: 0, cat: null, label: null,
     brandResults: [], brandActive: 0, brand: "",
-    moreOpen: false, msrp: "", cond: "", age: "", size: "", attrs: {},
+    moreOpen: false, msrp: "", cond: "", age: "", size: "", attrs: {}, payout: "credit",
     result: null, loading: false, error: "", added: false,
     bag: loadBag(),
   };
@@ -495,9 +499,17 @@
     const e = r.earnings;
     const parts = [];
     parts.push(`<div class="pe-basis">${S.loading ? '<span class="pe-spin"></span>' : ""}${esc(basisText(r))}</div>`);
-    parts.push(`<div class="pe-ranges"><div class="pe-range pe-primary"><div class="pe-range-label">Store credit</div><div class="pe-range-value">${money(e.credit.low)}–${money(e.credit.high)}</div></div>
-      <div class="pe-range"><div class="pe-range-label">Cash</div><div class="pe-range-value">${money(e.cash.low)}–${money(e.cash.high)}</div></div></div>`);
-    if (r.weeksToSell) parts.push(`<div style="font-size:14px;color:#3F4A44">Paid when your item sells · usually ${r.weeksToSell.low === r.weeksToSell.high ? r.weeksToSell.low : r.weeksToSell.low + "–" + r.weeksToSell.high} week${r.weeksToSell.high === 1 ? "" : "s"}</div>`);
+    const pick = (id, label, rng) => `<button type="button" class="pe-range" aria-pressed="${S.payout === id}" data-act="payout" data-v="${id}">
+        <div class="pe-range-pick"><span class="pe-radio" aria-hidden="true"></span><span class="pe-range-label">${label}</span></div>
+        <div class="pe-range-value">${money(rng.low)}–${money(rng.high)}</div></button>`;
+    parts.push(`<div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", e.credit)}${pick("cash", "Cash", e.cash)}</div>`);
+    if (S.payout === "credit") {
+      parts.push(`<div class="pe-timing">Available once you approve our offer. No need to wait for your item to sell.</div>`);
+    } else {
+      const w = r.weeksToSell;
+      const wk = w ? ` · estimated ${w.low === w.high ? w.low : w.low + "–" + w.high} week${w.high === 1 ? "" : "s"}` : "";
+      parts.push(`<div class="pe-timing">Paid when your item sells${wk}</div>`);
+    }
     if (r.match.lowConfidence) parts.push(`<div class="pe-note pe-note-amber">We've only sold a few of these, so treat this as a rough guide.</div>`);
     if (r.retail && r.retail.blend === "premium") parts.push(`<div class="pe-note pe-note-green">Your original retail price is well above typical sales here, so we weighted it heavily. Premium pieces like this often earn more.</div>`);
     if (!r.retail) parts.push(`<button type="button" class="pe-nudge" data-act="open-msrp"><span><strong>Premium model?</strong> Add the original retail price for a sharper estimate.</span><span style="font-weight:700">Add</span></button>`);
@@ -564,6 +576,7 @@
         S.attrs[k] = t.dataset.multi === "true" ? (cur.includes(v) ? cur.filter((x) => x !== v) : cur.concat(v)) : (cur.includes(v) ? [] : [v]);
         break;
       }
+      case "payout": S.payout = v; renderResult(); return;
       case "open-msrp": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-msrp").focus(), 0); return;
       case "add": {
         const r = S.result; if (!r || r.status !== "ok") return;
