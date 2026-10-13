@@ -105,6 +105,11 @@
   .pe-req h4 { margin: 0; font-size: 16px; }
   .pe-textarea { width: 100%; min-height: 84px; padding: 10px 14px; border: 1px solid #B9BFB4; border-radius: 10px; resize: vertical; font: inherit; }
   .pe-pending { font-size: 13px; font-weight: 600; color: #7A4E00; }
+  .pe-badge-info { color: #3D4A63; background: #E6EAF2; }
+  .pe-used { font-size: 13px; color: var(--pe-muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .pe-used .pe-textlink { font-size: 13px; }
+  .pe-inline-flow { display: flex; flex-direction: column; gap: 16px; border: 1px solid var(--pe-line); border-radius: 12px; padding: 16px; background: #FCFCFA; }
+  .pe .pe-btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
   .pe-range-label { font-size: 13px; font-weight: 600; color: #3F4A44; }
   .pe-range-value { font-size: clamp(24px, 4vw, 30px); font-weight: 700; line-height: 1.15; }
   .pe-note { border-radius: 12px; padding: 12px 16px; font-size: 14px; }
@@ -231,6 +236,7 @@
     "Not accepting": ["Not accepting", "pe-tag-no"],
     "Donation only": ["Donation only", "pe-tag-warn"],
   };
+  const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>';
   const ICON = {
     ok: '<span class="pe-ico pe-ico-ok" aria-label="Accepted"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>',
     warn: '<span class="pe-ico pe-ico-warn" aria-label="Heads up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2.5v4.2"/><path d="M6 9.3v.1"/></svg></span>',
@@ -242,7 +248,7 @@
     cats: [], rules: {}, brands: [],
     catResults: [], catActive: 0, cat: null, label: null,
     brandResults: [], brandActive: 0, brand: "",
-    moreOpen: false, msrp: "", cond: "", age: "", size: "", attrs: {}, payout: "credit",
+    moreOpen: false, msrp: "", msrpDraft: "", cond: "", age: "", size: "", attrs: {}, payout: "credit", flash: "",
     result: null, loading: false, error: "", added: false,
     req: { open: false, email: "", note: "", sending: false, sent: false, error: "" },
     bag: loadBag(),
@@ -337,7 +343,7 @@
   function selectCat(r) {
     S.cat = r.cat; S.label = r.label;
     S.size = r.cat.sizeTypes.length === 1 ? r.cat.sizeTypes[0] : "";
-    S.attrs = {}; S.added = false; S.result = null; resetReq();
+    resetItem(); S.flash = "";
     $("pe-cat").value = ""; S.catResults = []; renderCatList();
     renderAll(); requestEstimate();
     if (!S.brand) setTimeout(() => $("pe-brand") && $("pe-brand").focus(), 0);
@@ -478,6 +484,8 @@
   // ---------------- result rendering (three confidence states) ----------------
   const TRUST = `<div class="pe-trust"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>A person on our team inspects every item, and you approve our price before anything is listed. This estimate is a starting point, not an offer.</span></div>`;
 
+  const nounFor = (r) => (S.label || shortName(r.category.name)).toLowerCase();
+
   function compsHtml(comps, heading, quiet) {
     if (!comps || !comps.length) return "";
     return `<div class="${quiet ? "pe-context" : "pe-comps"}">${quiet ? `<p class="pe-context-lede">${heading}</p>` : `<h3>${heading}</h3>`}${comps.map((c) => {
@@ -503,15 +511,19 @@
     </div>`;
   }
 
-  function inlineMsrpHtml() {
-    if (S.msrp) return "";
-    return `<div><label class="pe-sublabel" for="pe-msrp-inline" style="display:block">Know the original retail price?</label>
-      <div class="pe-inline-msrp"><div class="pe-money"><span style="font-weight:600">$</span><input id="pe-msrp-inline" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 300"></div>
-      <button type="button" class="pe-btn-secondary" data-act="msrp-go">Get my estimate</button></div>
-      <div class="pe-hint">A rough guess is fine. We'll estimate from that plus recent sales.</div></div>`;
+  // Rough / no-sales flow: original retail price -> age -> condition, then estimate.
+  function inlineDetailsHtml() {
+    const cards = (list, cur, act) => list.map((x) => `<button type="button" class="pe-card-btn" aria-pressed="${x.id === cur}" data-act="${act}" data-v="${x.id}"><b>${x.label}</b><span>${x.desc}</span></button>`).join("");
+    const ready = Number(S.msrpDraft) > 0;
+    return `<div class="pe-inline-flow">
+      <div><label class="pe-sublabel" for="pe-msrp-inline" style="display:block">1. Original retail price</label>
+        <div class="pe-money" style="max-width:240px"><span style="font-weight:600">$</span><input id="pe-msrp-inline" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 300" value="${esc(S.msrpDraft)}"></div>
+        <div class="pe-hint">A rough guess is fine.</div></div>
+      <div><div class="pe-sublabel">2. Age</div><div class="pe-cards">${cards(AGES, S.age, "age-inline")}</div></div>
+      <div><div class="pe-sublabel">3. Condition</div><div class="pe-cards">${cards(CONDITIONS, S.cond, "cond-inline")}</div></div>
+      <button type="button" class="pe-btn" data-act="msrp-go" ${ready ? "" : 'aria-disabled="true"'}>Get my estimate</button>
+    </div>`;
   }
-
-  const nounFor = (r) => (S.label || shortName(r.category.name)).toLowerCase();
 
   function roughHeadline(r) {
     const where = nounFor(r);
@@ -522,11 +534,24 @@
     return `We can't estimate this one automatically.`;
   }
 
+  function usedInputsHtml() {
+    const bits = [];
+    if (S.msrp) bits.push(`${money(S.msrp)} retail`);
+    if (S.age) bits.push((AGES.find((a) => a.id === S.age) || {}).label);
+    if (S.cond) bits.push((CONDITIONS.find((c) => c.id === S.cond) || {}).label);
+    if (!bits.length) return "";
+    return `<div class="pe-used">Using: ${bits.map(esc).join(" · ")} <button type="button" class="pe-textlink" data-act="edit-details">Edit</button></div>`;
+  }
+
   function renderResult() {
     const box = $("pe-result");
     const cat = S.cat;
     const rule = ruleFor(cat);
-    if (!cat) { box.innerHTML = `<div class="pe-empty"><div class="pe-empty-title">Your estimate shows up here</div>Search for what you have, then pick a brand.</div>`; return; }
+    if (!cat) {
+      box.innerHTML = (S.flash ? `<div class="pe-note pe-note-green" style="font-weight:600">${esc(S.flash)}</div>` : "")
+        + `<div class="pe-empty"><div class="pe-empty-title">${S.flash ? "What's next?" : "Your estimate shows up here"}</div>Search for what you have, then pick a brand.</div>`;
+      return;
+    }
     if (rule.m === "Not accepting") {
       const why = (rule.r.find((x) => x[0] === "-") || "- Not currently accepting").slice(2);
       box.innerHTML = `<div class="pe-note pe-note-red"><div style="font-size:19px;font-weight:700;margin-bottom:4px">We're not taking this right now</div>${esc(why)}.</div>
@@ -547,52 +572,52 @@
     const inStore = rule.m === "In store only";
     const parts = [];
     const conf = r.status !== "ok" ? "none" : (r.confidence || "strong");
+    const reasons = r.confidenceReasons || [];
 
-    // ---- State 3: nothing to compare ----
-    if (conf === "none") {
-      parts.push(`<p class="pe-rough-head">We don't have enough ${esc(where)} sales to estimate this yet.</p>`);
-      parts.push(`<p class="pe-rough-body">Add the original retail price for a rough estimate, or ask our team. We're happy to take a look.</p>`);
-      parts.push(inlineMsrpHtml());
-      if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-btn" data-act="req-open">Get a personal estimate</button>`);
+    // ---- States 2 and 3: no reliable automatic estimate ----
+    if (conf === "none" || conf === "rough") {
+      parts.push(`<p class="pe-rough-head">${conf === "none" ? `We don't have enough ${esc(where)} sales to estimate this yet.` : roughHeadline(r)}</p>`);
+      parts.push(`<p class="pe-rough-body">Tell us a little more and we'll estimate from the original retail price, or ask our team for a personal estimate.</p>`);
+      parts.push(inlineDetailsHtml());
+      if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Rather have a person look at it? Get a personal estimate</button>`);
       parts.push(requestHtml());
-      parts.push(TRUST);
-      box.innerHTML = parts.join("");
-      return;
-    }
-
-    const e = r.earnings;
-    const sel = S.payout === "cash" ? e.cash : e.credit;
-
-    // ---- State 2: rough — lead with honesty and next steps, keep numbers as quiet context ----
-    if (conf === "rough") {
-      parts.push(`<p class="pe-rough-head">${roughHeadline(r)}</p>`);
-      parts.push(`<p class="pe-rough-body">Add the original retail price and we can estimate from that, or ask our team for a personal estimate.</p>`);
-      parts.push(inlineMsrpHtml());
-      if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-btn" data-act="req-open">Get a personal estimate</button>`);
-      parts.push(requestHtml());
-      const label = S.payout === "cash" ? "cash" : "store credit";
-      parts.push(compsHtml(r.comps, `For context, other ${esc(where)} sales have earned around ${money(sel.low)}–${money(sel.high)} in ${label}. Yours could be quite different.`, true));
+      if (conf === "rough") {
+        const sel = S.payout === "cash" ? r.earnings.cash : r.earnings.credit;
+        const label = S.payout === "cash" ? "cash" : "store credit";
+        parts.push(compsHtml(r.comps, `For context, other ${esc(where)} sales have earned around ${money(sel.low)}–${money(sel.high)} in ${label}. Yours could be quite different.`, true));
+      }
       if (!inStore) {
-        parts.push(S.added
-          ? `<div class="pe-note pe-note-green" style="text-align:center;font-weight:700">Added to your bag as “estimate pending.”</div>`
-          : `<button type="button" class="pe-textlink" data-act="add-pending">Add to my bag without an estimate</button>`);
+        parts.push(`<button type="button" class="pe-textlink" data-act="add-pending">Add to my bag without an estimate</button>`);
       }
       parts.push(TRUST);
       box.innerHTML = parts.join("");
       return;
     }
 
-    // ---- State 1: strong — show the estimate ----
+    // ---- State 1: show the estimate ----
+    const est = r.estimate || { credit: r.earnings.credit, cash: r.earnings.cash };
+    const fromRetail = reasons.includes("retail_price") || reasons.includes("retail_price_only");
+    const leansOnRetail = fromRetail && (reasons.includes("brand_not_matched") || reasons.includes("few_sales") || reasons.includes("retail_price_only"));
     const brandPart = r.match.brandMatched ? `${esc(S.brand)} ` : "";
-    const badge = r.retail
-      ? `Based on ${r.match.salesMatched} recent sales and your original retail price`
-      : `Strong match · ${r.match.salesMatched} ${brandPart}${esc(where)} sales`;
-    parts.push(`<span class="pe-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>${badge}${S.loading ? '<span class="pe-spin" style="margin:0 0 0 6px"></span>' : ""}</span>`);
+    const badge = leansOnRetail
+      ? `<span class="pe-badge pe-badge-info">Estimated from your retail price${S.age || S.cond ? ", age and condition" : ""}</span>`
+      : fromRetail
+        ? `<span class="pe-badge">${ICON_CHECK}Based on ${r.match.salesMatched} recent sales and your retail price</span>`
+        : `<span class="pe-badge">${ICON_CHECK}Strong match · ${r.match.salesMatched} ${brandPart}${esc(where)} sales</span>`;
+    parts.push(`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">${badge}${S.loading ? '<span class="pe-spin"></span>' : ""}</div>`);
+    if (leansOnRetail) {
+      const lead = reasons.includes("retail_price_only")
+        ? `We haven't sold any ${esc(where)} like this yet, so this estimate comes from the original retail price you entered.`
+        : `We haven't sold many ${reasons.includes("brand_not_matched") ? esc(S.brand) + " " : ""}${esc(where)}s, so this estimate leans mostly on the original retail price you entered.`;
+      parts.push(`<div class="pe-note pe-note-amber">${lead}</div>`);
+    }
+    parts.push(usedInputsHtml());
+    const sub = fromRetail ? "Your estimated range" : `Similar items earned ${money(r.earnings[S.payout === "cash" ? "cash" : "credit"].low)}–${money(r.earnings[S.payout === "cash" ? "cash" : "credit"].high)}`;
     const pick = (id, label, rng) => `<button type="button" class="pe-range" aria-pressed="${S.payout === id}" data-act="payout" data-v="${id}">
         <div class="pe-range-pick"><span class="pe-radio" aria-hidden="true"></span><span class="pe-range-label">${label}</span></div>
-        <div class="pe-range-value">${money(rng.typical)}</div>
-        <div class="pe-range-sub">Most earn ${money(rng.low)}–${money(rng.high)}</div></button>`;
-    parts.push(`<div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", e.credit)}${pick("cash", "Cash", e.cash)}</div>`);
+        <div class="pe-range-value">${money(rng.low)}–${money(rng.high)}</div></button>`;
+    parts.push(`<div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", est.credit)}${pick("cash", "Cash", est.cash)}</div>`);
+    if (!fromRetail) parts.push(`<div class="pe-range-sub">${sub}</div>`);
     if (S.payout === "credit") {
       parts.push(`<div class="pe-timing">Available once you approve our offer. No need to wait for your item to sell.</div>`);
     } else {
@@ -600,18 +625,16 @@
       const wk = w ? ` · estimated ${w.low === w.high ? w.low : w.low + "–" + w.high} week${w.high === 1 ? "" : "s"}` : "";
       parts.push(`<div class="pe-timing">Paid when your item sells${wk}</div>`);
     }
-    if (r.retail && r.retail.blend === "premium") parts.push(`<div class="pe-note pe-note-green">Your original retail price is well above typical sales here, so we weighted it heavily. Premium pieces like this often earn more.</div>`);
+    if (r.retail && r.retail.blend === "premium" && !leansOnRetail) parts.push(`<div class="pe-note pe-note-green">Your original retail price is well above typical sales here, so we weighted it heavily. Premium pieces like this often earn more.</div>`);
     if (!r.retail) parts.push(`<button type="button" class="pe-nudge" data-act="open-msrp"><span><strong>Premium model?</strong> Add the original retail price for a sharper estimate.</span><span style="font-weight:700">Add</span></button>`);
-    if (e.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Add it to a bag with other gear, or send it in a donation bag.</div>`);
-    parts.push(compsHtml(r.comps, r.match.brandMatched ? `Recent ${esc(S.brand)} ${esc(where)} sales` : "Similar gear we've sold recently", false));
+    if (est.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Add it to a bag with other gear, or send it in a donation bag.</div>`);
     if (inStore) {
       parts.push(`<div class="pe-note pe-note-amber"><strong>Bring this one to our Provo store.</strong> We can't take it by mail. Drop it off at 249 N University Ave and we'll look at it with you.</div>`);
     } else {
       if (rule.m === "Ask first") parts.push(`<div class="pe-note pe-note-amber">We decide on this one case by case, so we'll confirm with you before you ship it.</div>`);
-      parts.push(S.added
-        ? `<div class="pe-note pe-note-green" style="text-align:center;font-weight:700">Added to your bag. Search again to add another item.</div>`
-        : `<button type="button" class="pe-btn" data-act="add">Add to my bag</button>`);
+      parts.push(`<button type="button" class="pe-btn" data-act="add">Add to my bag</button>`);
     }
+    parts.push(compsHtml(r.comps, leansOnRetail ? `For context, other ${esc(where)} sales` : r.match.brandMatched ? `Recent ${esc(S.brand)} ${esc(where)} sales` : "Similar gear we've sold recently", leansOnRetail));
     if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Something special about yours? Ask our team for a personal estimate</button>`);
     parts.push(requestHtml());
     parts.push(TRUST);
@@ -627,12 +650,13 @@
     const attributes = {};
     for (const [k, v] of Object.entries(S.attrs)) if (v.length) attributes[k] = v;
     const r = S.result;
+    const shownEst = r && r.status === "ok" ? (r.estimate || r.earnings) : null;
     try {
       const res = await fetch(CONFIG.functionUrl, {
         method: "POST", headers,
         body: JSON.stringify({ event: "estimate_request", email: q.email, note: q.note, category: S.cat && S.cat.id, label: S.label, brand: S.brand,
-          sizeType: S.size || null, attributes, condition: S.cond || null, age: S.age || null, msrp: S.msrp ? Number(S.msrp) : null,
-          shown: r && r.status === "ok" ? { confidence: r.confidence, credit: { low: r.earnings.credit.low, high: r.earnings.credit.high } } : { confidence: "none" },
+          sizeType: S.size || null, attributes, condition: S.cond || null, age: S.age || null, msrp: (S.msrp || S.msrpDraft) ? Number(S.msrp || S.msrpDraft) : null,
+          shown: shownEst ? { confidence: r.confidence, credit: { low: shownEst.credit.low, high: shownEst.credit.high } } : { confidence: "none" },
           sessionId, source: CONFIG.source }),
       });
       if (!res.ok) throw new Error();
@@ -675,24 +699,43 @@
   $("pe-cat-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectCat(S.catResults[+b.dataset.i]); });
   $("pe-brand-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectBrand(S.brandResults[+b.dataset.i]); });
   $("pe-more-toggle").addEventListener("click", () => { S.moreOpen = !S.moreOpen; renderAll(); });
-  $("pe-msrp").addEventListener("input", () => { S.msrp = $("pe-msrp").value; S.added = false; renderAll(); requestEstimate(800); });
+  $("pe-msrp").addEventListener("input", () => { S.msrp = $("pe-msrp").value; S.msrpDraft = S.msrp; S.added = false; renderAll(); requestEstimate(800); });
 
   // Keep request-form typing in state without re-rendering (so focus isn't lost).
   root.addEventListener("input", (e) => {
     if (e.target.id === "pe-req-email") S.req.email = e.target.value;
     if (e.target.id === "pe-req-note") S.req.note = e.target.value;
+    if (e.target.id === "pe-msrp-inline") {
+      S.msrpDraft = e.target.value;
+      const go = root.querySelector('[data-act="msrp-go"]');
+      if (go) { if (Number(S.msrpDraft) > 0) go.removeAttribute("aria-disabled"); else go.setAttribute("aria-disabled", "true"); }
+    }
   });
   root.addEventListener("keydown", (e) => {
     if (e.target.id === "pe-msrp-inline" && e.key === "Enter") { e.preventDefault(); root.querySelector('[data-act="msrp-go"]').click(); }
   });
   const resetReq = () => { S.req = { open: false, email: S.req.email, note: "", sending: false, sent: false, error: "" }; };
+  // Everything that describes one specific item. Cleared when the item changes or is added to the bag.
+  function resetItem() {
+    S.msrp = ""; S.msrpDraft = ""; S.cond = ""; S.age = ""; S.attrs = {}; S.moreOpen = false;
+    S.added = false; S.result = null; S.error = ""; S.loading = false;
+    const m = $("pe-msrp"); if (m) m.value = "";
+    resetReq();
+  }
+  function startNextItem(message) {
+    S.cat = null; S.label = null; S.brand = ""; S.size = ""; resetItem();
+    S.flash = message; renderAll(); renderBag();
+    const top = root.querySelector('.pe-form');
+    if (top && top.getBoundingClientRect().top < 0) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => $("pe-cat").focus({ preventScroll: true }), 0);
+  }
 
   root.addEventListener("click", (e) => {
     const t = e.target.closest("[data-act]");
     if (!t) return;
     const v = t.dataset.v;
     switch (t.dataset.act) {
-      case "clear-cat": S.cat = null; S.label = null; S.result = null; S.added = false; renderAll(); setTimeout(() => $("pe-cat").focus(), 0); return;
+      case "clear-cat": S.cat = null; S.label = null; resetItem(); renderAll(); setTimeout(() => $("pe-cat").focus(), 0); return;
       case "clear-brand": S.brand = ""; S.result = null; S.added = false; renderAll(); setTimeout(() => $("pe-brand").focus(), 0); return;
       case "label": S.label = v; break;
       case "cond": S.cond = S.cond === v ? "" : v; break;
@@ -707,21 +750,25 @@
       case "req-open": S.req.open = true; renderResult(); setTimeout(() => $("pe-req-email") && $("pe-req-email").focus(), 0); return;
       case "req-send": sendRequest(); return;
       case "msrp-go": {
-        const val = ($("pe-msrp-inline") || {}).value;
+        const val = S.msrpDraft;
         if (!val || Number(val) <= 0) { $("pe-msrp-inline") && $("pe-msrp-inline").focus(); return; }
-        S.msrp = val; $("pe-msrp").value = val; S.added = false; renderAll(); requestEstimate(0); return;
+        S.msrp = val; $("pe-msrp").value = val; S.added = false; S.result = null; renderAll(); requestEstimate(0); return;
       }
+      case "age-inline": S.age = S.age === v ? "" : v; renderResult(); return;
+      case "cond-inline": S.cond = S.cond === v ? "" : v; renderResult(); return;
+      case "edit-details": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-more").scrollIntoView({ behavior: "smooth", block: "nearest" }), 0); return;
       case "add-pending": {
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
         S.bag.push({ id: Date.now(), label, pending: true });
-        saveBag(); S.added = true; renderResult(); renderBag(); return;
+        saveBag(); startNextItem(`Added ${label} to your bag. We'll price it when it arrives.`); return;
       }
       case "open-msrp": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-msrp").focus(), 0); return;
       case "add": {
         const r = S.result; if (!r || r.status !== "ok") return;
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
-        S.bag.push({ id: Date.now(), label, creditLo: r.earnings.credit.low, creditHi: r.earnings.credit.high, cashLo: r.earnings.cash.low, cashHi: r.earnings.cash.high });
-        saveBag(); S.added = true; renderResult(); renderBag(); return;
+        const est = r.estimate || r.earnings;
+        S.bag.push({ id: Date.now(), label, creditLo: est.credit.low, creditHi: est.credit.high, cashLo: est.cash.low, cashHi: est.cash.high });
+        saveBag(); startNextItem(`Added ${label} to your bag.`); return;
       }
       case "remove": S.bag = S.bag.filter((x) => String(x.id) !== t.dataset.id); saveBag(); renderBag(); return;
       default: return;
