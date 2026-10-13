@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What will my gear earn? | Pando Refitters</title>
+<meta name="robots" content="noindex">
+<style>
+  /* Page shell for the standalone test page. In Shopify, only #pando-estimator and its <style>/<script> are used. */
+  body { margin: 0; background: #F3F4EF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  .pe-page { padding: 32px 16px 64px; }
+</style>
+</head>
+<body>
+<div class="pe-page">
+
+<!-- ===================== Pando earnings estimator (embeddable) ===================== -->
+<div id="pando-estimator" class="pe">
+<style>
+  .pe { --pe-accent: #2E5B47; --pe-accent-dark: #1F4033; --pe-ink: #1C2620; --pe-muted: #4F5A54; --pe-faint: #5A645E;
+        --pe-line: #D9DDD3; --pe-line-2: #E3E6DE; --pe-card: #FFFFFF; --pe-soft: #F6F7F3; --pe-green-bg: #E8EFEA;
+        --pe-amber-bg: #FBEEDD; --pe-amber-ink: #5A3D0B; --pe-red-bg: #F8E7E4; --pe-red-ink: #7A2626;
+        color: var(--pe-ink); font: inherit; font-size: 15px; line-height: 1.5; max-width: 1120px; margin: 0 auto; box-sizing: border-box; }
+  .pe *, .pe *::before, .pe *::after { box-sizing: border-box; }
+  .pe button, .pe input { font: inherit; color: inherit; }
+  .pe button:focus-visible, .pe input:focus-visible, .pe a:focus-visible { outline: 2px solid var(--pe-accent); outline-offset: 2px; }
+  .pe [hidden] { display: none !important; }
+  .pe-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; max-width: 680px; }
+  .pe-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pe-accent); }
+  .pe-h1 { margin: 0; font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; }
+  .pe-lede { margin: 0; color: var(--pe-muted); font-size: 17px; }
+  .pe-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .pe-card { background: var(--pe-card); border: 1px solid var(--pe-line); border-radius: 16px; padding: 24px; min-width: 0; }
+  .pe-form { flex: 1 1 380px; display: flex; flex-direction: column; gap: 22px; }
+  .pe-result { flex: 1.15 1 400px; display: flex; flex-direction: column; gap: 16px; }
+  .pe-step-label { display: block; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .pe-opt { font-weight: 400; color: var(--pe-faint); }
+  .pe-input { width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid #B9BFB4; border-radius: 10px; background: #fff; }
+  .pe-input::placeholder { color: #6B746E; }
+  .pe-list { margin-top: 6px; border: 1px solid var(--pe-line); border-radius: 12px; background: #fff; overflow: hidden; box-shadow: 0 8px 24px rgba(28,38,32,.08); }
+  .pe-option { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 12px; min-height: 50px; padding: 8px 14px; border: 0; border-top: 1px solid #EEF0EA; background: #fff; text-align: left; cursor: pointer; }
+  .pe-option:first-child { border-top: 0; }
+  .pe-option[aria-selected="true"], .pe-option:hover { background: #EEF4F0; }
+  .pe-option-main { display: flex; flex-direction: column; min-width: 0; }
+  .pe-option-title { font-weight: 600; }
+  .pe-option-sub { font-size: 13px; color: var(--pe-faint); }
+  .pe-tag { flex-shrink: 0; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 3px 10px; }
+  .pe-tag-ok { color: #1F5A3A; background: #DCEBE1; }
+  .pe-tag-warn { color: #7A4E00; background: #FBEAC8; }
+  .pe-tag-no { color: #8A2A22; background: #F6DCD8; }
+  .pe-hint { font-size: 13px; color: var(--pe-faint); margin-top: 6px; }
+  .pe-chip { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid #C9CEC3; border-radius: 12px; padding: 10px 10px 10px 14px; }
+  .pe-chip-title { font-weight: 700; }
+  .pe-chip-sub { font-size: 13px; color: var(--pe-faint); }
+  .pe-btn-ghost { flex-shrink: 0; min-height: 44px; padding: 0 14px; border: 1px solid #C9CEC3; border-radius: 10px; background: #fff; font-weight: 600; cursor: pointer; }
+  .pe-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pe-pill { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9CEC3; background: #fff; font-weight: 600; cursor: pointer; }
+  .pe-pill[aria-pressed="true"] { background: var(--pe-accent); border-color: var(--pe-accent); color: #fff; }
+  .pe-sublabel { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+  .pe-accept { background: var(--pe-soft); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .pe-accept-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+  .pe-rule { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #2C3A33; }
+  .pe-ico { flex-shrink: 0; width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .pe-ico-ok { background: #DCEBE1; color: #1F5A3A; }
+  .pe-ico-warn { background: #FBEAC8; color: #7A4E00; }
+  .pe-ico-no { background: #F6DCD8; color: #8A2A22; }
+  .pe-more-toggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
+  .pe-chev { flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; border: 1px solid #C9CEC3; display: flex; align-items: center; justify-content: center; transition: transform .15s; }
+  .pe-more-toggle[aria-expanded="true"] .pe-chev { transform: rotate(180deg); }
+  .pe-more { border-top: 1px solid var(--pe-line-2); padding-top: 18px; display: flex; flex-direction: column; gap: 18px; }
+  .pe-more-body { display: flex; flex-direction: column; gap: 20px; }
+  .pe-money { display: flex; align-items: center; gap: 8px; max-width: 220px; }
+  .pe-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .pe-card-btn { display: flex; flex-direction: column; gap: 2px; min-height: 60px; padding: 10px 12px; border-radius: 10px; border: 1px solid #C9CEC3; background: #fff; text-align: left; cursor: pointer; }
+  .pe-card-btn[aria-pressed="true"] { border: 2px solid var(--pe-accent); background: #EEF4F0; padding: 9px 11px; }
+  .pe-card-btn b { font-size: 14px; }
+  .pe-card-btn span { font-size: 12px; color: var(--pe-muted); line-height: 1.35; }
+  .pe-empty { text-align: center; color: var(--pe-faint); padding: 28px 0; }
+  .pe-empty-title { font-size: 21px; font-weight: 700; color: var(--pe-ink); margin-bottom: 6px; }
+  .pe-basis { font-size: 14px; color: var(--pe-muted); }
+  .pe-ranges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .pe-range { border: 1px solid #C9CEC3; border-radius: 12px; padding: 14px 16px; }
+  .pe-range.pe-primary { border: 2px solid var(--pe-accent); padding: 13px 15px; }
+  .pe-range-label { font-size: 13px; font-weight: 600; color: #3F4A44; }
+  .pe-range-value { font-size: clamp(24px, 4vw, 30px); font-weight: 700; line-height: 1.15; }
+  .pe-note { border-radius: 12px; padding: 12px 16px; font-size: 14px; }
+  .pe-note-green { background: var(--pe-green-bg); color: var(--pe-accent-dark); }
+  .pe-note-amber { background: var(--pe-amber-bg); color: var(--pe-amber-ink); }
+  .pe-note-red { background: var(--pe-red-bg); color: var(--pe-red-ink); }
+  .pe-nudge { display: flex; gap: 12px; align-items: center; justify-content: space-between; width: 100%; min-height: 50px; padding: 12px 16px; border: 1px dashed #8FA597; border-radius: 12px; background: #F6F9F7; text-align: left; color: var(--pe-accent-dark); cursor: pointer; }
+  .pe-comps h3 { margin: 0 0 4px; font-size: 15px; }
+  .pe-comp { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--pe-line-2); }
+  .pe-comp-title { font-weight: 600; }
+  .pe-comp-meta { font-size: 13px; color: var(--pe-faint); }
+  .pe-comp-earn { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; text-align: right; }
+  .pe-btn { min-height: 48px; padding: 0 20px; border: 0; border-radius: 10px; background: var(--pe-accent); color: #fff; font-weight: 700; cursor: pointer; width: 100%; }
+  .pe-btn:hover { background: var(--pe-accent-dark); }
+  .pe-trust { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #3F4A44; border-top: 1px solid var(--pe-line-2); padding-top: 14px; }
+  .pe-bag { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .pe-bag-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .pe-bag-head h2 { margin: 0; font-size: 22px; }
+  .pe-bag-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--pe-line-2); }
+  .pe-total { background: var(--pe-soft); border-radius: 12px; padding: 14px 16px; }
+  .pe-total-value { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .pe-x { min-width: 44px; min-height: 44px; border: 1px solid #C9CEC3; border-radius: 10px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .pe-link-btn { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 10px; background: var(--pe-accent); color: #fff; font-weight: 700; text-decoration: none; }
+  .pe-spin { display: inline-block; width: 14px; height: 14px; border: 2px solid #C9CEC3; border-top-color: var(--pe-accent); border-radius: 50%; animation: pe-spin .8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+  @keyframes pe-spin { to { transform: rotate(360deg); } }
+  @media (max-width: 520px) { .pe-card { padding: 18px; } .pe-cards { grid-template-columns: 1fr; } }
+</style>
+
+<div class="pe-head">
+  <div class="pe-eyebrow">Mail-in program</div>
+  <h1 class="pe-h1">What will my gear earn?</h1>
+  <p class="pe-lede">Tell us what you have. We'll show what similar gear has earned at Pando, and whether we can take it.</p>
+</div>
+
+<div class="pe-row">
+  <section class="pe-card pe-form" aria-label="Your item">
+    <div>
+      <label class="pe-step-label" for="pe-cat">1 · What is it?</label>
+      <div id="pe-cat-search">
+        <input id="pe-cat" class="pe-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pe-cat-list" autocomplete="off" placeholder="Loading…" disabled>
+        <div id="pe-cat-list" class="pe-list" role="listbox" hidden></div>
+        <div id="pe-cat-nomatch" class="pe-hint" hidden>No match yet. Try a simpler word, like “jacket”, “pack” or “skis”.</div>
+      </div>
+      <div id="pe-cat-chip" hidden></div>
+      <div id="pe-labels" hidden style="margin-top:12px"></div>
+    </div>
+
+    <div id="pe-accept" class="pe-accept" hidden></div>
+
+    <div id="pe-brand-step" hidden>
+      <label class="pe-step-label" for="pe-brand">2 · Brand</label>
+      <div id="pe-brand-search">
+        <input id="pe-brand" class="pe-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pe-brand-list" autocomplete="off" placeholder="Start typing a brand">
+        <div id="pe-brand-list" class="pe-list" role="listbox" hidden></div>
+      </div>
+      <div id="pe-brand-chip" hidden></div>
+    </div>
+
+    <div id="pe-more" class="pe-more" hidden>
+      <button type="button" id="pe-more-toggle" class="pe-more-toggle" aria-expanded="false" aria-controls="pe-more-body">
+        <span><span style="font-weight:700">3 · Tell us more</span> <span class="pe-opt">(optional)</span><br><span id="pe-more-summary" class="pe-opt" style="font-size:13px"></span></span>
+        <span class="pe-chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg></span>
+      </button>
+      <div id="pe-more-body" class="pe-more-body" hidden>
+        <div>
+          <label class="pe-sublabel" for="pe-msrp" style="display:block">Original retail price</label>
+          <div class="pe-money"><span style="font-weight:600">$</span><input id="pe-msrp" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 260"></div>
+          <div class="pe-hint">The best way to tell us it's a premium model. A rough guess is fine.</div>
+        </div>
+        <div><div class="pe-sublabel">Condition</div><div id="pe-cond" class="pe-cards"></div></div>
+        <div><div class="pe-sublabel">Age</div><div id="pe-age" class="pe-cards"></div></div>
+        <div id="pe-fit-wrap" hidden><div class="pe-sublabel">Fit</div><div id="pe-fit" class="pe-pills"></div></div>
+        <div id="pe-attrs"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pe-card pe-result" id="pe-result" aria-live="polite"></section>
+</div>
+
+<section class="pe-card pe-bag" id="pe-bag" aria-label="Your bag"></section>
+
+<script>
+(() => {
+  // ---------------- config ----------------
+  const CONFIG = {
+    functionUrl: "https://ehzcymnztsbbroxzcidq.supabase.co/functions/v1/earnings-estimate",
+    restUrl: "https://ehzcymnztsbbroxzcidq.supabase.co/rest/v1",
+    // Public (anon) key: safe to embed. It can only call the estimator and the brand list.
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoemN5bW56dHNiYnJveHpjaWRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTUxOTIsImV4cCI6MjA5MDQ3MTE5Mn0.mwNRsmt9WGZAu85WY3GQ74VYilX3P9833gHBOrleTi8",
+    rulesUrl: "rules.json",          // draft acceptance rules; moves to Airtable after review
+    mailInUrl: "/pages/mail-in",     // where "Start my mail-in" goes
+    freeShippingNote: "Free prepaid shipping label for bags of [X]+ items.",
+    source: "estimate-page",
+  };
+
+  const root = document.getElementById("pando-estimator");
+  const $ = (id) => root.querySelector("#" + id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const money = (n) => "$" + Number(n).toLocaleString("en-US");
+  const shortName = (c) => { const p = c.split(" - "); return p[p.length - 1].trim(); };
+  const headers = { "Content-Type": "application/json", Authorization: "Bearer " + CONFIG.anonKey, apikey: CONFIG.anonKey };
+
+  const sessionId = (() => {
+    try { let s = sessionStorage.getItem("pe-session"); if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem("pe-session", s); } return s; }
+    catch { return Math.random().toString(36).slice(2); }
+  })();
+
+  const CONDITIONS = [
+    { id: "Excellent", label: "Like new", desc: "No visible wear. Could pass for new." },
+    { id: "Great", label: "Great", desc: "Light wear you'd have to look for." },
+    { id: "Good", label: "Good", desc: "Visible wear, fully functional." },
+    { id: "Fair", label: "Well used", desc: "Obvious wear or cosmetic flaws." },
+  ];
+  const AGES = [
+    { id: "Current", label: "Current", desc: "Still sold new, or 1–3 years old" },
+    { id: "Recent", label: "A few years old", desc: "3–9 years old" },
+    { id: "Legacy", label: "Older", desc: "10+ years old" },
+  ];
+  const ELIG = {
+    "Mail-in OK": ["Mail-in accepted", "pe-tag-ok"],
+    "In store only": ["In store only", "pe-tag-warn"],
+    "Ask first": ["Case by case", "pe-tag-warn"],
+    "Not accepting": ["Not accepting", "pe-tag-no"],
+    "Donation only": ["Donation only", "pe-tag-warn"],
+  };
+  const ICON = {
+    ok: '<span class="pe-ico pe-ico-ok" aria-label="Accepted"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>',
+    warn: '<span class="pe-ico pe-ico-warn" aria-label="Heads up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2.5v4.2"/><path d="M6 9.3v.1"/></svg></span>',
+    no: '<span class="pe-ico pe-ico-no" aria-label="Not accepted"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.3 3.3l5.4 5.4M8.7 3.3l-5.4 5.4"/></svg></span>',
+  };
+
+  // ---------------- state ----------------
+  const S = {
+    cats: [], rules: {}, brands: [],
+    catResults: [], catActive: 0, cat: null, label: null,
+    brandResults: [], brandActive: 0, brand: "",
+    moreOpen: false, msrp: "", cond: "", age: "", size: "", attrs: {},
+    result: null, loading: false, error: "", added: false,
+    bag: loadBag(),
+  };
+  function loadBag() { try { return JSON.parse(localStorage.getItem("pe-bag") || "[]"); } catch { return []; } }
+  function saveBag() { try { localStorage.setItem("pe-bag", JSON.stringify(S.bag)); } catch {} }
+  const ruleFor = (cat) => (cat && S.rules[cat.name.trim()]) || { m: "Ask first", r: [] };
+
+  // ---------------- data loading ----------------
+  async function init() {
+    try {
+      const [catRes, rulesRes, brandRes] = await Promise.all([
+        fetch(CONFIG.functionUrl + "?action=categories", { headers }),
+        fetch(CONFIG.rulesUrl).catch(() => null),
+        fetch(CONFIG.restUrl + "/rpc/estimator_brands", { method: "POST", headers, body: "{}" }).catch(() => null),
+      ]);
+      S.cats = (await catRes.json()).categories || [];
+      if (rulesRes && rulesRes.ok) S.rules = await rulesRes.json();
+      if (brandRes && brandRes.ok) S.brands = (await brandRes.json()).map((b) => b.brand);
+      const input = $("pe-cat");
+      input.disabled = false;
+      input.placeholder = "Try “puffy”, “skis” or “tent”";
+    } catch (e) {
+      $("pe-cat").placeholder = "Couldn't load. Please refresh.";
+    }
+    renderResult(); renderBag();
+  }
+
+  // ---------------- category search ----------------
+  function searchCats(q) {
+    const query = q.trim().toLowerCase();
+    if (query.length < 2) return [];
+    const tokens = query.split(/\s+/);
+    const out = [];
+    for (const cat of S.cats) {
+      const labels = cat.labels.length ? cat.labels : [shortName(cat.name)];
+      const terms = cat.searchTerms || [];
+      const hay = [cat.name, ...cat.labels, ...terms].join(" | ").toLowerCase();
+      if (!tokens.every((t) => hay.includes(t))) continue;
+      let best = 0, viaTerm = null;
+      for (const t of terms) {
+        const tl = t.toLowerCase();
+        const s = tl === query ? 9 : tl.startsWith(query) ? 7 : tl.includes(query) ? 5 : 0;
+        if (s > best) { best = s; viaTerm = t; }
+      }
+      const labelHits = labels.map((l) => {
+        const ll = l.toLowerCase();
+        return { l, s: ll === query ? 10 : ll.startsWith(query) ? 8 : ll.includes(query) ? 6 : 0 };
+      }).filter((x) => x.s > 0);
+      if (labelHits.length) {
+        for (const h of labelHits) out.push({ cat, label: cat.labels.length ? h.l : null, title: h.l, score: h.s });
+      } else {
+        const nameScore = cat.name.toLowerCase().includes(query) ? 4 : 2;
+        out.push({ cat, label: cat.labels[0] || null, title: labels[0], via: viaTerm, score: Math.max(best, nameScore) });
+      }
+    }
+    const elig = (c) => ruleFor(c).m;
+    out.sort((a, b) => (b.score - a.score) || ((elig(a.cat) === "Not accepting") - (elig(b.cat) === "Not accepting")) || a.title.localeCompare(b.title));
+    return out.slice(0, 8);
+  }
+
+  let noMatchTimer = null;
+  function onCatInput() {
+    const q = $("pe-cat").value;
+    S.catResults = searchCats(q);
+    S.catActive = 0;
+    renderCatList();
+    clearTimeout(noMatchTimer);
+    if (q.trim().length >= 3 && !S.catResults.length) {
+      noMatchTimer = setTimeout(() => {
+        fetch(CONFIG.functionUrl, { method: "POST", headers, body: JSON.stringify({ event: "search_no_match", query: q.trim(), sessionId, source: CONFIG.source }) }).catch(() => {});
+      }, 1500);
+    }
+  }
+
+  function renderCatList() {
+    const list = $("pe-cat-list"), input = $("pe-cat");
+    const q = input.value.trim();
+    $("pe-cat-nomatch").hidden = !(q.length >= 3 && !S.catResults.length);
+    if (!S.catResults.length) { list.hidden = true; input.setAttribute("aria-expanded", "false"); return; }
+    list.innerHTML = S.catResults.map((r, i) => {
+      const e = ELIG[ruleFor(r.cat).m];
+      const tag = e && ruleFor(r.cat).m !== "Mail-in OK" ? `<span class="pe-tag ${e[1]}">${esc(e[0])}</span>` : "";
+      return `<button type="button" class="pe-option" role="option" id="pe-cat-opt-${i}" aria-selected="${i === S.catActive}" data-i="${i}">
+        <span class="pe-option-main"><span class="pe-option-title">${esc(r.title)}</span><span class="pe-option-sub">${esc(r.cat.name)}</span></span>${tag}</button>`;
+    }).join("");
+    list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "pe-cat-opt-" + S.catActive);
+  }
+
+  function selectCat(r) {
+    S.cat = r.cat; S.label = r.label;
+    S.size = r.cat.sizeTypes.length === 1 ? r.cat.sizeTypes[0] : "";
+    S.attrs = {}; S.added = false; S.result = null;
+    $("pe-cat").value = ""; S.catResults = []; renderCatList();
+    renderAll(); requestEstimate();
+    if (!S.brand) setTimeout(() => $("pe-brand") && $("pe-brand").focus(), 0);
+  }
+
+  // ---------------- brand search ----------------
+  function searchBrands(q) {
+    const s = q.trim().toLowerCase();
+    if (!s) return [];
+    const starts = [], contains = [];
+    for (const b of S.brands) {
+      const bl = b.toLowerCase();
+      if (bl.startsWith(s)) starts.push(b); else if (bl.includes(s)) contains.push(b);
+    }
+    const res = starts.concat(contains).slice(0, 6);
+    if (!res.some((b) => b.toLowerCase() === s) && q.trim().length >= 2) res.push({ custom: q.trim() });
+    res.push("Other / not sure");
+    return res;
+  }
+  function renderBrandList() {
+    const list = $("pe-brand-list"), input = $("pe-brand");
+    if (!S.brandResults.length) { list.hidden = true; input.setAttribute("aria-expanded", "false"); return; }
+    list.innerHTML = S.brandResults.map((b, i) => {
+      const label = typeof b === "object" ? `Use “${esc(b.custom)}”` : esc(b);
+      return `<button type="button" class="pe-option" role="option" id="pe-brand-opt-${i}" aria-selected="${i === S.brandActive}" data-i="${i}"><span class="pe-option-title">${label}</span></button>`;
+    }).join("");
+    list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "pe-brand-opt-" + S.brandActive);
+  }
+  function selectBrand(b) {
+    S.brand = typeof b === "object" ? b.custom : (b === "Other / not sure" ? "Other" : b);
+    S.added = false;
+    $("pe-brand").value = ""; S.brandResults = []; renderBrandList();
+    renderAll(); requestEstimate();
+  }
+
+  function comboKeys(e, kind) {
+    const isCat = kind === "cat";
+    const list = isCat ? S.catResults : S.brandResults;
+    if (!list.length) return;
+    const key = isCat ? "catActive" : "brandActive";
+    if (e.key === "ArrowDown") { e.preventDefault(); S[key] = Math.min(S[key] + 1, list.length - 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); S[key] = Math.max(S[key] - 1, 0); }
+    else if (e.key === "Enter") { e.preventDefault(); isCat ? selectCat(list[S[key]]) : selectBrand(list[S[key]]); return; }
+    else if (e.key === "Escape") { if (isCat) { S.catResults = []; } else { S.brandResults = []; } }
+    else return;
+    isCat ? renderCatList() : renderBrandList();
+  }
+
+  // ---------------- form rendering ----------------
+  function renderAll() {
+    const cat = S.cat;
+    const rule = ruleFor(cat);
+    const paying = cat && rule.m !== "Not accepting" && rule.m !== "Donation only";
+
+    $("pe-cat-search").hidden = !!cat;
+    $("pe-cat-chip").hidden = !cat;
+    if (cat) {
+      $("pe-cat-chip").innerHTML = `<div class="pe-chip"><div><div class="pe-chip-title">${esc(S.label || shortName(cat.name))}</div><div class="pe-chip-sub">${esc(cat.name)}</div></div><button type="button" class="pe-btn-ghost" data-act="clear-cat">Change</button></div>`;
+    }
+    const labels = $("pe-labels");
+    labels.hidden = !(cat && cat.labels.length > 1);
+    if (cat && cat.labels.length > 1) {
+      labels.innerHTML = `<div class="pe-sublabel">Which type?</div><div class="pe-pills">${cat.labels.map((l) => `<button type="button" class="pe-pill" aria-pressed="${l === S.label}" data-act="label" data-v="${esc(l)}">${esc(l)}</button>`).join("")}</div>`;
+    }
+
+    const acc = $("pe-accept");
+    acc.hidden = !cat;
+    if (cat) {
+      const e = ELIG[rule.m] || ELIG["Ask first"];
+      const rows = rule.r.length ? rule.r.map((x) => {
+        const kind = x[0] === "+" ? "ok" : x[0] === "-" ? "no" : "warn";
+        return `<div class="pe-rule">${ICON[kind]}<span>${esc(x.slice(2))}</span></div>`;
+      }).join("") : `<div class="pe-rule"><span>We'll review this one by hand. Ask us if you're not sure.</span></div>`;
+      acc.innerHTML = `<div class="pe-accept-head"><span>What we accept</span><span class="pe-tag ${e[1]}">${esc(e[0])}</span></div>${rows}`;
+    }
+
+    $("pe-brand-step").hidden = !paying;
+    $("pe-brand-search").hidden = !!S.brand;
+    $("pe-brand-chip").hidden = !S.brand;
+    if (S.brand) {
+      $("pe-brand-chip").innerHTML = `<div class="pe-chip"><div class="pe-chip-title">${esc(S.brand === "Other" ? "Other / not sure" : S.brand)}</div><button type="button" class="pe-btn-ghost" data-act="clear-brand">Change</button></div>`;
+    }
+
+    $("pe-more").hidden = !paying;
+    $("pe-more-toggle").setAttribute("aria-expanded", String(S.moreOpen));
+    $("pe-more-body").hidden = !S.moreOpen;
+    const filled = [S.msrp && "retail price", S.cond && "condition", S.age && "age", S.size && cat && cat.sizeTypes.length > 1 && "fit"].filter(Boolean);
+    const attrCount = Object.values(S.attrs).filter((v) => v.length).length;
+    if (attrCount) filled.push(attrCount + " detail" + (attrCount > 1 ? "s" : ""));
+    $("pe-more-summary").textContent = filled.length ? "Added: " + filled.join(", ") : "Retail price, condition and age sharpen the estimate";
+
+    $("pe-cond").innerHTML = CONDITIONS.map((c) => `<button type="button" class="pe-card-btn" aria-pressed="${c.id === S.cond}" data-act="cond" data-v="${c.id}"><b>${c.label}</b><span>${c.desc}</span></button>`).join("");
+    $("pe-age").innerHTML = AGES.map((a) => `<button type="button" class="pe-card-btn" aria-pressed="${a.id === S.age}" data-act="age" data-v="${a.id}"><b>${a.label}</b><span>${a.desc}</span></button>`).join("");
+    const fits = cat ? cat.sizeTypes : [];
+    $("pe-fit-wrap").hidden = fits.length < 2;
+    $("pe-fit").innerHTML = fits.map((z) => `<button type="button" class="pe-pill" aria-pressed="${z === S.size}" data-act="size" data-v="${esc(z)}">${esc(z)}</button>`).join("");
+    $("pe-attrs").innerHTML = (cat ? cat.attributes : []).map((a) => {
+      const multi = /feature/i.test(a.label);
+      const cur = S.attrs[a.key] || [];
+      return `<div style="margin-bottom:18px"><div class="pe-sublabel">${esc(a.label)} ${multi ? '<span class="pe-opt">(pick any)</span>' : ""}</div><div class="pe-pills">${a.options.map((o) =>
+        `<button type="button" class="pe-pill" aria-pressed="${cur.includes(o)}" data-act="attr" data-k="${a.key}" data-multi="${multi}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+    }).join("");
+
+    renderResult();
+  }
+
+  // ---------------- estimate ----------------
+  let estTimer = null, reqSeq = 0;
+  function requestEstimate(delay = 300) {
+    clearTimeout(estTimer);
+    const rule = ruleFor(S.cat);
+    if (!S.cat || !S.brand || rule.m === "Not accepting" || rule.m === "Donation only") { S.result = null; S.loading = false; renderResult(); return; }
+    S.loading = true; renderResult();
+    estTimer = setTimeout(async () => {
+      const seq = ++reqSeq;
+      const attributes = {};
+      for (const [k, v] of Object.entries(S.attrs)) if (v.length) attributes[k] = v;
+      try {
+        const res = await fetch(CONFIG.functionUrl, {
+          method: "POST", headers,
+          body: JSON.stringify({ category: S.cat.id, label: S.label, brand: S.brand, sizeType: S.size || null, attributes,
+            condition: S.cond || null, age: S.age || null, msrp: S.msrp ? Number(S.msrp) : null, sessionId, source: CONFIG.source }),
+        });
+        const data = await res.json();
+        if (seq !== reqSeq) return;
+        if (!res.ok) throw new Error(data.error || "Request failed");
+        S.result = data; S.error = "";
+      } catch (e) {
+        if (seq !== reqSeq) return;
+        S.result = null; S.error = "We couldn't get an estimate right now. Please try again in a moment.";
+      }
+      S.loading = false; renderResult();
+    }, delay);
+  }
+
+  function basisText(r) {
+    const m = r.match;
+    const used = m.levelsUsed;
+    const n = m.salesMatched;
+    const where = shortName(r.category.name).toLowerCase();
+    let s;
+    if (used.includes("Brand")) s = `Based on ${n} ${S.brand} ${where} we've sold recently`;
+    else if (S.brand && S.brand !== "Other") s = `We haven't sold many ${S.brand} ${where} yet, so this is based on ${n} similar items`;
+    else s = `Based on ${n} similar items we've sold recently`;
+    const extras = [];
+    if (used.includes("Default Product Label") && S.label) extras.push(S.label.toLowerCase());
+    if (used.includes("Size Type") && S.size) extras.push(S.size.toLowerCase());
+    if (used.includes("Year") && S.age) extras.push((AGES.find((a) => a.id === S.age) || {}).label.toLowerCase());
+    if (extras.length) s += ` (matching ${extras.join(", ")})`;
+    if (m.adjustedFor.length) s += `, adjusted for ${m.adjustedFor.join(" and ")}`;
+    return s + ".";
+  }
+
+  function renderResult() {
+    const box = $("pe-result");
+    const cat = S.cat;
+    const rule = ruleFor(cat);
+    if (!cat) { box.innerHTML = `<div class="pe-empty"><div class="pe-empty-title">Your estimate shows up here</div>Search for what you have, then pick a brand.</div>`; return; }
+    if (rule.m === "Not accepting") {
+      const why = (rule.r.find((x) => x[0] === "-") || "- Not currently accepting").slice(2);
+      box.innerHTML = `<div class="pe-note pe-note-red"><div style="font-size:19px;font-weight:700;margin-bottom:4px">We're not taking this right now</div>${esc(why)}.</div>
+        <p style="margin:0;color:var(--pe-muted)">Still want it to do some good? Our donation bags turn gear we can't resell into support for our conservation partners.</p>`;
+      return;
+    }
+    if (rule.m === "Donation only") {
+      box.innerHTML = `<div class="pe-note pe-note-amber"><div style="font-size:19px;font-weight:700;margin-bottom:4px">Donation only</div>We can't pay for this one, but we'd gladly take it in a donation bag. Proceeds support our conservation partners.</div>`;
+      return;
+    }
+    if (!S.brand) { box.innerHTML = `<div class="pe-empty"><div class="pe-empty-title">Add a brand to see your estimate</div>Pick “Other / not sure” if you don't see it.</div>`; return; }
+    if (S.error) { box.innerHTML = `<div class="pe-note pe-note-red">${esc(S.error)}</div>`; return; }
+    if (S.loading && !S.result) { box.innerHTML = `<div class="pe-empty"><span class="pe-spin"></span>Checking recent sales…</div>`; return; }
+    const r = S.result;
+    if (!r) return;
+    if (r.status !== "ok") {
+      box.innerHTML = `<div class="pe-note pe-note-amber">We haven't sold enough of these to estimate yet. Add the original retail price under “Tell us more” for a rough estimate, or send it in and our team will price it.</div>`;
+      return;
+    }
+    const e = r.earnings;
+    const parts = [];
+    parts.push(`<div class="pe-basis">${S.loading ? '<span class="pe-spin"></span>' : ""}${esc(basisText(r))}</div>`);
+    parts.push(`<div class="pe-ranges"><div class="pe-range pe-primary"><div class="pe-range-label">Store credit</div><div class="pe-range-value">${money(e.credit.low)}–${money(e.credit.high)}</div></div>
+      <div class="pe-range"><div class="pe-range-label">Cash</div><div class="pe-range-value">${money(e.cash.low)}–${money(e.cash.high)}</div></div></div>`);
+    if (r.weeksToSell) parts.push(`<div style="font-size:14px;color:#3F4A44">Paid when your item sells · usually ${r.weeksToSell.low === r.weeksToSell.high ? r.weeksToSell.low : r.weeksToSell.low + "–" + r.weeksToSell.high} week${r.weeksToSell.high === 1 ? "" : "s"}</div>`);
+    if (r.match.lowConfidence) parts.push(`<div class="pe-note pe-note-amber">We've only sold a few of these, so treat this as a rough guide.</div>`);
+    if (r.retail && r.retail.blend === "premium") parts.push(`<div class="pe-note pe-note-green">Your original retail price is well above typical sales here, so we weighted it heavily. Premium pieces like this often earn more.</div>`);
+    if (!r.retail) parts.push(`<button type="button" class="pe-nudge" data-act="open-msrp"><span><strong>Premium model?</strong> Add the original retail price for a sharper estimate.</span><span style="font-weight:700">Add</span></button>`);
+    if (e.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Add it to a bag with other gear, or send it in a donation bag.</div>`);
+    if (r.comps && r.comps.length) {
+      parts.push(`<div class="pe-comps"><h3>Similar gear we've sold recently</h3>${r.comps.map((c) => {
+        const meta = [c.condition ? c.condition + " condition" : null, "sold " + c.soldMonth, c.daysToSell != null ? `in ${c.daysToSell} day${c.daysToSell === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ");
+        return `<div class="pe-comp"><div style="min-width:0"><div class="pe-comp-title">${esc(c.title)}</div><div class="pe-comp-meta">${esc(meta)}</div></div>
+          <div class="pe-comp-earn"><b>${money(c.credit)} credit</b><span class="pe-comp-meta">${money(c.cash)} cash</span></div></div>`;
+      }).join("")}</div>`);
+    }
+    if (rule.m === "In store only") {
+      parts.push(`<div class="pe-note pe-note-amber"><strong>Bring this one to our Provo store.</strong> We can't take it by mail. Drop it off at 249 N University Ave and we'll look at it with you.</div>`);
+    } else {
+      if (rule.m === "Ask first") parts.push(`<div class="pe-note pe-note-amber">We decide on this one case by case, so we'll confirm with you before you ship it.</div>`);
+      parts.push(S.added
+        ? `<div class="pe-note pe-note-green" style="text-align:center;font-weight:700">Added to your bag. Search again to add another item.</div>`
+        : `<button type="button" class="pe-btn" data-act="add">Add to my bag</button>`);
+    }
+    parts.push(`<div class="pe-trust"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>A person on our team inspects every item, and you approve our price before anything is listed. This estimate is a starting point, not an offer.</span></div>`);
+    box.innerHTML = parts.join("");
+  }
+
+  // ---------------- bag ----------------
+  function renderBag() {
+    const box = $("pe-bag");
+    const n = S.bag.length;
+    if (!n) {
+      box.innerHTML = `<div class="pe-bag-head"><h2>Your bag</h2><span class="pe-opt">0 items</span></div><p style="margin:0;color:var(--pe-faint)">Most people send several items at once. Add each one to see your combined estimate.</p>`;
+      return;
+    }
+    const sum = (k) => S.bag.reduce((a, x) => a + x[k], 0);
+    box.innerHTML = `<div class="pe-bag-head"><h2>Your bag</h2><span class="pe-opt">${n} item${n === 1 ? "" : "s"}</span></div>
+      <div>${S.bag.map((it) => `<div class="pe-bag-item"><div><div style="font-weight:600">${esc(it.label)}</div><div class="pe-comp-meta">${money(it.creditLo)}–${money(it.creditHi)} credit · ${money(it.cashLo)}–${money(it.cashHi)} cash</div></div>
+        <button type="button" class="pe-x" data-act="remove" data-id="${it.id}" aria-label="Remove ${esc(it.label)}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>`).join("")}</div>
+      <div class="pe-total"><div class="pe-range-label">Estimated total</div><div class="pe-total-value">${money(sum("creditLo"))}–${money(sum("creditHi"))} credit</div><div class="pe-comp-meta">or ${money(sum("cashLo"))}–${money(sum("cashHi"))} cash</div></div>
+      <div style="font-size:14px;color:#3F4A44">${esc(CONFIG.freeShippingNote)}</div>
+      <a class="pe-link-btn" href="${esc(CONFIG.mailInUrl)}">Start my mail-in</a>`;
+  }
+
+  // ---------------- events ----------------
+  $("pe-cat").addEventListener("input", onCatInput);
+  $("pe-cat").addEventListener("keydown", (e) => comboKeys(e, "cat"));
+  $("pe-brand").addEventListener("input", () => { S.brandResults = searchBrands($("pe-brand").value); S.brandActive = 0; renderBrandList(); });
+  $("pe-brand").addEventListener("keydown", (e) => comboKeys(e, "brand"));
+  $("pe-cat-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectCat(S.catResults[+b.dataset.i]); });
+  $("pe-brand-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectBrand(S.brandResults[+b.dataset.i]); });
+  $("pe-more-toggle").addEventListener("click", () => { S.moreOpen = !S.moreOpen; renderAll(); });
+  $("pe-msrp").addEventListener("input", () => { S.msrp = $("pe-msrp").value; S.added = false; renderAll(); requestEstimate(800); });
+
+  root.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-act]");
+    if (!t) return;
+    const v = t.dataset.v;
+    switch (t.dataset.act) {
+      case "clear-cat": S.cat = null; S.label = null; S.result = null; S.added = false; renderAll(); setTimeout(() => $("pe-cat").focus(), 0); return;
+      case "clear-brand": S.brand = ""; S.result = null; S.added = false; renderAll(); setTimeout(() => $("pe-brand").focus(), 0); return;
+      case "label": S.label = v; break;
+      case "cond": S.cond = S.cond === v ? "" : v; break;
+      case "age": S.age = S.age === v ? "" : v; break;
+      case "size": S.size = S.size === v ? "" : v; break;
+      case "attr": {
+        const k = t.dataset.k, cur = S.attrs[k] || [];
+        S.attrs[k] = t.dataset.multi === "true" ? (cur.includes(v) ? cur.filter((x) => x !== v) : cur.concat(v)) : (cur.includes(v) ? [] : [v]);
+        break;
+      }
+      case "open-msrp": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-msrp").focus(), 0); return;
+      case "add": {
+        const r = S.result; if (!r || r.status !== "ok") return;
+        const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
+        S.bag.push({ id: Date.now(), label, creditLo: r.earnings.credit.low, creditHi: r.earnings.credit.high, cashLo: r.earnings.cash.low, cashHi: r.earnings.cash.high });
+        saveBag(); S.added = true; renderResult(); renderBag(); return;
+      }
+      case "remove": S.bag = S.bag.filter((x) => String(x.id) !== t.dataset.id); saveBag(); renderBag(); return;
+      default: return;
+    }
+    S.added = false; renderAll(); requestEstimate();
+  });
+
+  init();
+})();
+</script>
+</div>
+<!-- =================== end Pando earnings estimator =================== -->
+
+</div>
+</body>
+</html>
