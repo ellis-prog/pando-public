@@ -26,7 +26,7 @@
     // Public (anon) key: safe to embed. It can only call the estimator and the brand list.
     anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoemN5bW56dHNiYnJveHpjaWRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTUxOTIsImV4cCI6MjA5MDQ3MTE5Mn0.mwNRsmt9WGZAu85WY3GQ74VYilX3P9833gHBOrleTi8",
     mailInUrl: "https://pandorefitters.typeform.com/sendgear?typeform-source=estimator",     // where "Start my mail-in" goes
-    freeShippingNote: "Shipping is on us, when your gear is assessed by our team with a trade in or cash value $100 or higher. Need to send a smaller load? Shipping is a simple flat $7.95 deducted from your offer.",
+    freeShippingNote: "Shipping is on us, when your gear is assessed by our team with a trade in or cash value $150 or higher. Need to send a smaller load? Shipping is a simple flat $7.95 deducted from your offer.",
     source: "estimate-page",
     skiMailInMinYear: 2024,          // skis/snowboards: oldest model year we take by mail (update each season)
     skiStoreMinYear: 2019,           // skis/snowboards: oldest model year we take in store
