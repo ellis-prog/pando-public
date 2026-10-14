@@ -237,7 +237,8 @@
     mailInUrl: "https://pandorefitters.typeform.com/sendgear?typeform-source=estimator",     // where "Start my mail-in" goes
     freeShippingNote: "Shipping is on us, when your gear is assessed by our team with a trade in or cash value $100 or higher. Need to send a smaller load? Shipping is a simple flat $7.95 deducted from your offer.",
     source: "estimate-page",
-    mailInMaxSeasons: 4,             // skis/snowboards by mail: up to this many seasons old
+    skiMailInMinYear: 2024,          // skis/snowboards: oldest model year we take by mail (update each season)
+    skiStoreMinYear: 2019,           // skis/snowboards: oldest model year we take in store
     // Shorthand customers type for brands. Only used if the brand exists in our sales history.
     brandAliases: {
       "tnf": "The North Face", "north face": "The North Face", "northface": "The North Face",
@@ -739,7 +740,7 @@
     if (kind === "bike") {
       parts.push(`<div class="pe-note pe-note-amber"><strong>Bikes are in-store only.</strong> We can't take them by mail. Get an estimate here, then bring it to our Provo store at 249 N University Ave.</div>`);
     } else {
-      parts.push(`<div class="pe-note pe-note-soft"><strong>Mail-in for skis and snowboards works as a trade.</strong> Order a ski or snowboard from us, then ship your old one back in the same box. Our team approves each one first. Please note: for mail-in, we only accept skis and snowboards up to ${CONFIG.mailInMaxSeasons} seasons old.</div>`);
+      parts.push(`<div class="pe-note pe-note-soft"><strong>Mail-in for skis and snowboards works as a trade.</strong> Order a ski or snowboard from us, then ship your old one back in the same box. Our team approves each one first. Please note: for mail-in, we only accept skis and snowboards from ${CONFIG.skiMailInMinYear} or newer.</div>`);
     }
     if (T.sent) {
       parts.push(`<div class="pe-note pe-note-green"><strong>Thanks, we've got it.</strong> We'll email you at ${esc(T.email)} with an estimate.</div>`);
@@ -749,7 +750,10 @@
     const my = modelYear();
     const years = [];
     for (let y = my; y >= my - 12; y--) years.push(y);
-    const tooOld = kind !== "bike" && T.year && T.year !== "older" && Number(T.year) < my - CONFIG.mailInMaxSeasons;
+    const yr = kind !== "bike" && T.year && T.year !== "older" ? Number(T.year) : null;
+    const yearNote = yr == null ? ""
+      : yr < CONFIG.skiStoreMinYear ? `We're only able to take skis and snowboards from ${CONFIG.skiStoreMinYear} or newer, even in store.`
+      : yr < CONFIG.skiMailInMinYear ? `That's older than we take by mail (${CONFIG.skiMailInMinYear} or newer), but we're happy to look at it in our Provo store.` : "";
     const sizeHint = kind === "bike" ? "e.g. Medium or 54 cm" : kind === "ski" ? "e.g. 172 cm" : "e.g. 156 cm";
     parts.push(`<div class="pe-team">
       <div class="pe-team-row">
@@ -758,7 +762,7 @@
         <div><label class="pe-sublabel" for="pe-t-size" style="display:block">Size <span class="pe-opt">(optional)</span></label>
           <input id="pe-t-size" class="pe-input" type="text" placeholder="${sizeHint}" value="${esc(T.size)}"></div>
       </div>
-      ${tooOld ? `<div class="pe-note pe-note-amber">That's a little older than we take by mail, but we're happy to look at it in our Provo store.</div>` : ""}
+      ${yearNote ? `<div class="pe-note pe-note-amber">${yearNote}</div>` : ""}
       <div><label class="pe-sublabel" for="pe-t-brand" style="display:block">Brand</label>
         <input id="pe-t-brand" class="pe-input" type="text" placeholder="e.g. Rossignol" value="${esc(T.brand)}"></div>
       <div><label class="pe-sublabel" for="pe-t-model" style="display:block">Model</label>
