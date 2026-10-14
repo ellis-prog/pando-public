@@ -100,7 +100,7 @@
   .pe-context-lede { font-size: 14px; color: var(--pe-muted); margin: 0 0 4px; }
   .pe-context .pe-comp-title { font-weight: 500; color: #3F4A44; }
   .pe-context .pe-comp-earn b { font-weight: 600; color: #3F4A44; }
-  .pe-textlink { background: none; border: 0; padding: 0; color: var(--pe-accent-dark); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 14px; align-self: flex-start; }
+  .pe-textlink { background: none; border: 0; padding: 0; color: var(--pe-accent-dark); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 14px; align-self: flex-start; text-align: left; }
   .pe-req { border: 1px solid var(--pe-line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: #FCFCFA; }
   .pe-req h4 { margin: 0; font-size: 16px; }
   .pe-textarea { width: 100%; min-height: 84px; padding: 10px 14px; border: 1px solid #B9BFB4; border-radius: 10px; resize: vertical; font: inherit; }
@@ -124,7 +124,30 @@
   .pe-comp-earn { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; text-align: right; }
   .pe-btn { min-height: 48px; padding: 0 20px; border: 0; border-radius: 10px; background: var(--pe-accent); color: #fff; font-weight: 700; cursor: pointer; width: 100%; }
   .pe-btn:hover { background: var(--pe-accent-dark); }
-  .pe-trust { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #3F4A44; border-top: 1px solid var(--pe-line-2); padding-top: 14px; }
+  .pe-trust { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #3F4A44; }
+  .pe-estimate { display: flex; flex-direction: column; gap: 10px; }
+  .pe-range-when { font-size: 13px; color: var(--pe-muted); margin-top: 2px; }
+  .pe-nudge-go { font-weight: 700; flex-shrink: 0; }
+  .pe-links { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+  .pe-flow { display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--pe-line); border-radius: 12px; padding: 16px; background: #FCFCFA; }
+  .pe-flow-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; font-weight: 600; color: var(--pe-faint); }
+  .pe-flow-done { font-weight: 400; }
+  .pe-flow-q { font-size: 17px; font-weight: 700; display: block; }
+  .pe-btn.pe-btn-inline { width: auto; flex: 0 0 auto; padding: 0 22px; }
+  .pe-opts { display: flex; flex-direction: column; gap: 8px; }
+  .pe-opt-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-height: 48px; padding: 11px 14px; border-radius: 10px; border: 1px solid #C9CEC3; background: #fff; text-align: left; cursor: pointer; }
+  .pe-opt-row:hover { border-color: var(--pe-accent); background: #F4F8F5; }
+  .pe-opt-row[aria-pressed="true"] { border-color: var(--pe-accent); background: #EEF4F0; }
+  .pe-opt-row b { font-size: 15px; }
+  .pe-opt-row span { font-size: 13px; color: var(--pe-muted); }
+  .pe-evidence { border-top: 1px solid var(--pe-line-2); padding-top: 12px; }
+  .pe-evidence-toggle { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 0; font-size: 14px; font-weight: 600; color: var(--pe-accent-dark); cursor: pointer; text-align: left; }
+  .pe-evidence-body { margin-top: 8px; background: var(--pe-soft); border-radius: 12px; padding: 4px 14px 6px; }
+  .pe-evidence-lede { font-size: 13px; color: var(--pe-muted); margin: 8px 0 2px; }
+  .pe-evidence .pe-comp { padding: 9px 0; }
+  .pe-evidence .pe-comp:first-of-type { border-top: 0; }
+  .pe-evidence .pe-comp-title { font-weight: 500; font-size: 14px; }
+  .pe-evidence .pe-comp-earn span:first-child { font-size: 14px; font-weight: 600; }
   .pe-bag { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
   .pe-bag-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .pe-bag-head h2 { margin: 0; font-size: 22px; }
@@ -168,29 +191,16 @@
       <div id="pe-brand-chip" hidden></div>
     </div>
 
-    <div id="pe-more" class="pe-more" hidden>
-      <button type="button" id="pe-more-toggle" class="pe-more-toggle" aria-expanded="false" aria-controls="pe-more-body">
-        <span><span style="font-weight:700">3 · Tell us more</span> <span class="pe-opt">(optional)</span><br><span id="pe-more-summary" class="pe-opt" style="font-size:13px"></span></span>
-        <span class="pe-chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg></span>
-      </button>
-      <div id="pe-more-body" class="pe-more-body" hidden>
-        <div>
-          <label class="pe-sublabel" for="pe-msrp" style="display:block">Original retail price</label>
-          <div class="pe-money"><span style="font-weight:600">$</span><input id="pe-msrp" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 260"></div>
-          <div class="pe-hint">The best way to tell us it's a premium model. A rough guess is fine.</div>
-        </div>
-        <div><div class="pe-sublabel">Condition</div><div id="pe-cond" class="pe-cards"></div></div>
-        <div><div class="pe-sublabel">Age</div><div id="pe-age" class="pe-cards"></div></div>
-        <div id="pe-fit-wrap" hidden><div class="pe-sublabel">Fit</div><div id="pe-fit" class="pe-pills"></div></div>
-        <div id="pe-attrs"></div>
-      </div>
+    <div id="pe-fit-wrap" hidden>
+      <div class="pe-step-label">3 · Fit <span class="pe-opt">(optional)</span></div>
+      <div id="pe-fit" class="pe-pills"></div>
     </div>
   </section>
 
   <section class="pe-card pe-result" id="pe-result" aria-live="polite"></section>
 </div>
 
-<section class="pe-card pe-bag" id="pe-bag" aria-label="Your bag"></section>
+<section class="pe-card pe-bag" id="pe-bag" aria-label="Your estimate"></section>
 
 <script>
 (() => {
@@ -248,7 +258,7 @@
     cats: [], rules: {}, brands: [],
     catResults: [], catActive: 0, cat: null, label: null,
     brandResults: [], brandActive: 0, brand: "",
-    moreOpen: false, msrp: "", msrpDraft: "", cond: "", age: "", size: "", attrs: {}, payout: "credit", flash: "",
+    msrp: "", msrpDraft: "", cond: "", age: "", size: "", payout: "credit", flash: "", flow: { open: false, step: 1 }, compsOpen: false,
     result: null, loading: false, error: "", added: false,
     req: { open: false, email: "", note: "", sending: false, sent: false, error: "" },
     bag: loadBag(),
@@ -429,25 +439,9 @@
       $("pe-brand-chip").innerHTML = `<div class="pe-chip"><div class="pe-chip-title">${esc(S.brand === "Other" ? "Other / not sure" : S.brand)}</div><button type="button" class="pe-btn-ghost" data-act="clear-brand">Change</button></div>`;
     }
 
-    $("pe-more").hidden = !paying;
-    $("pe-more-toggle").setAttribute("aria-expanded", String(S.moreOpen));
-    $("pe-more-body").hidden = !S.moreOpen;
-    const filled = [S.msrp && "retail price", S.cond && "condition", S.age && "age", S.size && cat && cat.sizeTypes.length > 1 && "fit"].filter(Boolean);
-    const attrCount = Object.values(S.attrs).filter((v) => v.length).length;
-    if (attrCount) filled.push(attrCount + " detail" + (attrCount > 1 ? "s" : ""));
-    $("pe-more-summary").textContent = filled.length ? "Added: " + filled.join(", ") : "Retail price, condition and age sharpen the estimate";
-
-    $("pe-cond").innerHTML = CONDITIONS.map((c) => `<button type="button" class="pe-card-btn" aria-pressed="${c.id === S.cond}" data-act="cond" data-v="${c.id}"><b>${c.label}</b><span>${c.desc}</span></button>`).join("");
-    $("pe-age").innerHTML = AGES.map((a) => `<button type="button" class="pe-card-btn" aria-pressed="${a.id === S.age}" data-act="age" data-v="${a.id}"><b>${a.label}</b><span>${a.desc}</span></button>`).join("");
     const fits = cat ? cat.sizeTypes : [];
-    $("pe-fit-wrap").hidden = fits.length < 2;
+    $("pe-fit-wrap").hidden = !paying || fits.length < 2;
     $("pe-fit").innerHTML = fits.map((z) => `<button type="button" class="pe-pill" aria-pressed="${z === S.size}" data-act="size" data-v="${esc(z)}">${esc(z)}</button>`).join("");
-    $("pe-attrs").innerHTML = (cat ? cat.attributes : []).map((a) => {
-      const multi = /feature/i.test(a.label);
-      const cur = S.attrs[a.key] || [];
-      return `<div style="margin-bottom:18px"><div class="pe-sublabel">${esc(a.label)} ${multi ? '<span class="pe-opt">(pick any)</span>' : ""}</div><div class="pe-pills">${a.options.map((o) =>
-        `<button type="button" class="pe-pill" aria-pressed="${cur.includes(o)}" data-act="attr" data-k="${a.key}" data-multi="${multi}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
-    }).join("");
 
     renderResult();
   }
@@ -461,12 +455,10 @@
     S.loading = true; renderResult();
     estTimer = setTimeout(async () => {
       const seq = ++reqSeq;
-      const attributes = {};
-      for (const [k, v] of Object.entries(S.attrs)) if (v.length) attributes[k] = v;
       try {
         const res = await fetch(CONFIG.functionUrl, {
           method: "POST", headers,
-          body: JSON.stringify({ category: S.cat.id, label: S.label, brand: S.brand, sizeType: S.size || null, attributes,
+          body: JSON.stringify({ category: S.cat.id, label: S.label, brand: S.brand, sizeType: S.size || null,
             condition: S.cond || null, age: S.age || null, msrp: S.msrp ? Number(S.msrp) : null, sessionId, source: CONFIG.source }),
         });
         const data = await res.json();
@@ -482,17 +474,27 @@
   }
 
   // ---------------- result rendering (three confidence states) ----------------
-  const TRUST = `<div class="pe-trust"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>A person on our team inspects every item, and you approve our price before anything is listed. This estimate is a starting point, not an offer.</span></div>`;
+  const TRUST_TEXT = "Based on similar past sales. A gear expert checks every item, and nothing is final until you approve our offer.";
+  const trustHtml = (text) => `<div class="pe-trust"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>${text}</span></div>`;
 
   const nounFor = (r) => (S.label || shortName(r.category.name)).toLowerCase();
+  const itemLabel = () => S.label || (S.cat ? shortName(S.cat.name) : "item");
+  const hasDetails = () => !!(S.msrp || S.cond || S.age);
 
-  function compsHtml(comps, heading, quiet) {
+  // Recent sales live behind a disclosure: proof when wanted, quiet when not.
+  function compsHtml(comps, toggleLabel, lede) {
     if (!comps || !comps.length) return "";
-    return `<div class="${quiet ? "pe-context" : "pe-comps"}">${quiet ? `<p class="pe-context-lede">${heading}</p>` : `<h3>${heading}</h3>`}${comps.map((c) => {
-      const meta = [c.condition ? c.condition + " condition" : null, "sold " + c.soldMonth, c.daysToSell != null ? `in ${c.daysToSell} day${c.daysToSell === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ");
+    const open = S.compsOpen;
+    const chev = `<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform .15s;${open ? "transform:rotate(180deg)" : ""}"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg>`;
+    const rows = comps.map((c) => {
+      const meta = [c.condition ? c.condition + " condition" : null, "sold " + c.soldMonth].filter(Boolean).join(" · ");
       return `<div class="pe-comp"><div style="min-width:0"><div class="pe-comp-title">${esc(c.title)}</div><div class="pe-comp-meta">${esc(meta)}</div></div>
-        <div class="pe-comp-earn"><b>${money(c.credit)} credit</b><span class="pe-comp-meta">${money(c.cash)} cash</span></div></div>`;
-    }).join("")}</div>`;
+        <div class="pe-comp-earn"><span>${money(c.credit)} credit</span><span class="pe-comp-meta">${money(c.cash)} cash</span></div></div>`;
+    }).join("");
+    return `<div class="pe-evidence">
+      <button type="button" class="pe-evidence-toggle" data-act="comps" aria-expanded="${open}">${toggleLabel}${chev}</button>
+      ${open ? `<div class="pe-evidence-body"><p class="pe-evidence-lede">${lede}</p>${rows}</div>` : ""}
+    </div>`;
   }
 
   function requestHtml() {
@@ -501,46 +503,56 @@
     if (!q.open) return "";
     return `<div class="pe-req" id="pe-req">
       <h4>Get a personal estimate</h4>
-      <div style="font-size:14px;color:var(--pe-muted)">Someone on our team will look at what you have and email you back.</div>
+      <div style="font-size:14px;color:var(--pe-muted)">Someone on our team will take a look and email you back.</div>
       <label class="pe-sublabel" for="pe-req-email" style="margin:0">Email</label>
       <input id="pe-req-email" class="pe-input" type="email" autocomplete="email" placeholder="you@example.com" value="${esc(q.email)}">
-      <label class="pe-sublabel" for="pe-req-note" style="margin:0">Anything that helps <span class="pe-opt">(optional)</span></label>
-      <textarea id="pe-req-note" class="pe-textarea" placeholder="Model, year, size, condition…">${esc(q.note)}</textarea>
+      <label class="pe-sublabel" for="pe-req-note" style="margin:0">Model name, and anything else that helps</label>
+      <textarea id="pe-req-note" class="pe-textarea" placeholder="e.g. Big Agnes Anvil Horn 15, size regular, used 5 nights">${esc(q.note)}</textarea>
       ${q.error ? `<div class="pe-note pe-note-red">${esc(q.error)}</div>` : ""}
       <button type="button" class="pe-btn" data-act="req-send" ${q.sending ? "disabled" : ""}>${q.sending ? '<span class="pe-spin"></span>Sending…' : "Send my request"}</button>
     </div>`;
   }
 
-  // Rough / no-sales flow: original retail price -> age -> condition, then estimate.
-  function inlineDetailsHtml() {
-    const cards = (list, cur, act) => list.map((x) => `<button type="button" class="pe-card-btn" aria-pressed="${x.id === cur}" data-act="${act}" data-v="${x.id}"><b>${x.label}</b><span>${x.desc}</span></button>`).join("");
-    const ready = Number(S.msrpDraft) > 0;
-    return `<div class="pe-inline-flow">
-      <div><label class="pe-sublabel" for="pe-msrp-inline" style="display:block">1. Original retail price</label>
-        <div class="pe-money" style="max-width:240px"><span style="font-weight:600">$</span><input id="pe-msrp-inline" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 300" value="${esc(S.msrpDraft)}"></div>
-        <div class="pe-hint">A rough guess is fine.</div></div>
-      <div><div class="pe-sublabel">2. Age</div><div class="pe-cards">${cards(AGES, S.age, "age-inline")}</div></div>
-      <div><div class="pe-sublabel">3. Condition</div><div class="pe-cards">${cards(CONDITIONS, S.cond, "cond-inline")}</div></div>
-      <button type="button" class="pe-btn" data-act="msrp-go" ${ready ? "" : 'aria-disabled="true"'}>Get my estimate</button>
-    </div>`;
+  // One question at a time: retail price -> age -> condition. Taps advance; the last tap runs the estimate.
+  function stepperHtml(retailRequired) {
+    const step = S.flow.step;
+    const done = [];
+    if (step > 1 && S.msrpDraft) done.push(`${money(S.msrpDraft)} new`);
+    if (step > 2 && S.age) done.push((AGES.find((a) => a.id === S.age) || {}).label);
+    const top = `<div class="pe-flow-top"><span>Question ${step} of 3${done.length ? ` · <span class="pe-flow-done">${done.map(esc).join(" · ")}</span>` : ""}</span>
+      ${step > 1 ? `<button type="button" class="pe-textlink" data-act="flow-back">Back</button>` : ""}</div>`;
+    const opts = (list, cur, act) => `<div class="pe-opts">${list.map((x) => `<button type="button" class="pe-opt-row" aria-pressed="${x.id === cur}" data-act="${act}" data-v="${x.id}"><b>${x.label}</b><span>${x.desc}</span></button>`).join("")}</div>`;
+    let body;
+    if (step === 1) {
+      const ready = Number(S.msrpDraft) > 0;
+      body = `<label class="pe-flow-q" for="pe-msrp-inline">Roughly what did it cost new?</label>
+        <div class="pe-inline-msrp"><div class="pe-money"><span style="font-weight:600">$</span><input id="pe-msrp-inline" class="pe-input" type="number" inputmode="decimal" min="0" placeholder="e.g. 300" value="${esc(S.msrpDraft)}"></div>
+        <button type="button" class="pe-btn pe-btn-inline" data-act="flow-next" ${ready ? "" : 'aria-disabled="true"'}>Next</button></div>
+        <div class="pe-hint">A guess is fine.${retailRequired ? "" : ` <button type="button" class="pe-textlink" data-act="flow-skip" style="font-size:13px">Not sure, skip</button>`}</div>`;
+    } else if (step === 2) {
+      body = `<div class="pe-flow-q">How old is it?</div>${opts(AGES, S.age, "flow-age")}`;
+    } else {
+      body = `<div class="pe-flow-q">What shape is it in?</div>${opts(CONDITIONS, S.cond, "flow-cond")}`;
+    }
+    return `<div class="pe-flow">${top}${body}</div>`;
   }
 
   function roughHeadline(r) {
     const where = nounFor(r);
     const why = r.confidenceReasons || [];
-    if (why.includes("brand_not_matched")) return `We don't have enough ${esc(S.brand)} ${esc(where)} sales to estimate automatically.`;
-    if (why.includes("few_sales")) return `We've only had a few ${esc(where)} sales, so we can't estimate this one automatically.`;
-    if (why.includes("wide_range")) return `${esc(where.charAt(0).toUpperCase() + where.slice(1))} prices vary a lot, so an automatic estimate wouldn't be reliable.`;
-    return `We can't estimate this one automatically.`;
+    if (why.includes("brand_not_matched")) return `We haven't sold enough ${esc(S.brand)} ${esc(where)}s to estimate this automatically.`;
+    if (why.includes("few_sales")) return `We've only sold a few ${esc(where)}s, so we can't estimate this one automatically.`;
+    if (why.includes("wide_range")) return `${esc(where.charAt(0).toUpperCase() + where.slice(1))} prices vary a lot, so we need a bit more to go on.`;
+    return `We need a bit more to estimate this one.`;
   }
 
   function usedInputsHtml() {
     const bits = [];
-    if (S.msrp) bits.push(`${money(S.msrp)} retail`);
+    if (S.msrp) bits.push(`${money(S.msrp)} new`);
     if (S.age) bits.push((AGES.find((a) => a.id === S.age) || {}).label);
     if (S.cond) bits.push((CONDITIONS.find((c) => c.id === S.cond) || {}).label);
     if (!bits.length) return "";
-    return `<div class="pe-used">Using: ${bits.map(esc).join(" · ")} <button type="button" class="pe-textlink" data-act="edit-details">Edit</button></div>`;
+    return `<div class="pe-used">Using: ${bits.map(esc).join(" · ")} <button type="button" class="pe-textlink" data-act="flow-open">Edit</button></div>`;
   }
 
   function renderResult() {
@@ -573,23 +585,24 @@
     const parts = [];
     const conf = r.status !== "ok" ? "none" : (r.confidence || "strong");
     const reasons = r.confidenceReasons || [];
+    const salesWord = (n) => `${n} recent ${where} sale${n === 1 ? "" : "s"}`;
 
     // ---- States 2 and 3: no reliable automatic estimate ----
     if (conf === "none" || conf === "rough") {
-      parts.push(`<p class="pe-rough-head">${conf === "none" ? `We don't have enough ${esc(where)} sales to estimate this yet.` : roughHeadline(r)}</p>`);
-      parts.push(`<p class="pe-rough-body">Tell us a little more and we'll estimate from the original retail price, or ask our team for a personal estimate.</p>`);
-      parts.push(inlineDetailsHtml());
-      if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Rather have a person look at it? Get a personal estimate</button>`);
-      parts.push(requestHtml());
+      if (!S.flow.open) S.flow = { open: true, step: 1 };
+      parts.push(`<p class="pe-rough-head">${conf === "none" ? `We haven't sold enough ${esc(where)}s to estimate this yet.` : roughHeadline(r)}</p>`);
+      parts.push(`<p class="pe-rough-body">Answer 3 quick questions and we'll estimate from the original retail price.</p>`);
+      parts.push(stepperHtml(true));
       if (conf === "rough") {
         const sel = S.payout === "cash" ? r.earnings.cash : r.earnings.credit;
-        const label = S.payout === "cash" ? "cash" : "store credit";
-        parts.push(compsHtml(r.comps, `For context, other ${esc(where)} sales have earned around ${money(sel.low)}–${money(sel.high)} in ${label}. Yours could be quite different.`, true));
+        parts.push(compsHtml(r.comps, `See other ${esc(where)} sales for context`,
+          `Similar ${esc(where)}s have earned around ${money(sel.low)}–${money(sel.high)} in ${S.payout === "cash" ? "cash" : "store credit"}. Yours could be quite different. These are for reference only.`));
       }
-      if (!inStore) {
-        parts.push(`<button type="button" class="pe-textlink" data-act="add-pending">Add to my bag without an estimate</button>`);
-      }
-      parts.push(TRUST);
+      const links = [];
+      if (!S.req.open && !S.req.sent) links.push(`<button type="button" class="pe-textlink" data-act="req-open">Rather have a person look at it?</button>`);
+      if (!inStore) links.push(`<button type="button" class="pe-textlink" data-act="add-pending">Add without a price</button>`);
+      if (links.length) parts.push(`<div class="pe-links">${links.join("")}</div>`);
+      parts.push(requestHtml());
       box.innerHTML = parts.join("");
       return;
     }
@@ -598,46 +611,40 @@
     const est = r.estimate || { credit: r.earnings.credit, cash: r.earnings.cash };
     const fromRetail = reasons.includes("retail_price") || reasons.includes("retail_price_only");
     const leansOnRetail = fromRetail && (reasons.includes("brand_not_matched") || reasons.includes("few_sales") || reasons.includes("retail_price_only"));
-    const brandPart = r.match.brandMatched ? `${esc(S.brand)} ` : "";
-    const badge = leansOnRetail
-      ? `<span class="pe-badge pe-badge-info">Estimated from your retail price${S.age || S.cond ? ", age and condition" : ""}</span>`
-      : fromRetail
-        ? `<span class="pe-badge">${ICON_CHECK}Based on ${r.match.salesMatched} recent sales and your retail price</span>`
-        : `<span class="pe-badge">${ICON_CHECK}Strong match · ${r.match.salesMatched} ${brandPart}${esc(where)} sales</span>`;
-    parts.push(`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">${badge}${S.loading ? '<span class="pe-spin"></span>' : ""}</div>`);
     if (leansOnRetail) {
       const lead = reasons.includes("retail_price_only")
-        ? `We haven't sold any ${esc(where)} like this yet, so this estimate comes from the original retail price you entered.`
-        : `We haven't sold many ${reasons.includes("brand_not_matched") ? esc(S.brand) + " " : ""}${esc(where)}s, so this estimate leans mostly on the original retail price you entered.`;
+        ? `We haven't sold any ${esc(where)}s like this yet, so this is based on the retail price you entered.`
+        : `We haven't sold many ${reasons.includes("brand_not_matched") ? esc(S.brand) + " " : ""}${esc(where)}s, so this is based mostly on the retail price you entered.`;
       parts.push(`<div class="pe-note pe-note-amber">${lead}</div>`);
     }
-    parts.push(usedInputsHtml());
-    const sub = fromRetail ? "Your estimated range" : `Similar items earned ${money(r.earnings[S.payout === "cash" ? "cash" : "credit"].low)}–${money(r.earnings[S.payout === "cash" ? "cash" : "credit"].high)}`;
-    const pick = (id, label, rng) => `<button type="button" class="pe-range" aria-pressed="${S.payout === id}" data-act="payout" data-v="${id}">
-        <div class="pe-range-pick"><span class="pe-radio" aria-hidden="true"></span><span class="pe-range-label">${label}</span></div>
-        <div class="pe-range-value">${money(rng.low)}–${money(rng.high)}</div></button>`;
-    parts.push(`<div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", est.credit)}${pick("cash", "Cash", est.cash)}</div>`);
-    if (!fromRetail) parts.push(`<div class="pe-range-sub">${sub}</div>`);
-    if (S.payout === "credit") {
-      parts.push(`<div class="pe-timing">Available once you approve our offer. No need to wait for your item to sell.</div>`);
-    } else {
-      const w = r.weeksToSell;
-      const wk = w ? ` · estimated ${w.low === w.high ? w.low : w.low + "–" + w.high} week${w.high === 1 ? "" : "s"}` : "";
-      parts.push(`<div class="pe-timing">Paid when your item sells${wk}</div>`);
-    }
-    if (r.retail && r.retail.blend === "premium" && !leansOnRetail) parts.push(`<div class="pe-note pe-note-green">Your original retail price is well above typical sales here, so we weighted it heavily. Premium pieces like this often earn more.</div>`);
-    if (!r.retail) parts.push(`<button type="button" class="pe-nudge" data-act="open-msrp"><span><strong>Premium model?</strong> Add the original retail price for a sharper estimate.</span><span style="font-weight:700">Add</span></button>`);
-    if (est.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Add it to a bag with other gear, or send it in a donation bag.</div>`);
+    const w = r.weeksToSell;
+    const cashWhen = w ? `When it sells<br>~${w.low === w.high ? w.low : w.low + "–" + w.high} weeks` : "When it sells";
+    const pick = (id, label, rng, when) => `<button type="button" class="pe-range" aria-pressed="${S.payout === id}" data-act="payout" data-v="${id}">
+        <div class="pe-range-pick"><span class="pe-radio" aria-hidden="true"></span><span class="pe-range-label">${label}</span>${S.loading && S.payout === id ? '<span class="pe-spin" style="margin:0 0 0 auto"></span>' : ""}</div>
+        <div class="pe-range-value">${money(rng.low)}–${money(rng.high)}</div>
+        <div class="pe-range-when">${when}</div></button>`;
+    parts.push(`<div class="pe-estimate"><div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", est.credit, "Right away<br>No waiting to sell")}${pick("cash", "Cash", est.cash, cashWhen)}</div>${trustHtml(leansOnRetail ? TRUST_TEXT.replace("Based on similar past sales.", "Based on your retail price.") : TRUST_TEXT)}</div>`);
+
+    if (hasDetails()) parts.push(usedInputsHtml());
+    if (S.flow.open) parts.push(stepperHtml(false));
+    else if (!hasDetails()) parts.push(`<button type="button" class="pe-nudge" data-act="flow-open"><span><strong>Nicer ${esc(itemLabel().toLowerCase())}?</strong> High-end, current season, or like new condition items may earn more. Add more detail for a sharper estimate.</span><span class="pe-nudge-go">Add detail</span></button>`);
+
+    if (est.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Send it along with other gear, or in a donation bag.</div>`);
     if (inStore) {
       parts.push(`<div class="pe-note pe-note-amber"><strong>Bring this one to our Provo store.</strong> We can't take it by mail. Drop it off at 249 N University Ave and we'll look at it with you.</div>`);
     } else {
       if (rule.m === "Ask first") parts.push(`<div class="pe-note pe-note-amber">We decide on this one case by case, so we'll confirm with you before you ship it.</div>`);
-      parts.push(`<button type="button" class="pe-btn" data-act="add">Add to my bag</button>`);
+      parts.push(`<button type="button" class="pe-btn" data-act="add">Add to Estimate</button>`);
     }
-    parts.push(compsHtml(r.comps, leansOnRetail ? `For context, other ${esc(where)} sales` : r.match.brandMatched ? `Recent ${esc(S.brand)} ${esc(where)} sales` : "Similar gear we've sold recently", leansOnRetail));
-    if (!S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Something special about yours? Ask our team for a personal estimate</button>`);
+    if (leansOnRetail) {
+      parts.push(compsHtml(r.comps, `See other ${esc(where)} sales for context`, `Recent ${esc(where)} sales from other brands. For reference only.`));
+    } else {
+      const n = r.match.salesMatched;
+      const who = r.match.brandMatched ? `${esc(S.brand)} ` : "";
+      parts.push(compsHtml(r.comps, `Based on ${n} recent ${who}${esc(where)} sale${n === 1 ? "" : "s"}`, `What sellers earned on a few of them. For reference only.`));
+    }
+    if (hasDetails() && !S.flow.open && !S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Still seems off? Ask our team for a personal estimate</button>`);
     parts.push(requestHtml());
-    parts.push(TRUST);
     box.innerHTML = parts.join("");
   }
 
@@ -647,15 +654,13 @@
     q.note = ($("pe-req-note") || {}).value || q.note;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) { q.error = "Please enter a valid email address."; renderResult(); return; }
     q.error = ""; q.sending = true; renderResult();
-    const attributes = {};
-    for (const [k, v] of Object.entries(S.attrs)) if (v.length) attributes[k] = v;
     const r = S.result;
     const shownEst = r && r.status === "ok" ? (r.estimate || r.earnings) : null;
     try {
       const res = await fetch(CONFIG.functionUrl, {
         method: "POST", headers,
         body: JSON.stringify({ event: "estimate_request", email: q.email, note: q.note, category: S.cat && S.cat.id, label: S.label, brand: S.brand,
-          sizeType: S.size || null, attributes, condition: S.cond || null, age: S.age || null, msrp: (S.msrp || S.msrpDraft) ? Number(S.msrp || S.msrpDraft) : null,
+          sizeType: S.size || null, condition: S.cond || null, age: S.age || null, msrp: (S.msrp || S.msrpDraft) ? Number(S.msrp || S.msrpDraft) : null,
           shown: shownEst ? { confidence: r.confidence, credit: { low: shownEst.credit.low, high: shownEst.credit.high } } : { confidence: "none" },
           sessionId, source: CONFIG.source }),
       });
@@ -672,7 +677,7 @@
     const box = $("pe-bag");
     const n = S.bag.length;
     if (!n) {
-      box.innerHTML = `<div class="pe-bag-head"><h2>Your bag</h2><span class="pe-opt">0 items</span></div><p style="margin:0;color:var(--pe-faint)">Most people send several items at once. Add each one to see your combined estimate.</p>`;
+      box.innerHTML = `<div class="pe-bag-head"><h2>Your Estimate</h2><span class="pe-opt">0 items</span></div><p style="margin:0;color:var(--pe-faint)">Most people send several items at once. Add each one to see your combined estimate.</p>`;
       return;
     }
     const priced = S.bag.filter((x) => !x.pending);
@@ -681,9 +686,9 @@
     const total = priced.length
       ? `<div class="pe-total"><div class="pe-range-label">Estimated total${pendingCount ? ` (${priced.length} of ${n} items)` : ""}</div><div class="pe-total-value">${money(sum("creditLo"))}–${money(sum("creditHi"))} credit</div><div class="pe-comp-meta">or ${money(sum("cashLo"))}–${money(sum("cashHi"))} cash${pendingCount ? ` · plus ${pendingCount} item${pendingCount === 1 ? "" : "s"} we'll price when they arrive` : ""}</div></div>`
       : `<div class="pe-total"><div class="pe-range-label">Estimated total</div><div class="pe-comp-meta">We'll price ${pendingCount === 1 ? "this item" : "these items"} by hand when ${pendingCount === 1 ? "it arrives" : "they arrive"}, and you approve before anything is listed.</div></div>`;
-    box.innerHTML = `<div class="pe-bag-head"><h2>Your bag</h2><span class="pe-opt">${n} item${n === 1 ? "" : "s"}</span></div>
+    box.innerHTML = `<div class="pe-bag-head"><h2>Your Estimate</h2><span class="pe-opt">${n} item${n === 1 ? "" : "s"}</span></div>
       <div>${S.bag.map((it) => `<div class="pe-bag-item"><div><div style="font-weight:600">${esc(it.label)}</div>${it.pending
-        ? `<div class="pe-pending">Estimate pending</div>`
+        ? `<div class="pe-pending">Priced when it arrives</div>`
         : `<div class="pe-comp-meta">${money(it.creditLo)}–${money(it.creditHi)} credit · ${money(it.cashLo)}–${money(it.cashHi)} cash</div>`}</div>
         <button type="button" class="pe-x" data-act="remove" data-id="${it.id}" aria-label="Remove ${esc(it.label)}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>`).join("")}</div>
       ${total}
@@ -698,8 +703,6 @@
   $("pe-brand").addEventListener("keydown", (e) => comboKeys(e, "brand"));
   $("pe-cat-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectCat(S.catResults[+b.dataset.i]); });
   $("pe-brand-list").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) selectBrand(S.brandResults[+b.dataset.i]); });
-  $("pe-more-toggle").addEventListener("click", () => { S.moreOpen = !S.moreOpen; renderAll(); });
-  $("pe-msrp").addEventListener("input", () => { S.msrp = $("pe-msrp").value; S.msrpDraft = S.msrp; S.added = false; renderAll(); requestEstimate(800); });
 
   // Keep request-form typing in state without re-rendering (so focus isn't lost).
   root.addEventListener("input", (e) => {
@@ -707,19 +710,18 @@
     if (e.target.id === "pe-req-note") S.req.note = e.target.value;
     if (e.target.id === "pe-msrp-inline") {
       S.msrpDraft = e.target.value;
-      const go = root.querySelector('[data-act="msrp-go"]');
+      const go = root.querySelector('[data-act="flow-next"]');
       if (go) { if (Number(S.msrpDraft) > 0) go.removeAttribute("aria-disabled"); else go.setAttribute("aria-disabled", "true"); }
     }
   });
   root.addEventListener("keydown", (e) => {
-    if (e.target.id === "pe-msrp-inline" && e.key === "Enter") { e.preventDefault(); root.querySelector('[data-act="msrp-go"]').click(); }
+    if (e.target.id === "pe-msrp-inline" && e.key === "Enter") { e.preventDefault(); root.querySelector('[data-act="flow-next"]').click(); }
   });
   const resetReq = () => { S.req = { open: false, email: S.req.email, note: "", sending: false, sent: false, error: "" }; };
   // Everything that describes one specific item. Cleared when the item changes or is added to the bag.
   function resetItem() {
-    S.msrp = ""; S.msrpDraft = ""; S.cond = ""; S.age = ""; S.attrs = {}; S.moreOpen = false;
+    S.msrp = ""; S.msrpDraft = ""; S.cond = ""; S.age = ""; S.flow = { open: false, step: 1 }; S.compsOpen = false;
     S.added = false; S.result = null; S.error = ""; S.loading = false;
-    const m = $("pe-msrp"); if (m) m.value = "";
     resetReq();
   }
   function startNextItem(message) {
@@ -736,39 +738,36 @@
     const v = t.dataset.v;
     switch (t.dataset.act) {
       case "clear-cat": S.cat = null; S.label = null; resetItem(); renderAll(); setTimeout(() => $("pe-cat").focus(), 0); return;
-      case "clear-brand": S.brand = ""; S.result = null; S.added = false; renderAll(); setTimeout(() => $("pe-brand").focus(), 0); return;
+      case "clear-brand": S.brand = ""; resetItem(); renderAll(); setTimeout(() => $("pe-brand").focus(), 0); return;
       case "label": S.label = v; break;
-      case "cond": S.cond = S.cond === v ? "" : v; break;
-      case "age": S.age = S.age === v ? "" : v; break;
       case "size": S.size = S.size === v ? "" : v; break;
-      case "attr": {
-        const k = t.dataset.k, cur = S.attrs[k] || [];
-        S.attrs[k] = t.dataset.multi === "true" ? (cur.includes(v) ? cur.filter((x) => x !== v) : cur.concat(v)) : (cur.includes(v) ? [] : [v]);
-        break;
-      }
       case "payout": S.payout = v; renderResult(); return;
       case "req-open": S.req.open = true; renderResult(); setTimeout(() => $("pe-req-email") && $("pe-req-email").focus(), 0); return;
       case "req-send": sendRequest(); return;
-      case "msrp-go": {
-        const val = S.msrpDraft;
-        if (!val || Number(val) <= 0) { $("pe-msrp-inline") && $("pe-msrp-inline").focus(); return; }
-        S.msrp = val; $("pe-msrp").value = val; S.added = false; S.result = null; renderAll(); requestEstimate(0); return;
+      case "comps": S.compsOpen = !S.compsOpen; renderResult(); return;
+      case "flow-open": S.msrpDraft = S.msrp; S.flow = { open: true, step: 1 }; renderResult(); setTimeout(() => $("pe-msrp-inline") && $("pe-msrp-inline").focus(), 0); return;
+      case "flow-back": S.flow.step = Math.max(1, S.flow.step - 1); renderResult(); return;
+      case "flow-next": {
+        if (!(Number(S.msrpDraft) > 0)) { $("pe-msrp-inline") && $("pe-msrp-inline").focus(); return; }
+        S.flow.step = 2; renderResult(); return;
       }
-      case "age-inline": S.age = S.age === v ? "" : v; renderResult(); return;
-      case "cond-inline": S.cond = S.cond === v ? "" : v; renderResult(); return;
-      case "edit-details": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-more").scrollIntoView({ behavior: "smooth", block: "nearest" }), 0); return;
+      case "flow-skip": S.msrpDraft = ""; S.flow.step = 2; renderResult(); return;
+      case "flow-age": S.age = v; S.flow.step = 3; renderResult(); return;
+      case "flow-cond": {
+        S.cond = v; S.msrp = S.msrpDraft; S.flow = { open: false, step: 1 }; S.compsOpen = false;
+        S.added = false; S.result = null; renderResult(); requestEstimate(0); return;
+      }
       case "add-pending": {
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
         S.bag.push({ id: Date.now(), label, pending: true });
-        saveBag(); startNextItem(`Added ${label} to your bag. We'll price it when it arrives.`); return;
+        saveBag(); startNextItem(`Added ${label} to your estimate. We'll price it when it arrives.`); return;
       }
-      case "open-msrp": S.moreOpen = true; renderAll(); setTimeout(() => $("pe-msrp").focus(), 0); return;
       case "add": {
         const r = S.result; if (!r || r.status !== "ok") return;
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
         const est = r.estimate || r.earnings;
         S.bag.push({ id: Date.now(), label, creditLo: est.credit.low, creditHi: est.credit.high, cashLo: est.cash.low, cashHi: est.cash.high });
-        saveBag(); startNextItem(`Added ${label} to your bag.`); return;
+        saveBag(); startNextItem(`Added ${label} to your estimate.`); return;
       }
       case "remove": S.bag = S.bag.filter((x) => String(x.id) !== t.dataset.id); saveBag(); renderBag(); return;
       default: return;
