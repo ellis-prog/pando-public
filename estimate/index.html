@@ -52,6 +52,7 @@
   .pe-tag-warn { color: #7A4E00; background: #FBEAC8; }
   .pe-tag-no { color: #8A2A22; background: #F6DCD8; }
   .pe-hint { font-size: 13px; color: var(--pe-faint); margin-top: 6px; }
+  .pe-brand-note { color: var(--pe-accent-dark); }
   .pe-chip { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid #C9CEC3; border-radius: 12px; padding: 10px 10px 10px 14px; }
   .pe-chip-title { font-weight: 700; }
   .pe-chip-sub { font-size: 13px; color: var(--pe-faint); }
@@ -148,6 +149,27 @@
   .pe-evidence .pe-comp:first-of-type { border-top: 0; }
   .pe-evidence .pe-comp-title { font-weight: 500; font-size: 14px; }
   .pe-evidence .pe-comp-earn span:first-child { font-size: 14px; font-weight: 600; }
+  .pe { --pe-dot: #7E8A82; --pe-band: #E9EEE8; }
+  .pe-kicker { font-size: 13px; font-weight: 600; color: var(--pe-muted); }
+  .pe-fallback { margin: 0; font-size: 14px; color: var(--pe-muted); }
+  .pe-headline { font-size: 19px; font-weight: 700; line-height: 1.3; margin-top: -8px; }
+  .pe-fallback + .pe-headline { margin-top: -6px; }
+  .pe-strip { display: block; width: 100%; height: auto; margin: -4px 0 -6px; }
+  .pe-pos { font-size: 13px; color: var(--pe-muted); margin-top: -6px; }
+  .pe-divider { border-top: 1px solid var(--pe-line-2); }
+  .pe-lead, .pe-ask { margin: 0; font-size: 14px; color: var(--pe-muted); }
+  .pe-ask { font-size: 16px; font-weight: 700; color: var(--pe-ink); }
+  .pe-lead + .pe-boxes { margin-top: -8px; }
+  .pe-boxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pe-box { border: 1px solid #C9CEC3; border-radius: 12px; padding: 12px 14px; background: #fff; }
+  .pe-box:first-child { border: 2px solid var(--pe-accent); background: #F3F7F4; padding: 11px 13px; }
+  .pe-box-label { font-size: 13px; font-weight: 600; color: #3F4A44; }
+  .pe-box-value { font-size: clamp(22px, 4vw, 28px); font-weight: 700; line-height: 1.2; }
+  .pe-box-when { font-size: 12px; color: var(--pe-muted); }
+  .pe-note-soft { background: var(--pe-soft); color: #2C3A33; }
+  .pe-team { display: flex; flex-direction: column; gap: 14px; }
+  .pe-team-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pe-select { appearance: auto; padding-right: 8px; }
   .pe-bag { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
   .pe-bag-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .pe-bag-head h2 { margin: 0; font-size: 22px; }
@@ -174,6 +196,7 @@
       <div id="pe-cat-search">
         <input id="pe-cat" class="pe-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pe-cat-list" autocomplete="off" placeholder="Loading…" disabled>
         <div id="pe-cat-list" class="pe-list" role="listbox" hidden></div>
+        <div id="pe-cat-brand" class="pe-hint pe-brand-note" hidden></div>
         <div id="pe-cat-nomatch" class="pe-hint" hidden>No match yet. Try a simpler word, like “jacket”, “pack” or “skis”.</div>
       </div>
       <div id="pe-cat-chip" hidden></div>
@@ -214,17 +237,28 @@
     mailInUrl: "https://pandorefitters.typeform.com/sendgear?typeform-source=estimator",     // where "Start my mail-in" goes
     freeShippingNote: "Shipping is on us, when your gear is assessed by our team with a trade in or cash value $100 or higher. Need to send a smaller load? Shipping is a simple flat $7.95 deducted from your offer.",
     source: "estimate-page",
+    mailInMaxSeasons: 4,             // skis/snowboards by mail: up to this many seasons old
+    // Shorthand customers type for brands. Only used if the brand exists in our sales history.
+    brandAliases: {
+      "tnf": "The North Face", "north face": "The North Face", "northface": "The North Face",
+      "bd": "Black Diamond", "mhw": "Mountain Hardwear", "hh": "Helly Hansen", "bca": "Backcountry Access",
+      "sportiva": "La Sportiva", "patagucci": "Patagonia", "5 10": "Five Ten", "510": "Five Ten", "fiveten": "Five Ten",
+      "rei coop": "REI Co-op", "pearl izumi": "PEARL iZUMi", "troy lee": "Troy Lee Designs", "tld": "Troy Lee Designs",
+    },
   };
 
   const root = document.getElementById("pando-estimator");
   const $ = (id) => root.querySelector("#" + id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const money = (n) => "$" + Number(n).toLocaleString("en-US");
+  // Lowercase, strip accents and apostrophes, turn other punctuation into spaces.
+  const fold = (x) => String(x ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    .replace(/[’'`]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
   const shortName = (c) => { const p = c.split(" - "); return p[p.length - 1].trim(); };
   const headers = { "Content-Type": "application/json", Authorization: "Bearer " + CONFIG.anonKey, apikey: CONFIG.anonKey };
 
   const sessionId = (() => {
-    try { let s = sessionStorage.getItem("pe-session"); if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem("pe-session", s); } return s; }
+    try { let s = localStorage.getItem("pe-visitor"); if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("pe-visitor", s); } return s; }
     catch { return Math.random().toString(36).slice(2); }
   })();
 
@@ -256,16 +290,30 @@
   // ---------------- state ----------------
   const S = {
     cats: [], rules: {}, brands: [],
-    catResults: [], catActive: 0, cat: null, label: null,
+    catResults: [], catActive: 0, cat: null, label: null, catBrand: "", catIgnored: [],
     brandResults: [], brandActive: 0, brand: "",
     msrp: "", msrpDraft: "", cond: "", age: "", size: "", payout: "credit", flash: "", flow: { open: false, step: 1 }, compsOpen: false,
     result: null, loading: false, error: "", added: false,
-    req: { open: false, email: "", note: "", sending: false, sent: false, error: "" },
+    req: { open: false, email: "", note: "", model: "", sending: false, sent: false, error: "" },
+    team: { year: "", brand: "", model: "", size: "", cond: "", note: "", email: "", sending: false, sent: false, error: "", added: false },
     bag: loadBag(),
   };
   function loadBag() { try { return JSON.parse(localStorage.getItem("pe-bag") || "[]"); } catch { return []; } }
   function saveBag() { try { localStorage.setItem("pe-bag", JSON.stringify(S.bag)); } catch {} }
   const ruleFor = (cat) => (cat && S.rules[cat.name.trim()]) || { m: "Ask first", r: [] };
+
+  // ---------------- tracking ----------------
+  function track(name, extra) {
+    try {
+      fetch(CONFIG.functionUrl, { method: "POST", headers, keepalive: true,
+        body: JSON.stringify(Object.assign({ event: "track", name, sessionId, source: CONFIG.source }, extra || {})) }).catch(() => {});
+    } catch {}
+  }
+  const itemTrack = () => ({ category: S.cat && S.cat.id, categoryName: S.cat && S.cat.name, label: S.label, brand: S.brand });
+  const mailInHref = () => {
+    const u = CONFIG.mailInUrl;
+    return `${u}${u.includes("?") ? "&" : "?"}sid=${encodeURIComponent(sessionId)}&items=${S.bag.length}`;
+  };
 
   // ---------------- data loading ----------------
   async function init() {
@@ -285,36 +333,108 @@
       $("pe-cat").placeholder = "Couldn't load. Please refresh.";
     }
     renderResult(); renderBag();
+    track("page_view");
   }
 
   // ---------------- category search ----------------
-  function searchCats(q) {
-    const query = q.trim().toLowerCase();
-    if (query.length < 2) return [];
-    const tokens = query.split(/\s+/);
-    const out = [];
-    for (const cat of S.cats) {
-      const labels = cat.labels.length ? cat.labels : [shortName(cat.name)];
-      const terms = cat.searchTerms || [];
-      const hay = [cat.name, ...cat.labels, ...terms].join(" | ").toLowerCase();
-      if (!tokens.every((t) => hay.includes(t))) continue;
-      let best = 0, viaTerm = null;
-      for (const t of terms) {
-        const tl = t.toLowerCase();
-        const s = tl === query ? 9 : tl.startsWith(query) ? 7 : tl.includes(query) ? 5 : 0;
-        if (s > best) { best = s; viaTerm = t; }
-      }
-      const labelHits = labels.map((l) => {
-        const ll = l.toLowerCase();
-        return { l, s: ll === query ? 10 : ll.startsWith(query) ? 8 : ll.includes(query) ? 6 : 0 };
-      }).filter((x) => x.s > 0);
-      if (labelHits.length) {
-        for (const h of labelHits) out.push({ cat, label: cat.labels.length ? h.l : null, title: h.l, score: h.s });
-      } else {
-        const nameScore = cat.name.toLowerCase().includes(query) ? 4 : 2;
-        out.push({ cat, label: cat.labels[0] || null, title: labels[0], via: viaTerm, score: Math.max(best, nameScore) });
+  // Customers type things like "patagonia jacket" or "tnf puffy". We pull out a brand if we can,
+  // ignore words that don't match any category ("blue", "mens", typos), and search on what's left.
+  let brandIndex = null, catHay = null;
+  function buildIndexes() {
+    brandIndex = new Map();
+    for (const b of S.brands) {
+      const k = fold(b);
+      if (k.length < 2) continue;
+      brandIndex.set(k, b);
+      brandIndex.set(k.replace(/ /g, ""), b);
+      if (k.startsWith("the ")) brandIndex.set(k.slice(4), b);
+    }
+    const byKey = new Map(S.brands.map((b) => [fold(b), b]));
+    for (const [alias, target] of Object.entries(CONFIG.brandAliases || {})) {
+      const b = byKey.get(fold(target));
+      if (b) brandIndex.set(fold(alias), b);
+    }
+    catHay = S.cats.map((cat) => " " + fold([cat.name, ...cat.labels, ...(cat.searchTerms || [])].join(" ")) + " ");
+  }
+  const inAnyCat = (t) => catHay.some((h) => h.includes(" " + t));
+  function editDistance(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return 9;
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+  function parseQuery(q) {
+    if (!brandIndex) buildIndexes();
+    let words = fold(q).split(" ").filter(Boolean);
+    let brand = "";
+    // 1) exact brand phrase, longest first (3 words down to 1)
+    outer: for (let n = Math.min(3, words.length); n >= 1; n--) {
+      for (let i = 0; i + n <= words.length; i++) {
+        const phrase = words.slice(i, i + n).join(" ");
+        // One-word brands that are also gear words ("camp", "head", "backcountry") are too ambiguous to auto-fill.
+        if (n === 1 && inAnyCat(phrase)) continue;
+        const hit = brandIndex.get(phrase) || (n > 1 && brandIndex.get(phrase.replace(/ /g, "")));
+        if (hit) { brand = hit; words = words.slice(0, i).concat(words.slice(i + n)); break outer; }
       }
     }
+    // 2) close misspelling of a one-word brand ("pataginia"), only for words that aren't gear words
+    if (!brand) {
+      for (let i = 0; i < words.length && !brand; i++) {
+        const w = words[i];
+        if (w.length < 7 || inAnyCat(w)) continue;
+        for (const [k, b] of brandIndex) {
+          if (k.includes(" ") || k.length < 7) continue;
+          if (editDistance(w, k) <= (k.length >= 8 ? 2 : 1)) { brand = b; words.splice(i, 1); break; }
+        }
+      }
+    }
+    // 3) keep words that match some category; the rest are ignored
+    const keep = words.filter((w) => w.length >= 2 && inAnyCat(w));
+    const ignored = words.filter((w) => !keep.includes(w));
+    // Ambiguous brand words only count when nothing else does: "head skis" searches "skis".
+    const strong = keep.filter((w) => !brandIndex.has(w));
+    return { brand, tokens: strong.length ? strong : keep, ignored };
+  }
+
+  function searchCats(q) {
+    if (fold(q).length < 2) { S.catBrand = ""; S.catIgnored = []; return []; }
+    let { brand, tokens, ignored } = parseQuery(q);
+    // A brand name that's also a gear word ("head") typed alone: search it as a word too.
+    if (!tokens.length && brand && inAnyCat(fold(brand))) tokens = [fold(brand)];
+    S.catBrand = brand; S.catIgnored = ignored;
+    if (!tokens.length) return [];
+    const query = tokens.join(" ");
+    const scored = [];
+    S.cats.forEach((cat, idx) => {
+      const hay = catHay[idx];
+      const matched = tokens.filter((t) => hay.includes(" " + t)).length;
+      if (!matched) return;
+      const labels = cat.labels.length ? cat.labels : [shortName(cat.name)];
+      const terms = cat.searchTerms || [];
+      let best = 0, viaTerm = null;
+      for (const t of terms) {
+        const tl = fold(t);
+        const sc = tl === query ? 9 : tl.startsWith(query) ? 7 : tl.includes(query) ? 5 : 0;
+        if (sc > best) { best = sc; viaTerm = t; }
+      }
+      const labelHits = labels.map((l) => {
+        const ll = fold(l);
+        return { l, s: ll === query ? 10 : ll.startsWith(query) ? 8 : ll.includes(query) ? 6 : tokens.some((t) => (" " + ll).includes(" " + t)) ? 3 : 0 };
+      }).filter((x) => x.s > 0);
+      if (labelHits.length) {
+        for (const h of labelHits) scored.push({ cat, matched, label: cat.labels.length ? h.l : null, title: h.l, score: h.s });
+      } else {
+        const nameScore = fold(cat.name).includes(query) ? 4 : 2;
+        scored.push({ cat, matched, label: cat.labels[0] || null, title: labels[0], via: viaTerm, score: Math.max(best, nameScore) });
+      }
+    });
+    // Prefer categories that match the most of the typed words.
+    const top = Math.max(0, ...scored.map((x) => x.matched));
+    const out = scored.filter((x) => x.matched === top);
     const elig = (c) => ruleFor(c).m;
     out.sort((a, b) => (b.score - a.score) || ((elig(a.cat) === "Not accepting") - (elig(b.cat) === "Not accepting")) || a.title.localeCompare(b.title));
     return out.slice(0, 8);
@@ -327,7 +447,8 @@
     S.catActive = 0;
     renderCatList();
     clearTimeout(noMatchTimer);
-    if (q.trim().length >= 3 && !S.catResults.length) {
+    // Log anything that didn't fully land: no results, or words we had to ignore.
+    if (q.trim().length >= 3 && (!S.catResults.length || S.catIgnored.length)) {
       noMatchTimer = setTimeout(() => {
         fetch(CONFIG.functionUrl, { method: "POST", headers, body: JSON.stringify({ event: "search_no_match", query: q.trim(), sessionId, source: CONFIG.source }) }).catch(() => {});
       }, 1500);
@@ -337,7 +458,12 @@
   function renderCatList() {
     const list = $("pe-cat-list"), input = $("pe-cat");
     const q = input.value.trim();
-    $("pe-cat-nomatch").hidden = !(q.length >= 3 && !S.catResults.length);
+    const brandNote = $("pe-cat-brand");
+    brandNote.hidden = !(q && S.catBrand);
+    if (S.catBrand) brandNote.innerHTML = S.catResults.length
+      ? `Brand: <b>${esc(S.catBrand)}</b>. We'll fill that in for you.`
+      : `Got it, <b>${esc(S.catBrand)}</b>. What kind of item is it? Try “jacket”, “pack” or “skis”.`;
+    $("pe-cat-nomatch").hidden = !(q.length >= 3 && !S.catResults.length && !S.catBrand);
     if (!S.catResults.length) { list.hidden = true; input.setAttribute("aria-expanded", "false"); return; }
     list.innerHTML = S.catResults.map((r, i) => {
       const e = ELIG[ruleFor(r.cat).m];
@@ -354,22 +480,32 @@
     S.cat = r.cat; S.label = r.label;
     S.size = r.cat.sizeTypes.length === 1 ? r.cat.sizeTypes[0] : "";
     resetItem(); S.flash = "";
+    if (S.catBrand) { S.brand = S.catBrand; S.catBrand = ""; }
     $("pe-cat").value = ""; S.catResults = []; renderCatList();
+    if (teamKind(S.cat)) {
+      S.team.brand = S.brand && S.brand !== "Other" ? S.brand : S.team.brand;
+      renderAll(); track("staff_form_view", itemTrack());
+      return;
+    }
     renderAll(); requestEstimate();
     if (!S.brand) setTimeout(() => $("pe-brand") && $("pe-brand").focus(), 0);
   }
 
   // ---------------- brand search ----------------
   function searchBrands(q) {
-    const s = q.trim().toLowerCase();
+    const s = fold(q);
     if (!s) return [];
+    if (!brandIndex) buildIndexes();
     const starts = [], contains = [];
+    const alias = brandIndex.get(s) || brandIndex.get(s.replace(/ /g, ""));
+    if (alias) starts.push(alias);
     for (const b of S.brands) {
-      const bl = b.toLowerCase();
-      if (bl.startsWith(s)) starts.push(b); else if (bl.includes(s)) contains.push(b);
+      if (b === alias) continue;
+      const bl = fold(b), bn = bl.replace(/ /g, ""), sn = s.replace(/ /g, "");
+      if (bl.startsWith(s) || bn.startsWith(sn)) starts.push(b); else if (bl.includes(s) || bn.includes(sn)) contains.push(b);
     }
     const res = starts.concat(contains).slice(0, 6);
-    if (!res.some((b) => b.toLowerCase() === s) && q.trim().length >= 2) res.push({ custom: q.trim() });
+    if (!alias && !res.some((b) => fold(b) === s) && q.trim().length >= 2) res.push({ custom: q.trim() });
     res.push("Other / not sure");
     return res;
   }
@@ -432,7 +568,7 @@
       acc.innerHTML = `<div class="pe-accept-head"><span>What we accept</span><span class="pe-tag ${e[1]}">${esc(e[0])}</span></div>${rows}`;
     }
 
-    $("pe-brand-step").hidden = !paying;
+    $("pe-brand-step").hidden = !paying || !!teamKind(cat);
     $("pe-brand-search").hidden = !!S.brand;
     $("pe-brand-chip").hidden = !S.brand;
     if (S.brand) {
@@ -440,7 +576,7 @@
     }
 
     const fits = cat ? cat.sizeTypes : [];
-    $("pe-fit-wrap").hidden = !paying || fits.length < 2;
+    $("pe-fit-wrap").hidden = !paying || fits.length < 2 || !!teamKind(cat);
     $("pe-fit").innerHTML = fits.map((z) => `<button type="button" class="pe-pill" aria-pressed="${z === S.size}" data-act="size" data-v="${esc(z)}">${esc(z)}</button>`).join("");
 
     renderResult();
@@ -451,7 +587,7 @@
   function requestEstimate(delay = 300) {
     clearTimeout(estTimer);
     const rule = ruleFor(S.cat);
-    if (!S.cat || !S.brand || rule.m === "Not accepting" || rule.m === "Donation only") { S.result = null; S.loading = false; renderResult(); return; }
+    if (!S.cat || !S.brand || teamKind(S.cat) || rule.m === "Not accepting" || rule.m === "Donation only") { S.result = null; S.loading = false; renderResult(); return; }
     S.loading = true; renderResult();
     estTimer = setTimeout(async () => {
       const seq = ++reqSeq;
@@ -473,13 +609,57 @@
     }, delay);
   }
 
-  // ---------------- result rendering (three confidence states) ----------------
-  const TRUST_TEXT = "Based on similar past sales. A gear expert personally inspects every item before making a final offer. Not happy with it? We’ll send your gear back.";
+  // ---------------- result rendering ----------------
+  // Leads with what similar gear has earned (a dot strip of past payouts), then where the customer's
+  // item likely lands. Skis, snowboards and bikes skip the numbers and go to our team instead.
+  const TRUST_TEXT = "A look at past sales, not an offer. A gear expert personally inspects your item and factors in current demand before making a final offer. Not happy with it? We’ll send your gear back.";
   const trustHtml = (text) => `<div class="pe-trust"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>${text}</span></div>`;
 
   const nounFor = (r) => (S.label || shortName(r.category.name)).toLowerCase();
   const itemLabel = () => S.label || (S.cat ? shortName(S.cat.name) : "item");
   const hasDetails = () => !!(S.msrp || S.cond || S.age);
+
+  // Skis, snowboards and bikes: a person on our team estimates these for now.
+  const teamKind = (cat) => {
+    if (!cat) return null;
+    const n = cat.name.trim();
+    if (/^bikes\b/i.test(n)) return "bike";
+    if (/^skis\b/i.test(n)) return "ski";
+    if (/^snowboard$/i.test(n)) return "snowboard";
+    return null;
+  };
+  // Ski/snowboard model years roll over mid-year (2027 models arrive in fall 2026).
+  const modelYear = () => { const d = new Date(); return d.getMonth() >= 6 ? d.getFullYear() + 1 : d.getFullYear(); };
+
+  // Past payouts as a dot strip, with the customer's likely range marked when we have one.
+  function stripHtml(dist, est) {
+    const vals = dist.credit, most = dist.most.credit;
+    const sorted = [...vals].sort((a, b) => a - b);
+    const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? sorted[sorted.length - 1];
+    const W = Math.round(Math.max(280, Math.min(620, ($("pe-result").clientWidth || 470) - 48)));
+    let max = Math.max(p95 * 1.15, most.high * 1.25, est ? est.high * 1.12 : 0, 10);
+    const step = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000].find((s) => max / s <= (W < 400 ? 3 : 4)) || 5000;
+    max = Math.ceil(max / step) * step;
+    const L = 16, R = W - 16, X = (v) => L + (Math.min(v, max) / max) * (R - L);
+    const H = est ? 86 : 58;
+    let h = `<rect x="${X(most.low)}" y="20" width="${Math.max(4, X(most.high) - X(most.low))}" height="30" rx="5" fill="var(--pe-band)"/>`;
+    h += `<line x1="${L}" y1="35" x2="${R}" y2="35" stroke="#C9CEC3" stroke-width="1"/>`;
+    for (let t = 0; t <= max; t += step) h += `<text x="${X(t)}" y="12" text-anchor="middle" font-size="12" fill="#6B746E">$${t.toLocaleString("en-US")}</text>`;
+    const stacks = {};
+    const offsets = [0, -9, 9, -18, 18];
+    for (const v of sorted) {
+      const b = Math.round(X(v) / 8);
+      const i = stacks[b] = (stacks[b] ?? -1) + 1;
+      h += `<circle cx="${X(v).toFixed(1)}" cy="${35 + offsets[i % offsets.length]}" r="4.5" fill="var(--pe-dot)" fill-opacity="${i >= offsets.length ? 0.5 : 0.9}"/>`;
+    }
+    if (est) {
+      const a = X(est.low), b = Math.max(X(est.high), a + 6);
+      h += `<rect x="${a}" y="60" width="${b - a}" height="7" rx="3.5" fill="var(--pe-accent)"/>`;
+      h += `<text x="${Math.min(Math.max((a + b) / 2, 30), W - 30)}" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pe-accent-dark)">Yours</text>`;
+    }
+    const label = `${dist.n} past sales. Most earned ${money(most.low)} to ${money(most.high)} in store credit.${est ? ` Your estimate: ${money(est.low)} to ${money(est.high)}.` : ""}`;
+    return `<svg class="pe-strip" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${h}</svg>`;
+  }
 
   // Recent sales live behind a disclosure: proof when wanted, quiet when not.
   function compsHtml(comps, toggleLabel, lede) {
@@ -504,10 +684,12 @@
     return `<div class="pe-req" id="pe-req">
       <h4>Get a personal estimate</h4>
       <div style="font-size:14px;color:var(--pe-muted)">Someone on our team will take a look and email you back.</div>
+      <label class="pe-sublabel" for="pe-req-model" style="margin:0">Model name</label>
+      <input id="pe-req-model" class="pe-input" type="text" placeholder="${esc(S.brand && S.brand !== "Other" ? S.brand + " " : "")}model, as best you know it" value="${esc(q.model)}">
+      <label class="pe-sublabel" for="pe-req-note" style="margin:0">Tell us more <span class="pe-opt">(optional)</span></label>
+      <textarea id="pe-req-note" class="pe-textarea" placeholder="Size, how much it's been used, anything special about it">${esc(q.note)}</textarea>
       <label class="pe-sublabel" for="pe-req-email" style="margin:0">Email</label>
       <input id="pe-req-email" class="pe-input" type="email" autocomplete="email" placeholder="you@example.com" value="${esc(q.email)}">
-      <label class="pe-sublabel" for="pe-req-note" style="margin:0">Model name, and anything else that helps</label>
-      <textarea id="pe-req-note" class="pe-textarea" placeholder="e.g. Big Agnes Anvil Horn 15, size regular, used 5 nights">${esc(q.note)}</textarea>
       ${q.error ? `<div class="pe-note pe-note-red">${esc(q.error)}</div>` : ""}
       <button type="button" class="pe-btn" data-act="req-send" ${q.sending ? "disabled" : ""}>${q.sending ? '<span class="pe-spin"></span>Sending…' : "Send my request"}</button>
     </div>`;
@@ -537,15 +719,6 @@
     return `<div class="pe-flow">${top}${body}</div>`;
   }
 
-  function roughHeadline(r) {
-    const where = nounFor(r);
-    const why = r.confidenceReasons || [];
-    if (why.includes("brand_not_matched")) return `We haven't sold enough ${esc(S.brand)} ${esc(where)}s to estimate this automatically.`;
-    if (why.includes("few_sales")) return `We've only sold a few ${esc(where)}s, so we can't estimate this one automatically.`;
-    if (why.includes("wide_range")) return `${esc(where.charAt(0).toUpperCase() + where.slice(1))} prices vary a lot, so we need a bit more to go on.`;
-    return `We need a bit more to estimate this one.`;
-  }
-
   function usedInputsHtml() {
     const bits = [];
     if (S.msrp) bits.push(`${money(S.msrp)} new`);
@@ -553,6 +726,52 @@
     if (S.cond) bits.push((CONDITIONS.find((c) => c.id === S.cond) || {}).label);
     if (!bits.length) return "";
     return `<div class="pe-used">Using: ${bits.map(esc).join(" · ")} <button type="button" class="pe-textlink" data-act="flow-open">Edit</button></div>`;
+  }
+
+  // ---- skis, snowboards and bikes: our team estimates these ----
+  function teamHtml(kind) {
+    const T = S.team;
+    const noun = kind === "bike" ? "bike" : kind === "ski" ? "ski" : "snowboard";
+    const plural = kind === "bike" ? "Bikes" : kind === "ski" ? "Skis" : "Snowboards";
+    const parts = [];
+    parts.push(`<p class="pe-rough-head">Let's make sure you get a solid estimate.</p>`);
+    parts.push(`<p class="pe-rough-body">${plural} get a personal look from our team. Tell us about yours and we'll email you back.</p>`);
+    if (kind === "bike") {
+      parts.push(`<div class="pe-note pe-note-amber"><strong>Bikes are in-store only.</strong> We can't take them by mail. Get an estimate here, then bring it to our Provo store at 249 N University Ave.</div>`);
+    } else {
+      parts.push(`<div class="pe-note pe-note-soft"><strong>Mail-in for skis and snowboards works as a trade.</strong> Order a ski or snowboard from us, then ship your old one back in the same box. Our team approves each one first. Please note: for mail-in, we only accept skis and snowboards up to ${CONFIG.mailInMaxSeasons} seasons old.</div>`);
+    }
+    if (T.sent) {
+      parts.push(`<div class="pe-note pe-note-green"><strong>Thanks, we've got it.</strong> We'll email you at ${esc(T.email)} with an estimate.</div>`);
+      if (kind !== "bike" && !T.added) parts.push(`<button type="button" class="pe-btn-secondary" data-act="team-add">Add to my estimate</button>`);
+      return parts.join("");
+    }
+    const my = modelYear();
+    const years = [];
+    for (let y = my; y >= my - 12; y--) years.push(y);
+    const tooOld = kind !== "bike" && T.year && T.year !== "older" && Number(T.year) < my - CONFIG.mailInMaxSeasons;
+    const sizeHint = kind === "bike" ? "e.g. Medium or 54 cm" : kind === "ski" ? "e.g. 172 cm" : "e.g. 156 cm";
+    parts.push(`<div class="pe-team">
+      <div class="pe-team-row">
+        <div><label class="pe-sublabel" for="pe-t-year" style="display:block">Year</label>
+          <select id="pe-t-year" class="pe-input pe-select"><option value="">Choose a year</option>${years.map((y) => `<option value="${y}" ${String(y) === T.year ? "selected" : ""}>${y}</option>`).join("")}<option value="older" ${T.year === "older" ? "selected" : ""}>Older / not sure</option></select></div>
+        <div><label class="pe-sublabel" for="pe-t-size" style="display:block">Size <span class="pe-opt">(optional)</span></label>
+          <input id="pe-t-size" class="pe-input" type="text" placeholder="${sizeHint}" value="${esc(T.size)}"></div>
+      </div>
+      ${tooOld ? `<div class="pe-note pe-note-amber">That's a little older than we take by mail, but we're happy to look at it in our Provo store.</div>` : ""}
+      <div><label class="pe-sublabel" for="pe-t-brand" style="display:block">Brand</label>
+        <input id="pe-t-brand" class="pe-input" type="text" placeholder="e.g. Rossignol" value="${esc(T.brand)}"></div>
+      <div><label class="pe-sublabel" for="pe-t-model" style="display:block">Model</label>
+        <input id="pe-t-model" class="pe-input" type="text" placeholder="${kind === "bike" ? "e.g. Stumpjumper Comp" : kind === "ski" ? "e.g. Experience 88" : "e.g. Custom Flying V"}" value="${esc(T.model)}"></div>
+      <div><div class="pe-sublabel">Condition</div><div class="pe-opts">${CONDITIONS.map((c) => `<button type="button" class="pe-opt-row" aria-pressed="${c.id === T.cond}" data-act="team-cond" data-v="${c.id}"><b>${c.label}</b><span>${c.desc}</span></button>`).join("")}</div></div>
+      <div><label class="pe-sublabel" for="pe-t-note" style="display:block">Tell us more <span class="pe-opt">(optional)</span></label>
+        <textarea id="pe-t-note" class="pe-textarea" placeholder="${kind === "ski" ? "Bindings included? Any base or edge damage?" : kind === "snowboard" ? "Bindings included? Any base or edge damage?" : "Upgrades, recent service, anything worn out?"}">${esc(T.note)}</textarea></div>
+      <div><label class="pe-sublabel" for="pe-t-email" style="display:block">Email</label>
+        <input id="pe-t-email" class="pe-input" type="email" autocomplete="email" placeholder="you@example.com" value="${esc(T.email)}"></div>
+      ${T.error ? `<div class="pe-note pe-note-red">${esc(T.error)}</div>` : ""}
+      <button type="button" class="pe-btn" data-act="team-send" ${T.sending ? "disabled" : ""}>${T.sending ? '<span class="pe-spin"></span>Sending…' : `Get my ${noun} estimate`}</button>
+    </div>`);
+    return parts.join("");
   }
 
   function renderResult() {
@@ -574,6 +793,8 @@
       box.innerHTML = `<div class="pe-note pe-note-amber"><div style="font-size:19px;font-weight:700;margin-bottom:4px">Donation only</div>We can't pay for this one, but we'd gladly take it in a donation bag. Proceeds support our conservation partners.</div>`;
       return;
     }
+    const kind = teamKind(cat);
+    if (kind) { box.innerHTML = teamHtml(kind); return; }
     if (!S.brand) { box.innerHTML = `<div class="pe-empty"><div class="pe-empty-title">Add a brand to see your estimate</div>Pick “Other / not sure” if you don't see it.</div>`; return; }
     if (S.error) { box.innerHTML = `<div class="pe-note pe-note-red">${esc(S.error)}</div>`; return; }
     if (S.loading && !S.result) { box.innerHTML = `<div class="pe-empty"><span class="pe-spin"></span>Checking recent sales…</div>`; return; }
@@ -585,49 +806,66 @@
     const parts = [];
     const conf = r.status !== "ok" ? "none" : (r.confidence || "strong");
     const reasons = r.confidenceReasons || [];
-    const salesWord = (n) => `${n} recent ${where} sale${n === 1 ? "" : "s"}`;
+    const est = r.estimate;
+    const d = r.dist && r.dist.n >= 3 ? r.dist : null;
+    const brandReq = !!S.brand && S.brand !== "Other";
+    const fallbackCat = brandReq && !r.match.brandMatched;
+    const who = brandReq && r.match.brandMatched ? `${esc(S.brand)} ` : "";
+    const retailOnly = reasons.includes("retail_price_only");
+    // Show prices when the sales are a good guide (strong), when only the brand was missing and the
+    // category's prices are fairly tight, or once the customer has told us more.
+    const showPrices = !!est && (conf === "strong" || (conf === "rough" && reasons.every((x) => x === "brand_not_matched")));
 
-    // ---- States 2 and 3: no reliable automatic estimate ----
-    if (conf === "none" || conf === "rough") {
-      if (!S.flow.open) S.flow = { open: true, step: 1 };
-      parts.push(`<p class="pe-rough-head">${conf === "none" ? `We haven't sold enough ${esc(where)}s to estimate this yet.` : roughHeadline(r)}</p>`);
-      parts.push(`<p class="pe-rough-body">Answer 3 quick questions and we'll estimate from the original retail price.</p>`);
-      parts.push(stepperHtml(true));
-      if (conf === "rough") {
-        const sel = S.payout === "cash" ? r.earnings.cash : r.earnings.credit;
-        parts.push(compsHtml(r.comps, `See other ${esc(where)} sales for context`,
-          `Similar ${esc(where)}s have earned around ${money(sel.low)}–${money(sel.high)} in ${S.payout === "cash" ? "cash" : "store credit"}. Yours could be quite different. These are for reference only.`));
+    // ---- what similar gear has earned ----
+    if (d) {
+      if (fallbackCat) parts.push(`<p class="pe-fallback">We haven't had many ${esc(S.brand)} ${esc(where)} sales yet, so here's what all ${esc(where)} sales have earned.</p>`);
+      else parts.push(`<div class="pe-kicker">What similar gear has earned</div>`);
+      const most = d.most.credit;
+      const sorted = [...d.credit].sort((a, b) => a - b);
+      parts.push(`<div class="pe-headline">${d.n < 5
+        ? `We've only taken in ${d.n} of these. They earned ${money(sorted[0])}–${money(sorted[sorted.length - 1])} in credit.`
+        : `Most ${who}${esc(where)} sales earned ${money(most.low)}–${money(most.high)} in credit`}</div>`);
+      parts.push(stripHtml(d, showPrices ? est.credit : null));
+      if (showPrices && hasDetails()) {
+        if (est.credit.low > most.high) parts.push(`<div class="pe-pos">Higher than most ${esc(where)} sales. Newer, high-end pieces usually are.</div>`);
+        else if (est.credit.high < most.low) parts.push(`<div class="pe-pos">Lower than most, which is typical for older or well-used gear.</div>`);
       }
+    } else if (!showPrices) {
+      parts.push(`<p class="pe-rough-head">We don't have enough past ${esc(where)} sales to show yet.</p>`);
+    }
+
+    if (!showPrices) {
+      // Prices vary too much (or there's nothing to go on): ask for the three details first.
+      if (!S.flow.open) S.flow = { open: true, step: 1 };
+      if (d) parts.push(`<div class="pe-divider"></div>`);
+      parts.push(`<p class="pe-ask">Tell us a little more for an estimate on yours.</p>`);
+      parts.push(stepperHtml(true));
       const links = [];
       if (!S.req.open && !S.req.sent) links.push(`<button type="button" class="pe-textlink" data-act="req-open">Rather have a person look at it?</button>`);
       if (!inStore) links.push(`<button type="button" class="pe-textlink" data-act="add-pending">Add without a price</button>`);
       if (links.length) parts.push(`<div class="pe-links">${links.join("")}</div>`);
       parts.push(requestHtml());
+      parts.push(compsHtml(r.comps, `See recent ${esc(where)} sales`, `What sellers earned on a few of them. For reference only.`));
       box.innerHTML = parts.join("");
       return;
     }
 
-    // ---- State 1: show the estimate ----
-    const est = r.estimate || { credit: r.earnings.credit, cash: r.earnings.cash };
-    const fromRetail = reasons.includes("retail_price") || reasons.includes("retail_price_only");
-    const leansOnRetail = fromRetail && (reasons.includes("brand_not_matched") || reasons.includes("few_sales") || reasons.includes("retail_price_only"));
-    if (leansOnRetail) {
-      const lead = reasons.includes("retail_price_only")
-        ? `We haven't sold any ${esc(where)}s like this yet, so this is based on the retail price you entered.`
-        : `We haven't sold many ${reasons.includes("brand_not_matched") ? esc(S.brand) + " " : ""}${esc(where)}s, so this is based mostly on the retail price you entered.`;
-      parts.push(`<div class="pe-note pe-note-amber">${lead}</div>`);
-    }
+    // ---- where yours likely lands ----
+    if (d) parts.push(`<div class="pe-divider"></div>`);
+    const lead = retailOnly ? "Based on your retail price, age and condition, yours would likely earn"
+      : hasDetails() ? "Based on what you told us, yours would likely earn"
+      : fallbackCat ? `Based on all ${esc(where)} sales, yours would likely earn`
+      : `Based on recent ${who}${esc(where)} sales, yours would likely earn`;
+    parts.push(`<div class="pe-lead">${lead}${S.loading ? ' <span class="pe-spin" style="margin:0 0 0 6px"></span>' : ""}</div>`);
     const w = r.weeksToSell;
-    const cashWhen = w ? `When it sells<br>~${w.low === w.high ? w.low : w.low + "–" + w.high} weeks` : "When it sells";
-    const pick = (id, label, rng, when) => `<button type="button" class="pe-range" aria-pressed="${S.payout === id}" data-act="payout" data-v="${id}">
-        <div class="pe-range-pick"><span class="pe-radio" aria-hidden="true"></span><span class="pe-range-label">${label}</span>${S.loading && S.payout === id ? '<span class="pe-spin" style="margin:0 0 0 auto"></span>' : ""}</div>
-        <div class="pe-range-value">${money(rng.low)}–${money(rng.high)}</div>
-        <div class="pe-range-when">${when}</div></button>`;
-    parts.push(`<div class="pe-estimate"><div class="pe-ranges" role="group" aria-label="How you'd like to be paid">${pick("credit", "Store credit", est.credit, "Right away<br>No waiting to sell")}${pick("cash", "Cash", est.cash, cashWhen)}</div>${trustHtml(leansOnRetail ? TRUST_TEXT.replace("Based on similar past sales.", "Based on your retail price.") : TRUST_TEXT)}</div>`);
+    const cashWhen = w ? `When it sells · ~${w.low === w.high ? w.low : w.low + "–" + w.high} weeks` : "When it sells";
+    const boxHtml = (label, rng, when) => `<div class="pe-box"><div class="pe-box-label">${label}</div><div class="pe-box-value">${money(rng.low)}–${money(rng.high)}</div><div class="pe-box-when">${when}</div></div>`;
+    parts.push(`<div class="pe-boxes">${boxHtml("Store credit", est.credit, "Right away")}${boxHtml("Cash", est.cash, cashWhen)}</div>`);
+    parts.push(trustHtml(TRUST_TEXT));
 
     if (hasDetails()) parts.push(usedInputsHtml());
     if (S.flow.open) parts.push(stepperHtml(false));
-    else if (!hasDetails()) parts.push(`<button type="button" class="pe-nudge" data-act="flow-open"><span><strong>Nicer ${esc(itemLabel().toLowerCase())}?</strong> High-end, current season, or like new condition items may earn more. Add more detail for a sharper estimate.</span><span class="pe-nudge-go">Add detail</span></button>`);
+    else if (!hasDetails()) parts.push(`<button type="button" class="pe-nudge" data-act="flow-open"><span><strong>Is yours newer or high-end?</strong> Tell us about it and we'll show where it might land.</span><span class="pe-nudge-go">Tell us more</span></button>`);
 
     if (est.credit.high < 12) parts.push(`<div class="pe-note pe-note-amber"><strong>Probably not worth mailing on its own.</strong> Send it along with other gear, or in a donation bag.</div>`);
     if (inStore) {
@@ -636,15 +874,9 @@
       if (rule.m === "Ask first") parts.push(`<div class="pe-note pe-note-amber">We decide on this one case by case, so we'll confirm with you before you ship it.</div>`);
       parts.push(`<button type="button" class="pe-btn" data-act="add">Add to Estimate</button>`);
     }
-    if (leansOnRetail) {
-      parts.push(compsHtml(r.comps, `See other ${esc(where)} sales for context`, `Recent ${esc(where)} sales from other brands. For reference only.`));
-    } else {
-      const n = r.match.salesMatched;
-      const who = r.match.brandMatched ? `${esc(S.brand)} ` : "";
-      parts.push(compsHtml(r.comps, `Based on ${n} recent ${who}${esc(where)} sale${n === 1 ? "" : "s"}`, `What sellers earned on a few of them. For reference only.`));
-    }
-    if (hasDetails() && !S.flow.open && !S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Still seems off? Ask our team for a personal estimate</button>`);
+    if (hasDetails() && !S.flow.open && !S.req.open && !S.req.sent) parts.push(`<button type="button" class="pe-textlink" data-act="req-open">Still think it's worth more? Send us the model for a personal estimate</button>`);
     parts.push(requestHtml());
+    parts.push(compsHtml(r.comps, d ? `See recent ${esc(where)} sales` : "See recent sales", `What sellers earned on a few of them. For reference only.`));
     box.innerHTML = parts.join("");
   }
 
@@ -652,14 +884,15 @@
     const q = S.req;
     q.email = ($("pe-req-email") || {}).value?.trim() || q.email;
     q.note = ($("pe-req-note") || {}).value || q.note;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) { q.error = "Please enter a valid email address."; renderResult(); return; }
+    q.model = ($("pe-req-model") || {}).value?.trim() || q.model;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) { q.error = "Enter a valid email address."; renderResult(); return; }
     q.error = ""; q.sending = true; renderResult();
     const r = S.result;
     const shownEst = r && r.status === "ok" ? (r.estimate || r.earnings) : null;
     try {
       const res = await fetch(CONFIG.functionUrl, {
         method: "POST", headers,
-        body: JSON.stringify({ event: "estimate_request", email: q.email, note: q.note, category: S.cat && S.cat.id, label: S.label, brand: S.brand,
+        body: JSON.stringify({ event: "estimate_request", kind: "personal", email: q.email, note: q.note, model: q.model, category: S.cat && S.cat.id, label: S.label, brand: S.brand,
           sizeType: S.size || null, condition: S.cond || null, age: S.age || null, msrp: (S.msrp || S.msrpDraft) ? Number(S.msrp || S.msrpDraft) : null,
           shown: shownEst ? { confidence: r.confidence, credit: { low: shownEst.credit.low, high: shownEst.credit.high } } : { confidence: "none" },
           sessionId, source: CONFIG.source }),
@@ -667,9 +900,31 @@
       if (!res.ok) throw new Error();
       q.sent = true; q.open = false;
     } catch {
-      q.error = "Something went wrong sending that. Please try again, or email us at hello@pandorefitters.com.";
+      q.error = "Something went wrong sending that. Try again, or email us at hello@pandorefitters.com.";
     }
     q.sending = false; renderResult();
+  }
+
+  async function sendTeamRequest() {
+    const T = S.team, kind = teamKind(S.cat);
+    if (!T.model.trim()) { T.error = "Add the model so our team can look it up."; renderResult(); setTimeout(() => $("pe-t-model") && $("pe-t-model").focus(), 0); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(T.email.trim())) { T.error = "Enter a valid email address."; renderResult(); setTimeout(() => $("pe-t-email") && $("pe-t-email").focus(), 0); return; }
+    T.error = ""; T.sending = true; renderResult();
+    try {
+      const res = await fetch(CONFIG.functionUrl, {
+        method: "POST", headers,
+        body: JSON.stringify({ event: "estimate_request", kind: "team", email: T.email.trim(), note: T.note, model: T.model.trim(),
+          year: T.year === "older" ? "Older / not sure" : T.year, size: T.size, brand: T.brand.trim(), condition: T.cond || null,
+          category: S.cat.id, label: S.label, shown: { confidence: "team" }, sessionId, source: CONFIG.source }),
+      });
+      if (!res.ok) throw new Error();
+      T.sent = true;
+      S.req.email = T.email.trim();
+    } catch {
+      T.error = "Something went wrong sending that. Try again, or email us at hello@pandorefitters.com.";
+    }
+    T.sending = false; renderResult();
+    void kind;
   }
 
   // ---------------- bag ----------------
@@ -688,12 +943,12 @@
       : `<div class="pe-total"><div class="pe-range-label">Estimated total</div><div class="pe-comp-meta">We'll price ${pendingCount === 1 ? "this item" : "these items"} by hand when ${pendingCount === 1 ? "it arrives" : "they arrive"}, and you approve before anything is listed.</div></div>`;
     box.innerHTML = `<div class="pe-bag-head"><h2>Your Estimate</h2><span class="pe-opt">${n} item${n === 1 ? "" : "s"}</span></div>
       <div>${S.bag.map((it) => `<div class="pe-bag-item"><div><div style="font-weight:600">${esc(it.label)}</div>${it.pending
-        ? `<div class="pe-pending">Priced when it arrives</div>`
+        ? `<div class="pe-pending">${esc(it.pendingText || "Priced when it arrives")}</div>`
         : `<div class="pe-comp-meta">${money(it.creditLo)}–${money(it.creditHi)} credit · ${money(it.cashLo)}–${money(it.cashHi)} cash</div>`}</div>
         <button type="button" class="pe-x" data-act="remove" data-id="${it.id}" aria-label="Remove ${esc(it.label)}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>`).join("")}</div>
       ${total}
       <div style="font-size:14px;color:#3F4A44">${esc(CONFIG.freeShippingNote)}</div>
-      <a class="pe-link-btn" href="${esc(CONFIG.mailInUrl)}">Start my mail-in</a>`;
+      <a class="pe-link-btn" href="${esc(mailInHref())}" data-act="start-mail-in">Start my mail-in</a>`;
   }
 
   // ---------------- events ----------------
@@ -708,16 +963,28 @@
   root.addEventListener("input", (e) => {
     if (e.target.id === "pe-req-email") S.req.email = e.target.value;
     if (e.target.id === "pe-req-note") S.req.note = e.target.value;
+    if (e.target.id === "pe-req-model") S.req.model = e.target.value;
+    const teamField = { "pe-t-brand": "brand", "pe-t-model": "model", "pe-t-size": "size", "pe-t-note": "note", "pe-t-email": "email" }[e.target.id];
+    if (teamField) {
+      S.team[teamField] = e.target.value;
+      if (S.team.error) { S.team.error = ""; const n = root.querySelector(".pe-team .pe-note-red"); if (n) n.remove(); }
+    }
     if (e.target.id === "pe-msrp-inline") {
       S.msrpDraft = e.target.value;
       const go = root.querySelector('[data-act="flow-next"]');
       if (go) { if (Number(S.msrpDraft) > 0) go.removeAttribute("aria-disabled"); else go.setAttribute("aria-disabled", "true"); }
     }
   });
+  root.addEventListener("change", (e) => {
+    if (e.target.id === "pe-t-year") { S.team.year = e.target.value; renderResult(); setTimeout(() => $("pe-t-year") && $("pe-t-year").focus(), 0); }
+  });
   root.addEventListener("keydown", (e) => {
     if (e.target.id === "pe-msrp-inline" && e.key === "Enter") { e.preventDefault(); root.querySelector('[data-act="flow-next"]').click(); }
   });
-  const resetReq = () => { S.req = { open: false, email: S.req.email, note: "", sending: false, sent: false, error: "" }; };
+  const resetReq = () => {
+    S.req = { open: false, email: S.req.email, note: "", model: "", sending: false, sent: false, error: "" };
+    S.team = { year: "", brand: S.brand && S.brand !== "Other" ? S.brand : "", model: "", size: "", cond: "", note: "", email: S.req.email || S.team.email, sending: false, sent: false, error: "", added: false };
+  };
   // Everything that describes one specific item. Cleared when the item changes or is added to the bag.
   function resetItem() {
     S.msrp = ""; S.msrpDraft = ""; S.cond = ""; S.age = ""; S.flow = { open: false, step: 1 }; S.compsOpen = false;
@@ -745,6 +1012,17 @@
       case "req-open": S.req.open = true; renderResult(); setTimeout(() => $("pe-req-email") && $("pe-req-email").focus(), 0); return;
       case "req-send": sendRequest(); return;
       case "comps": S.compsOpen = !S.compsOpen; renderResult(); return;
+      case "team-cond": S.team.cond = v; renderResult(); return;
+      case "team-send": sendTeamRequest(); return;
+      case "team-add": {
+        const T = S.team;
+        const label = [T.brand, T.model || (S.label || shortName(S.cat.name))].filter(Boolean).join(" ");
+        S.bag.push({ id: Date.now(), label, pending: true, pendingText: "Priced by our team" });
+        saveBag(); track("add_to_estimate", Object.assign(itemTrack(), { brand: T.brand, label }));
+        startNextItem(`Added ${label} to your estimate. Our team will price it.`); return;
+      }
+      case "start-mail-in": track("start_mail_in", { items: S.bag.length,
+        creditLo: S.bag.filter((x) => !x.pending).reduce((a, x) => a + x.creditLo, 0), creditHi: S.bag.filter((x) => !x.pending).reduce((a, x) => a + x.creditHi, 0) }); return;
       case "flow-open": S.msrpDraft = S.msrp; S.flow = { open: true, step: 1 }; renderResult(); setTimeout(() => $("pe-msrp-inline") && $("pe-msrp-inline").focus(), 0); return;
       case "flow-back": S.flow.step = Math.max(1, S.flow.step - 1); renderResult(); return;
       case "flow-next": {
@@ -760,20 +1038,23 @@
       case "add-pending": {
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
         S.bag.push({ id: Date.now(), label, pending: true });
-        saveBag(); startNextItem(`Added ${label} to your estimate. We'll price it when it arrives.`); return;
+        saveBag(); track("add_to_estimate", itemTrack()); startNextItem(`Added ${label} to your estimate. We'll price it when it arrives.`); return;
       }
       case "add": {
         const r = S.result; if (!r || r.status !== "ok") return;
         const label = (S.brand && S.brand !== "Other" ? S.brand + " " : "") + (S.label || shortName(S.cat.name));
         const est = r.estimate || r.earnings;
         S.bag.push({ id: Date.now(), label, creditLo: est.credit.low, creditHi: est.credit.high, cashLo: est.cash.low, cashHi: est.cash.high });
-        saveBag(); startNextItem(`Added ${label} to your estimate.`); return;
+        saveBag(); track("add_to_estimate", Object.assign(itemTrack(), { creditLo: est.credit.low, creditHi: est.credit.high, cashLo: est.cash.low, cashHi: est.cash.high })); startNextItem(`Added ${label} to your estimate.`); return;
       }
       case "remove": S.bag = S.bag.filter((x) => String(x.id) !== t.dataset.id); saveBag(); renderBag(); return;
       default: return;
     }
     S.added = false; renderAll(); requestEstimate();
   });
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (root.querySelector(".pe-strip")) renderResult(); }, 150); });
 
   init();
 })();
