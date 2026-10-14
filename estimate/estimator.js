@@ -406,7 +406,7 @@
   // ---------------- result rendering ----------------
   // Leads with what similar gear has earned (a dot strip of past payouts), then where the customer's
   // item likely lands. Skis, snowboards and bikes skip the numbers and go to our team instead.
-  const TRUST_TEXT = "A look at past sales, not an offer. A gear expert personally inspects your item and factors in current demand before making a final offer. Not happy with it? We\u2019ll send your gear back.";
+  const TRUST_TEXT = "A look at past sales, not an offer. A gear expert personally inspects your item before making a final offer. Not happy with it? We\u2019ll send your gear back.";
   const trustHtml = (text) => `<div class="pe-trust"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#2E5B47" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><path d="M9 1.8l5.6 2.3v4.3c0 3.6-2.4 6.4-5.6 7.8-3.2-1.4-5.6-4.2-5.6-7.8V4.1L9 1.8z"/><path d="M6.4 9.1l1.8 1.8 3.5-3.6"/></svg><span>${text}</span></div>`;
 
   const nounFor = (r) => (S.label || shortName(r.category.name)).toLowerCase();
