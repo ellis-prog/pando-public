@@ -591,7 +591,7 @@
     <div class="intro">
       <h1 class="intro-greeting" id="greeting">Hi there!</h1>
       <p class="intro-sub">Here's the gear you dropped off. Review our suggested pricing, choose how you'd like to sell each item, then hit Approve.</p>
-      <span class="intro-expiry">⏱ This link expires in 4 days</span>
+      <span class="intro-expiry">⏱ This link expires in 1 week</span>
     </div>
     <div class="batch-note" id="batch-note"></div>
     <div class="not-accepted" id="not-accepted"></div>
@@ -1020,6 +1020,14 @@ async function loadItems() {
       document.querySelector('.intro-expiry').style.display = 'none';
       renderBatchInfo(batch);
       return;
+    }
+
+    // Show the real time left on this link
+    if (batch.expires_at) {
+      const ms = new Date(batch.expires_at).getTime() - Date.now();
+      const days = Math.ceil(ms / 86400000);
+      const left = ms < 86400000 ? 'today' : days === 1 ? 'in 1 day' : days >= 7 ? 'in 1 week' : `in ${days} days`;
+      document.querySelector('.intro-expiry').textContent = `⏱ This link expires ${left}`;
     }
 
     window._items = items;
