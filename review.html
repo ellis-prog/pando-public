@@ -11,8 +11,8 @@
 
   :root {
     --forest: #1d3a58;
-    --forest-mid: #0F6E56;
-    --forest-light: #1D9E75;
+    --forest-mid: #233d32;
+    --forest-light: #3d6b57;
     --forest-pale: #ffffff;
     --forest-mint: #ffffff;
     --forest-teal: #ffffff;
@@ -25,8 +25,8 @@
     --paper-dark: #e8e8e4;
     --border: #d8d8d4;
     --white: #ffffff;
-    --amber: #BA7517;
-    --amber-pale: #FAEEDA;
+    --alert: #b8302a;
+    --alert-pale: #FBEAE9;
     --approve: #b8302a;
     --approve-hover: #500f0c;
   }
@@ -43,7 +43,7 @@
   }
 
   .site-header {
-    background: #000000;
+    background: #233d32;
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
@@ -82,8 +82,9 @@
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: var(--amber);
-    background: var(--amber-pale);
+    color: var(--ink-mid);
+    background: var(--paper-mid);
+    border: 1px solid var(--border);
     padding: 4px 10px;
     border-radius: 20px;
     margin-top: 0.75rem;
@@ -565,8 +566,8 @@
   .na-list li:first-child { border-top: none; }
   .na-name { font-size: 15px; color: var(--ink); }
   .na-reason { font-size: 13px; color: var(--ink-light); }
-  .na-pickup { display: flex; gap: 10px; align-items: flex-start; background: var(--amber-pale); border: 1.5px solid var(--amber); color: #7a4c0e; border-radius: 10px; padding: 12px 14px; font-size: 14px; font-weight: 600; line-height: 1.5; }
-  .na-pickup svg { flex-shrink: 0; margin-top: 1px; color: var(--amber); }
+  .na-pickup { display: flex; gap: 10px; align-items: flex-start; background: var(--alert-pale); border: 1.5px solid var(--alert); color: #7a1f1b; border-radius: 10px; padding: 12px 14px; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .na-pickup svg { flex-shrink: 0; margin-top: 1px; color: var(--alert); }
   .save-error { margin: 0 1.25rem 0.75rem; padding: 8px 12px; border-radius: 8px; background: #fdecea; color: #8a1f17; font-size: 13px; }
 </style>
 </head>
