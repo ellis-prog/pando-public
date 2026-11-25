@@ -901,7 +901,9 @@ async function sendDecisions(decisions) {
     for (const d of decisions) {
       const r = out.results && out.results[d.asset_id];
       if (r === 'ok' || r === 'already_decided_or_not_in_batch') continue;
-      revertUI(d.asset_id, r === 'not_eligible'
+      revertUI(d.asset_id, r === 'already_processed'
+        ? "This item was already processed. Refresh the page to see your latest items."
+        : r === 'not_eligible'
         ? "This item can't be approved that way. Please call us at (801) 210-1835."
         : "We couldn't save that. Please try again, or call us at (801) 210-1835.");
     }
